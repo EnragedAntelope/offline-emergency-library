@@ -186,6 +186,84 @@ if(-not $SkipMaps){
   }catch{ Log "osmand ERROR: $($_.Exception.Message)" }
 } else { Log '=== [8/8] Maps SKIPPED ===' }
 
+# ---------------- desktop map viewer (use the maps on a PC, no phone needed) -----------
+if(-not $SkipMaps){
+  Log '=== [8b] Desktop map viewer (OsmAndMapCreator + portable Java) ==='
+  $mvd = Join-Path $Root 'OsmAnd\MapViewer-Desktop'
+  New-Item -ItemType Directory -Force $mvd,(Join-Path $mvd 'app') | Out-Null
+  try{
+    $mc = Join-Path $mvd 'OsmAndMapCreator.zip'
+    Log 'mapviewer: OsmAndMapCreator'
+    Fetch 'https://download.osmand.net/latest-night-build/OsmAndMapCreator-main.zip' $mc
+    Expand-Archive $mc -DestinationPath (Join-Path $mvd 'app') -Force
+    # if the zip nested everything in a single subfolder, pull it up to \app
+    if(-not (Test-Path (Join-Path $mvd 'app\OsmAndMapCreator.bat'))){
+      $inner = Get-ChildItem (Join-Path $mvd 'app') -Directory | Select-Object -First 1
+      if($inner -and (Test-Path (Join-Path $inner.FullName 'OsmAndMapCreator.bat'))){
+        Get-ChildItem $inner.FullName -Force | Move-Item -Destination (Join-Path $mvd 'app') -Force
+      }
+    }
+    $jz = Join-Path $mvd 'jre.zip'
+    Log 'mapviewer: portable Java runtime'
+    Fetch 'https://api.adoptium.net/v3/binary/latest/21/ga/windows/x64/jre/hotspot/normal/eclipse' $jz
+    $tmp = Join-Path $mvd '_jre_tmp'
+    if(Test-Path $tmp){ Remove-Item $tmp -Recurse -Force }
+    Expand-Archive $jz -DestinationPath $tmp -Force
+    $jreSrc = Get-ChildItem $tmp -Directory | Select-Object -First 1
+    $jreDst = Join-Path $mvd 'jre'
+    if(Test-Path $jreDst){ Remove-Item $jreDst -Recurse -Force }
+    if($jreSrc){ Move-Item $jreSrc.FullName $jreDst }
+    Remove-Item $tmp -Recurse -Force -ErrorAction SilentlyContinue
+  }catch{ Log "mapviewer ERROR: $($_.Exception.Message)" }
+
+  # helper: unzip the downloaded .obf.zip map files into an \obf folder the viewer can read
+  $prep = @'
+$ErrorActionPreference='Continue'
+$maps = Split-Path -Parent $PSScriptRoot      # ...\OsmAnd
+$obf  = Join-Path $maps 'obf'
+New-Item -ItemType Directory -Force $obf | Out-Null
+$zips = Get-ChildItem (Join-Path $maps '*.obf.zip') -ErrorAction SilentlyContinue
+$i=0
+foreach($z in $zips){
+  $i++
+  $target = Join-Path $obf ($z.Name -replace '\.zip$','')
+  if(-not (Test-Path $target)){
+    Write-Host ("[{0}/{1}] unzipping {2}" -f $i,$zips.Count,$z.Name)
+    try{ Expand-Archive $z.FullName -DestinationPath $obf -Force }catch{ Write-Host "  failed: $($_.Exception.Message)" }
+  }
+}
+Write-Host "Maps ready in: $obf"
+'@
+  Set-Content -Path (Join-Path $mvd 'prepare-maps.ps1') -Value $prep -Encoding utf8
+
+  $mvbat = @"
+@echo off
+title Offline Maps on PC - OsmAndMapCreator
+cd /d "%~dp0"
+set "JAVA_HOME=%~dp0jre"
+set "PATH=%~dp0jre\bin;%PATH%"
+echo Preparing map files for desktop viewing (first run can take several minutes)...
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0prepare-maps.ps1"
+echo.
+echo Launching the desktop map viewer...
+echo In the app, your maps are the .obf files in the  OsmAnd\obf  folder.
+cd /d "%~dp0app"
+call OsmAndMapCreator.bat
+pause
+"@
+  Set-Content -Path (Join-Path $mvd 'VIEW-MAPS-ON-PC.bat') -Value $mvbat -Encoding ascii
+
+  # Android app, so a phone can be prepared with NO app store / internet later
+  try{
+    $pa = Join-Path $Root 'OsmAnd\PhoneApp-Android'
+    New-Item -ItemType Directory -Force $pa | Out-Null
+    $api = Invoke-RestMethod 'https://f-droid.org/api/v1/packages/net.osmand.plus' -Headers @{'User-Agent'='ps'}
+    $vc = $api.suggestedVersionCode
+    Log "phone app: OsmAnd~ APK (net.osmand.plus_$vc)"
+    Fetch "https://f-droid.org/repo/net.osmand.plus_$vc.apk" (Join-Path $pa "OsmAnd-$vc.apk")
+  }catch{ Log "phone app ERROR: $($_.Exception.Message)" }
+}
+
 # ================================================================ launchers
 Log '=== Writing launchers (.bat) ==='
 function WriteBat($path,$text){ Set-Content -Path $path -Value $text -Encoding ascii }
@@ -275,6 +353,7 @@ PlaceDoc 'HOW-TO-USE-KIWIX.md'      (Join-Path $Root 'Kiwix-Reader\HOW-TO-USE-KI
 PlaceDoc 'Manuals-READ-ME-FIRST.md' (Join-Path $Root 'Manuals\READ-ME-FIRST')                       'Manuals - Read Me First'
 PlaceDoc 'Medical-READ-ME-FIRST.md' (Join-Path $Root 'Medical\READ-ME-FIRST')                       'Medical - Read Me First'
 PlaceDoc 'RADIO-GUIDE.md'           (Join-Path $Root 'Manuals\Radio-Communications\RADIO-GUIDE')     'Emergency Radio Communications Guide'
+PlaceDoc 'HOW-TO-VIEW-MAPS.md'      (Join-Path $Root 'OsmAnd\HOW-TO-VIEW-MAPS')                      'Offline Maps - How to View'
 
 Log '=== DONE. Open START-HERE.html in the destination folder. ==='
 Write-Host ''

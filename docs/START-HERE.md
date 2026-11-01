@@ -21,7 +21,7 @@ This drive is a self-contained **offline survival library + AI**. Everything wor
 | `Manuals\Radio-Communications\` | How ham/CB/shortwave radio works + emergency comms | Browser | `RADIO-GUIDE.html` |
 | `Medical\` | Offline medical Wikipedia + first-aid books | ZIM→Kiwix, PDF→browser | `Medical\READ-ME-FIRST.html` |
 | `Wikipedia\` | Full Wikipedia article text (compressed) | Via Kiwix / archival | — |
-| `OsmAnd\` | Offline US maps for the OsmAnd app | OsmAnd app (phone) | — |
+| `OsmAnd\` | Offline US maps — view on **PC (no phone)** or phone | PC: `MapViewer-Desktop\VIEW-MAPS-ON-PC.bat`; phone: bundled APK | `OsmAnd\HOW-TO-VIEW-MAPS.html` |
 | `Kiwix-Reader\` | The reader for all `.zim` archives | Portable app | `Kiwix-Reader\HOW-TO-USE-KIWIX.html` |
 
 ---
@@ -38,7 +38,8 @@ This drive is a self-contained **offline survival library + AI**. Everything wor
 - **Survival / water / food:** Kiwix → `Manuals\Survival-Water-Food`; plus the Army
   survival PDFs.
 - **Communicate by radio:** read `Manuals\Radio-Communications\RADIO-GUIDE.html`.
-- **Look something up:** Wikipedia (via Kiwix) and the maps (OsmAnd app).
+- **Look something up:** Wikipedia (via Kiwix) and the maps (`OsmAnd\HOW-TO-VIEW-MAPS.html`
+  — works on a PC with no phone).
 
 ---
 
@@ -50,7 +51,9 @@ This drive is a self-contained **offline survival library + AI**. Everything wor
 | `.zim` archives | **Kiwix** (portable, no install) | ✅ `E:\Kiwix-Reader\app` |
 | Offline AI chat | Nothing extra (self-contained engine) | ✅ `E:\AI-Offline\engine` |
 | AI doc-Q&A | **GPT4All** (one-time install; self-contained, CPU) | ✅ installer in `DocReader-GPT4All` |
-| Maps | **OsmAnd** app on a phone/tablet | app store (get while online) |
+| Maps on a computer | Bundled desktop viewer + portable Java (no phone needed) | ✅ `OsmAnd\MapViewer-Desktop` |
+| Maps on Android | Bundled **OsmAnd~ APK** (sideload offline) | ✅ `OsmAnd\PhoneApp-Android` |
+| Maps on iPhone/iPad | OsmAnd from the App Store | app store (get while online) |
 
 Everything that needs a one-time online step (GPT4All's first run, phone apps) should be
 set up **now, while you still have internet**, so the kit is fully usable offline later.

@@ -17,7 +17,7 @@ works with **no internet**.
 | **Offline AI chat** | 3 local AI models (Llama 3.2 3B, Llama 3.1 8B, Qwen2.5 7B) + CPU & GPU engines (llama.cpp) | ~11 GB | CPU only (GPU optional) |
 | **Offline doc-Q&A** | GPT4All — ask an AI questions about your PDFs, with citations | ~0.7 GB | CPU, one-time install |
 | **Wikipedia** | Full English Wikipedia article text (compressed) | ~24 GB | Kiwix (or archival) |
-| **Offline US maps** | Every US state/region map for the OsmAnd app | ~17 GB | OsmAnd app (phone) |
+| **Offline US maps** | Every US state/region map (OsmAnd `.obf`) + **bundled desktop viewer** (OsmAndMapCreator + portable Java) + **bundled Android app (APK)** | ~17 GB (+~0.4 GB tools) | **PC (no phone) or phone** |
 | **Repair archive** | iFixit — cars, appliances, electronics, phones | ~3.4 GB | Kiwix |
 | **DIY archive** | Appropedia — plumbing, electrical, construction, energy, water, food | ~0.6 GB | Kiwix |
 | **Medical** | Offline medical Wikipedia (WikiMed) + curated medical guide | ~1.8 GB | Kiwix |
@@ -67,7 +67,8 @@ install, and future updates), so plan for more than 60 GB.
 | **Offline AI — big model (8B)** | **~8 GB RAM** recommended. CPU only. |
 | **Offline AI — GPU model (Qwen 7B)** | A graphics card with **~6 GB VRAM** (NVIDIA/AMD/Intel) for a big speed boost. Optional. |
 | **GPT4All doc-Q&A** | 64-bit PC, ~8 GB RAM recommended. CPU only. Self-contained (no Python/CUDA). |
-| **Maps** | The free **OsmAnd** app on a phone/tablet (copy the map files to it). |
+| **Maps on a computer** | **No phone needed** — bundled desktop viewer (OsmAndMapCreator) + bundled portable Java. First use unzips maps (~30 GB). |
+| **Maps on a phone** | Android: bundled **OsmAnd~ APK** (sideload offline). iPhone/iPad: install **OsmAnd** from the App Store while online. |
 
 **Key points:**
 - **No GPU is required** for the AI — it runs on an ordinary CPU (just slower). A 6 GB GPU
