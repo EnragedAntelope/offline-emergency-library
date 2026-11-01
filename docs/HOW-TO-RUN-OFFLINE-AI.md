@@ -61,6 +61,23 @@ This works offline too — it's a local page served by your own computer.
 
 ---
 
+## 2b. On macOS / Linux
+
+There are no `.bat` files on Mac/Linux — use the matching **`.sh`** launchers instead.
+Open a terminal in the `AI-Offline` folder and run:
+
+```
+./chat-3B-light.sh        # fast, light model
+./chat-8B-smart.sh        # smarter model
+./web-ui.sh               # browser chat at http://127.0.0.1:8080
+./chat-GPU-Qwen7B.sh      # Linux only: GPU-accelerated (Vulkan)
+```
+
+(If a script isn't executable: `chmod +x *.sh` first.) On macOS the AI automatically uses
+the Mac's GPU (Metal) — no separate GPU launcher needed.
+
+---
+
 ## 3. Which model should I use?
 
 There are **three** models included, one for each kind of computer:

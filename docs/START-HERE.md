@@ -3,6 +3,10 @@
 This drive is a self-contained **offline survival library + AI**. Everything works with
 **no internet**. This page explains what's here and how to open each part.
 
+> **Windows vs macOS/Linux:** launchers are `.bat` files on Windows and `.sh` files on
+> macOS/Linux (run them from a terminal). The content, PDFs, HTML guides, and phone apps
+> are identical on every platform.
+
 > **Two things to read things on this drive:**
 > - **PDFs and these guides (.html)** open in **Edge or any web browser** — no software.
 > - **`.zim` archives** open in **Kiwix** (portable, no install) — see

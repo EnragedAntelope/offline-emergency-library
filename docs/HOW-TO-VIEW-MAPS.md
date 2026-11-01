@@ -11,7 +11,8 @@ with **no internet**. Dependencies for each are bundled or explained below.
 Everything you need is bundled — **no separate install, no Java to set up.**
 
 1. Open `OsmAnd\MapViewer-Desktop\`.
-2. Double-click **`VIEW-MAPS-ON-PC.bat`**.
+2. **Windows:** double-click **`VIEW-MAPS-ON-PC.bat`**.
+   **macOS / Linux:** run **`./VIEW-MAPS-ON-PC.sh`** from a terminal in that folder.
    - The **first run** unzips the map files into `OsmAnd\obf\` (this can take several
      minutes and uses extra space — see note below), then opens the viewer.
    - Later runs skip straight to the viewer.

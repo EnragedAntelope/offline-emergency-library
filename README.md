@@ -55,8 +55,11 @@ install, and future updates), so plan for more than 60 GB.
 
 ## 💻 Hardware requirements — what machine do I need to USE it?
 
-**To download:** any Windows 10/11 (64-bit) PC with internet and `curl` + PowerShell
-(both built into Windows). Downloading ~60 GB can take a few hours.
+**To download:** any 64-bit **Windows, macOS, or Linux** computer with internet.
+- Windows: uses `curl` + PowerShell (both built in).
+- macOS/Linux: uses `curl` + `tar` (built in); `unzip` enables the desktop map viewer.
+
+Downloading ~60 GB can take a few hours.
 
 **To use it afterward (offline):**
 
@@ -95,21 +98,41 @@ Install this repo's skill, then say:
 It will ask **only**: *"Where would you like to save these files?"* — then download
 everything.
 
-### C) PowerShell one-liner (no Claude needed)
+### C) Windows — PowerShell one-liner (no Claude needed)
 ```powershell
 irm https://raw.githubusercontent.com/elhajahmadj/offline-emergency-library/main/Get-OfflineLibrary.ps1 | iex
 ```
 It will prompt you for the save location, then download everything.
 
-### D) Clone and run
-```powershell
+### D) macOS / Linux — one-liner
+```bash
+curl -fsSL https://raw.githubusercontent.com/elhajahmadj/offline-emergency-library/main/get-offline-library.sh | bash
+```
+It will prompt you for the save location, then download everything.
+(Requires `curl` and `tar`; `unzip` enables the desktop map viewer. All are standard.)
+
+### E) Clone and run
+```bash
 git clone https://github.com/elhajahmadj/offline-emergency-library.git
 cd offline-emergency-library
+# Windows:
 ./Get-OfflineLibrary.ps1 -Destination "E:\"
+# macOS / Linux:
+./get-offline-library.sh -d /path/to/drive
 ```
 
 **All methods are resumable** — if the download is interrupted, run the same command again
 and it continues where it left off.
+
+### Platform support
+| | Windows | macOS | Linux |
+|---|---|---|---|
+| Installer | `Get-OfflineLibrary.ps1` / `install.bat` | `get-offline-library.sh` | `get-offline-library.sh` |
+| Offline AI chat | ✅ (x64/ARM + Vulkan GPU) | ✅ (Metal GPU) | ✅ (x64/ARM + Vulkan GPU) |
+| GPT4All doc-Q&A | ✅ `.exe` | ✅ `.dmg` | ✅ `.run` |
+| Kiwix desktop | ✅ bundled portable | App Store / kiwix.org | ✅ bundled AppImage (x64) |
+| Maps on PC | ✅ bundled viewer+Java | ✅ bundled viewer+Java | ✅ bundled viewer+Java |
+| All content (Wikipedia, ZIM, PDF, maps, APKs) | ✅ | ✅ | ✅ |
 
 ---
 

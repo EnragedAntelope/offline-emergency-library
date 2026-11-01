@@ -313,7 +313,7 @@ pause
 
 # ================================================================ documentation
 Log '=== Documentation (Markdown + HTML) ==='
-# doc source: local .\docs if present (repo clone), else download from GitHub raw
+# doc source: local .\docs if present (repo clone), else download pre-rendered files from GitHub raw
 $scriptDir = if($PSScriptRoot){$PSScriptRoot}else{(Get-Location).Path}
 $localDocs = Join-Path $scriptDir 'docs'
 function Get-Doc($name){
@@ -321,41 +321,14 @@ function Get-Doc($name){
   if(Test-Path $lp){ return (Get-Content $lp -Raw) }
   try { return (curl.exe -sL "$RepoRaw/docs/$name" -A (UA)) } catch { return $null }
 }
-# md -> html (minimal converter)
-$css = @'
-<style>:root{--bg:#0f1420;--card:#171f2e;--ink:#e7ecf3;--muted:#9fb0c3;--accent:#4fd1c5;--accent2:#f6ad55;--line:#273246;--code:#0b0f17}@media(prefers-color-scheme:light){:root{--bg:#f4f6fb;--card:#fff;--ink:#15202b;--muted:#56657a;--accent:#0d9488;--accent2:#b45309;--line:#e2e8f0;--code:#f1f5f9}}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,Segoe UI,Roboto,Arial,sans-serif}.wrap{max-width:900px;margin:0 auto;padding:28px 20px 80px}h1{font-size:28px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}h2{font-size:22px;border-bottom:2px solid var(--line);padding-bottom:6px;margin-top:30px}h3{font-size:17px;color:var(--accent)}h4{font-size:15px;color:var(--accent2)}a{color:var(--accent)}code{background:var(--code);padding:2px 6px;border-radius:6px;font-family:Consolas,monospace;font-size:14px}pre{background:var(--code);border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow-x:auto}pre code{background:none;padding:0}table{border-collapse:collapse;width:100%;margin:12px 0;font-size:15px}th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}th{background:rgba(127,127,127,.12)}blockquote{border-left:4px solid var(--accent);background:rgba(79,209,197,.08);padding:10px 16px;border-radius:0 10px 10px 0}hr{border:none;border-top:1px solid var(--line);margin:26px 0}ul,ol{padding-left:26px}</style>
-'@
-function Esc($s){ $s -replace '&','&amp;' -replace '<','&lt;' -replace '>','&gt;' }
-function Inline($s){ $s=Esc $s; $s=[regex]::Replace($s,'`([^`]+)`','<code>$1</code>'); $s=[regex]::Replace($s,'\*\*([^*]+)\*\*','<strong>$1</strong>'); $s=[regex]::Replace($s,'\[([^\]]+)\]\(([^)]+)\)','<a href="$2">$1</a>'); return $s }
-function Md2Html($md,$title){
-  $lines = $md -split "`r?`n"
-  $o = New-Object System.Collections.Generic.List[string]
-  $i = 0; $inCode=$false; $listType=$null
-  function CloseList([ref]$lt,$out){ if($lt.Value){ $out.Add($(if($lt.Value -eq 'ul'){'</ul>'}else{'</ol>'})); $lt.Value=$null } }
-  while($i -lt $lines.Count){
-    $ln=$lines[$i]
-    if($ln -match '^\s*```'){ if(-not $inCode){CloseList ([ref]$listType) $o;$o.Add('<pre><code>');$inCode=$true}else{$o.Add('</code></pre>');$inCode=$false}; $i++; continue }
-    if($inCode){ $o.Add((Esc $ln)); $i++; continue }
-    if($ln -match '^\s*\|' -and $i+1 -lt $lines.Count -and $lines[$i+1] -match '^\s*\|?\s*:?-{2,}'){
-      CloseList ([ref]$listType) $o; $h=$ln.Trim().Trim('|').Split('|'); $o.Add('<table><thead><tr>'); foreach($c in $h){$o.Add('<th>'+(Inline $c.Trim())+'</th>')}; $o.Add('</tr></thead><tbody>'); $i+=2
-      while($i -lt $lines.Count -and $lines[$i] -match '^\s*\|'){ $cs=$lines[$i].Trim().Trim('|').Split('|'); $o.Add('<tr>'); foreach($c in $cs){$o.Add('<td>'+(Inline $c.Trim())+'</td>')}; $o.Add('</tr>'); $i++ }
-      $o.Add('</tbody></table>'); continue }
-    if($ln -match '^\s*---\s*$'){ CloseList ([ref]$listType) $o;$o.Add('<hr>');$i++;continue }
-    if($ln -match '^(#{1,4})\s+(.*)$'){ CloseList ([ref]$listType) $o;$l=$matches[1].Length;$o.Add("<h$l>"+(Inline $matches[2])+"</h$l>");$i++;continue }
-    if($ln -match '^\s*>\s?(.*)$'){ CloseList ([ref]$listType) $o;$b=@();while($i -lt $lines.Count -and $lines[$i] -match '^\s*>\s?(.*)$'){$b+=$matches[1];$i++};$o.Add('<blockquote>'+(Inline ($b -join ' '))+'</blockquote>');continue }
-    if($ln -match '^\s*[-*]\s+(.*)$'){ if($listType -ne 'ul'){CloseList ([ref]$listType) $o;$o.Add('<ul>');$listType='ul'}; $it=$matches[1] -replace '^\[ \]\s*','&#9744; ' -replace '^\[x\]\s*','&#9745; '; $o.Add('<li>'+(Inline $it)+'</li>');$i++;continue }
-    if($ln -match '^\s*\d+\.\s+(.*)$'){ if($listType -ne 'ol'){CloseList ([ref]$listType) $o;$o.Add('<ol>');$listType='ol'}; $o.Add('<li>'+(Inline $matches[1])+'</li>');$i++;continue }
-    if($ln -match '^\s*$'){ CloseList ([ref]$listType) $o;$i++;continue }
-    CloseList ([ref]$listType) $o; $o.Add('<p>'+(Inline $ln)+'</p>'); $i++
-  }
-  if($inCode){$o.Add('</code></pre>')}; CloseList ([ref]$listType) $o
-  return "<!DOCTYPE html><html lang=`"en`"><head><meta charset=`"utf-8`"><meta name=`"viewport`" content=`"width=device-width,initial-scale=1`"><title>$title</title>$css</head><body><div class=`"wrap`">`n"+($o -join "`n")+"`n</div></body></html>"
-}
+# both .md and .html ship in the repo /docs; just place them (no conversion needed)
 function PlaceDoc($srcName,$destPath,$title){
-  $md = Get-Doc $srcName
-  if(-not $md){ Log "  doc missing: $srcName"; return }
-  Set-Content -Path "$destPath.md" -Value $md -Encoding utf8
-  [System.IO.File]::WriteAllText("$destPath.html",(Md2Html $md $title),[System.Text.UTF8Encoding]::new($false))
+  $base = $srcName -replace '\.md$',''
+  foreach($ext in '.md','.html'){
+    $c = Get-Doc ($base + $ext)
+    if($c){ [System.IO.File]::WriteAllText("$destPath$ext",$c,[System.Text.UTF8Encoding]::new($false)) }
+    else { Log "  doc missing: $base$ext" }
+  }
 }
 PlaceDoc 'START-HERE.md'            (Join-Path $Root 'START-HERE')                                  'Offline Emergency Kit - Start Here'
 PlaceDoc 'HOW-TO-RUN-OFFLINE-AI.md' (Join-Path $Root 'AI-Offline\HOW-TO-RUN-OFFLINE-AI')            'Offline AI - How To Run'

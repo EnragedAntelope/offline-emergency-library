@@ -19,16 +19,23 @@ When this skill is invoked, your job is simple:
 1. **Ask exactly one question:** *"Where would you like to save these files?"*
    (e.g. a drive letter like `E:\`, or a folder path, or a USB/external drive path.)
    Do **not** ask anything else — no component menus, no confirmations.
-2. **Run the downloader** with that path. From the repo root:
-   ```powershell
-   ./Get-OfflineLibrary.ps1 -Destination "<the path the user gave>"
-   ```
-   If you are not in the repo, fetch and run it:
-   ```powershell
-   $s = Join-Path $env:TEMP 'Get-OfflineLibrary.ps1'
-   curl.exe -sL https://raw.githubusercontent.com/elhajahmadj/offline-emergency-library/main/Get-OfflineLibrary.ps1 -o $s
-   powershell -NoProfile -ExecutionPolicy Bypass -File $s -Destination "<path>"
-   ```
+2. **Run the downloader for the user's OS** with that path.
+   - **Windows** (from the repo root):
+     ```powershell
+     ./Get-OfflineLibrary.ps1 -Destination "<the path the user gave>"
+     ```
+     Or standalone:
+     ```powershell
+     $s = Join-Path $env:TEMP 'Get-OfflineLibrary.ps1'
+     curl.exe -sL https://raw.githubusercontent.com/elhajahmadj/offline-emergency-library/main/Get-OfflineLibrary.ps1 -o $s
+     powershell -NoProfile -ExecutionPolicy Bypass -File $s -Destination "<path>"
+     ```
+   - **macOS / Linux**:
+     ```bash
+     ./get-offline-library.sh -d "<the path the user gave>"
+     # or standalone:
+     curl -fsSL https://raw.githubusercontent.com/elhajahmadj/offline-emergency-library/main/get-offline-library.sh | bash -s -- -d "<path>"
+     ```
 3. The script creates `<path>\OfflineLibrary\`, downloads everything (resumable), writes
    the launcher `.bat` files, and generates all docs as Markdown **and** HTML. It logs to
    `<path>\OfflineLibrary\_download.log`.
@@ -39,7 +46,9 @@ When this skill is invoked, your job is simple:
   **resumable** — if interrupted, just run the same command again.
 - The script auto-resolves the **latest** versions (llama.cpp engine, Kiwix reader,
   GPT4All, and the ZIM archives) so it keeps working over time.
-- Platform: **Windows (PowerShell + curl)**, which is built in on Windows 10/11.
+- Platform: **Windows** (PowerShell + curl, built in) or **macOS / Linux** (bash + curl +
+  tar, built in; `unzip` enables the desktop map viewer). Pick the installer matching the
+  user's OS.
 - Everything downloaded is **free and legally redistributable**: open-weight AI models,
   openly-licensed Kiwix archives, and public-domain US-government manuals. No piracy.
 - If the user is low on disk space, you *may* mention the optional flags
