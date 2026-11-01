@@ -9,9 +9,13 @@
 
 REPO_RAW="https://raw.githubusercontent.com/elhajahmadj/offline-emergency-library/main"
 DEST=""; SKIP_WIKI=0; SKIP_MAPS=0; SKIP_MODELS=0
+REGION="US"; LISTREGIONS=0; FILTER=""
+CONTINENTS="africa asia australia-oceania centralamerica europe northamerica southamerica"
 while [ $# -gt 0 ]; do
   case "$1" in
     -d|--destination) DEST="$2"; shift 2;;
+    --region)         REGION="$2"; shift 2;;
+    --list-regions)   LISTREGIONS=1; if [ -n "$2" ] && [ "${2#-}" = "$2" ]; then FILTER="$2"; shift 2; else shift; fi;;
     --skip-wikipedia) SKIP_WIKI=1; shift;;
     --skip-maps)      SKIP_MAPS=1; shift;;
     --skip-models)    SKIP_MODELS=1; shift;;
@@ -22,6 +26,24 @@ done
 command -v curl >/dev/null 2>&1 || { echo "ERROR: 'curl' is required."; exit 1; }
 HAVE_UNZIP=1; command -v unzip >/dev/null 2>&1 || HAVE_UNZIP=0
 HAVE_TAR=1;   command -v tar   >/dev/null 2>&1 || HAVE_TAR=0
+
+# ---- --list-regions (discovery, no download) ----
+if [ "$LISTREGIONS" = 1 ]; then
+  idx="$(mktemp 2>/dev/null || echo /tmp/osmidx.xml)"
+  curl -s "https://download.osmand.net/get_indexes" -o "$idx"
+  names="$(grep -oE 'name="[^"]+\.obf\.zip"' "$idx" | sed -E 's/name="([^"]+)"/\1/' | grep -viE 'wiki|srtm|depth|road|hillshade|heightmap')"
+  if [ -n "$FILTER" ]; then
+    echo "Regions / sub-regions matching '$FILTER' (pass any of these to --region):"
+    echo "$names" | grep -iE "$FILTER" | sed -E "s/_(africa|asia|australia-oceania|centralamerica|europe|northamerica|southamerica)_[0-9]+\.obf\.zip\$//" | sort -u | sed 's/^/  /'
+  else
+    echo "Available top-level regions (pass one to --region, e.g. --region France):"
+    echo "$names" | cut -d_ -f1 | sort | uniq -c | awk '{printf "  %-26s %s file(s)\n",$2,$1}'
+    echo ""
+    echo "Continents: $CONTINENTS, or 'world' for everything."
+    echo "To see a country's sub-regions:  --list-regions US"
+  fi
+  rm -f "$idx" 2>/dev/null; exit 0
+fi
 
 if [ -z "$DEST" ]; then
   echo ""
@@ -158,12 +180,26 @@ if [ "$SKIP_WIKI" = 0 ]; then
 else log "=== [7/8] Wikipedia SKIPPED ==="; fi
 
 if [ "$SKIP_MAPS" = 0 ]; then
-  log "=== [8/8] Offline US maps (OsmAnd, ~17 GB) ==="
+  log "=== [8/8] Offline maps (OsmAnd) - region: $REGION ==="
   curl -s "https://download.osmand.net/get_indexes" -o "$ROOT/OsmAnd/_index.xml"
-  grep -oE 'name="US_[^"]+\.obf\.zip"' "$ROOT/OsmAnd/_index.xml" | sed -E 's/name="([^"]+)"/\1/' | grep -viE 'wiki|srtm|depth' | sort -u > "$ROOT/OsmAnd/_filelist.txt"
-  n=$(wc -l < "$ROOT/OsmAnd/_filelist.txt" | tr -d ' ')
-  log "osmand: $n US map files"
+  allnames="$(grep -oE 'name="[^"]+\.obf\.zip"' "$ROOT/OsmAnd/_index.xml" | sed -E 's/name="([^"]+)"/\1/' | grep -viE 'wiki|srtm|depth|road|hillshade|heightmap')"
+  : > "$ROOT/OsmAnd/_filelist.txt"
+  printf '%s' "$REGION" | tr ',;' '  ' | tr ' ' '\n' | while IFS= read -r tok; do
+    [ -z "$tok" ] && continue
+    tl="$(printf '%s' "$tok" | tr 'A-Z' 'a-z')"
+    if [ "$tl" = world ]; then printf '%s\n' "$allnames" >> "$ROOT/OsmAnd/_filelist.txt"
+    elif echo "$CONTINENTS" | grep -qw "$tl"; then printf '%s\n' "$allnames" | grep -iE "_${tl}_" >> "$ROOT/OsmAnd/_filelist.txt"
+    else printf '%s\n' "$allnames" | grep -iE "^${tok}_" >> "$ROOT/OsmAnd/_filelist.txt"
+    fi
+  done
+  sort -u "$ROOT/OsmAnd/_filelist.txt" -o "$ROOT/OsmAnd/_filelist.txt"
+  n=$(grep -c . "$ROOT/OsmAnd/_filelist.txt" 2>/dev/null || echo 0)
+  if [ "$n" = "0" ]; then
+    log "osmand: no maps matched region '$REGION'. Run with --list-regions to see valid names. Skipping maps."
+  else
+  log "osmand: $n map files for '$REGION'"
   while IFS= read -r fn; do [ -n "$fn" ] && fetch "https://download.osmand.net/download.php?standard=yes&file=$fn" "$ROOT/OsmAnd/$fn"; done < "$ROOT/OsmAnd/_filelist.txt"
+  fi
 
   # desktop map viewer (OsmAndMapCreator + portable Java) — use maps on a PC, no phone
   log "=== [8b] Desktop map viewer (OsmAndMapCreator + portable Java) ==="

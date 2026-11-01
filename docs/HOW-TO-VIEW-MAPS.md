@@ -1,8 +1,50 @@
 # Offline Maps — How to View Them (PC or Phone)
 
-The `OsmAnd\` folder contains offline maps of every US state/region (`.obf.zip` files).
-You can use them **on a computer (no phone needed)** or **on a phone/tablet**. Both work
-with **no internet**. Dependencies for each are bundled or explained below.
+The `OsmAnd\` folder contains offline maps (`.obf.zip` files) for the **region you chose at
+download time** (the default is the **United States**). You can use them **on a computer
+(no phone needed)** or **on a phone/tablet**. Both work with **no internet**. Dependencies
+for each are bundled or explained below.
+
+---
+
+## Choosing your country / region (at download time)
+
+By default the installer downloads **US** maps. To get a different country, region, or
+continent, pass `-Region` (Windows) or `--region` (macOS/Linux) when you run the installer.
+
+```
+# Windows
+./Get-OfflineLibrary.ps1 -Destination "E:\" -Region France
+./Get-OfflineLibrary.ps1 -Destination "E:\" -Region "Germany,Austria"
+./Get-OfflineLibrary.ps1 -Destination "E:\" -Region Europe        # a whole continent
+./Get-OfflineLibrary.ps1 -Destination "E:\" -Region US_texas      # one sub-region
+
+# macOS / Linux
+./get-offline-library.sh -d /mnt/usb --region Japan
+./get-offline-library.sh -d /mnt/usb --region world              # everything (huge!)
+```
+
+**Don't know the exact name?** List what's available (no download):
+```
+# Windows
+./Get-OfflineLibrary.ps1 -ListRegions                 # all countries/regions
+./Get-OfflineLibrary.ps1 -ListRegions -Filter US      # sub-regions of the US
+# macOS / Linux
+./get-offline-library.sh --list-regions               # all countries/regions
+./get-offline-library.sh --list-regions France        # sub-regions of France
+```
+
+Notes:
+- Accepts a **country** (`France`, `Kenya`, `Japan`), several (`"Germany,Austria"`), a
+  **continent** (`Europe`, `Africa`, `Asia`, `North-America`, `South-America`,
+  `Central-America`, `Australia-Oceania`), a **sub-region** (`US_texas`,
+  `Germany_bayern`), or **`world`** for everything.
+- Big countries are split into many files — picking the country name grabs them all.
+- **Size varies a lot:** US ≈ 17 GB, a small country can be under 1 GB, a whole continent
+  is tens of GB, and `world` is hundreds of GB. The installer prints the size before
+  downloading and warns if it's very large.
+- Everything else in this kit (the desktop viewer, phone apps, guides) works with **any**
+  region's maps — only the selection changes.
 
 ---
 

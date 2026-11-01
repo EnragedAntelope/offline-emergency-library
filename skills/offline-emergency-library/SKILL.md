@@ -3,7 +3,8 @@ name: offline-emergency-library
 description: >
   Download a complete offline, no-internet "emergency library" to a drive the user
   chooses: an offline AI (chat models + CPU/GPU engine), an offline document-Q&A app
-  (GPT4All), full Wikipedia article text, offline US maps (OsmAnd), survival/repair/
+  (GPT4All), full Wikipedia article text, offline maps (OsmAnd; default US, any
+  country/region/continent selectable), survival/repair/
   medical archives (Kiwix ZIM: iFixit, Appropedia, WikiMed, survival/water/food/knots),
   public-domain US Army field manuals + medical PDFs, the Kiwix reader, launchers, and
   full documentation (Markdown + HTML). Invoke for requests like "download the offline
@@ -53,6 +54,11 @@ When this skill is invoked, your job is simple:
   openly-licensed Kiwix archives, and public-domain US-government manuals. No piracy.
 - If the user is low on disk space, you *may* mention the optional flags
   `-SkipWikipedia`, `-SkipMaps`, `-SkipModels` — but do not prompt for them unless asked.
+- **Maps default to the US.** If the user wants another area, pass `-Region <name>`
+  (Windows) / `--region <name>` (macOS/Linux) — e.g. `France`, `"Germany,Austria"`,
+  `Europe`, `US_texas`, or `world`. To discover exact names, run with `-ListRegions` /
+  `--list-regions [filter]` (lists regions and exits, no download). Still ask only where
+  to save unless the user brings up maps/region themselves.
 
 See `README.md` for the full contents list, storage/hardware requirements, and how to
 use each component after downloading.

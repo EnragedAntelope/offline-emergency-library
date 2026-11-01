@@ -14,14 +14,40 @@
 [CmdletBinding()]
 param(
   [string]$Destination,
+  [string]$Region = 'US',   # which country/region maps to download (default US). Examples:
+                            #   -Region France   -Region "Germany,Austria"   -Region Europe
+                            #   -Region US_texas   -Region world   (see -ListRegions)
+  [switch]$ListRegions,     # print available map regions (optionally filtered by -Filter) and exit
+  [string]$Filter,          # substring filter used with -ListRegions
   [switch]$SkipWikipedia,   # Wikipedia is the biggest (~24 GB); allow skipping
-  [switch]$SkipMaps,        # OsmAnd US maps (~17 GB)
+  [switch]$SkipMaps,        # OsmAnd maps (~17 GB for US); allow skipping
   [switch]$SkipModels       # the large AI chat models (~11 GB)
 )
 
 $ErrorActionPreference = 'Continue'
 $ProgressPreference    = 'SilentlyContinue'
 $RepoRaw = 'https://raw.githubusercontent.com/elhajahmadj/offline-emergency-library/main'
+$Continents = @('africa','asia','australia-oceania','centralamerica','europe','northamerica','southamerica')
+
+# ---------------------------------------------------------------- -ListRegions (discovery, no download)
+if($ListRegions){
+  $tmp = Join-Path $env:TEMP 'osmand_idx.xml'
+  curl.exe -s 'https://download.osmand.net/get_indexes' -o $tmp
+  try { [xml]$ix = Get-Content $tmp } catch { Write-Host "Could not fetch the OsmAnd region index."; return }
+  $maps = $ix.osmand_regions.region | Where-Object { $_.type -eq 'map' }
+  if($Filter){
+    Write-Host "Regions / sub-regions matching '$Filter' (pass any of these to -Region):"
+    $rx = '_(' + ($Continents -join '|') + ')_\d+\.obf\.zip$'
+    $maps | Where-Object { $_.name -match [regex]::Escape($Filter) } | ForEach-Object { $_.name -replace $rx,'' } | Sort-Object -Unique | ForEach-Object { Write-Host "  $_" }
+  } else {
+    Write-Host "Available top-level regions (pass one to -Region, e.g. -Region France):"
+    $maps | ForEach-Object { ($_.name -split '_')[0] } | Group-Object | Sort-Object Name | ForEach-Object { Write-Host ("  {0,-26} {1} file(s)" -f $_.Name, $_.Count) }
+    Write-Host ""
+    Write-Host "Continents: $($Continents -join ', '), or 'world' for everything."
+    Write-Host "To see a country's sub-regions:  -ListRegions -Filter US"
+  }
+  return
+}
 
 # ---------------------------------------------------------------- destination
 if (-not $Destination) {
@@ -172,16 +198,31 @@ if(-not $SkipWikipedia){
 } else { Log '=== [7/8] Wikipedia SKIPPED ===' }
 
 if(-not $SkipMaps){
-  Log '=== [8/8] Offline US maps (OsmAnd, ~17 GB) ==='
+  Log "=== [8/8] Offline maps (OsmAnd) - region: $Region ==="
   try{
     $idxFile = Join-Path $env:TEMP 'osmand_idx.xml'
     curl.exe -s 'https://download.osmand.net/get_indexes' -o $idxFile
     [xml]$idx = Get-Content $idxFile
-    $us = $idx.osmand_regions.region | Where-Object { $_.name -like 'US_*' -and $_.type -eq 'map' }
-    Log "osmand: $($us.Count) US map files"
-    foreach($r in $us){
-      $out = Join-Path $Root "OsmAnd\$($r.name)"
-      Fetch "https://download.osmand.net/download.php?standard=yes&file=$($r.name)" $out
+    $allmaps = $idx.osmand_regions.region | Where-Object { $_.type -eq 'map' }
+    # resolve the -Region tokens (comma/space separated) to a file set
+    $tokens = ($Region -split '[,; ]') | ForEach-Object { $_.Trim() } | Where-Object { $_ }
+    $sel = @()
+    foreach($t in $tokens){
+      if($t -ieq 'world'){ $sel = $allmaps; break }
+      elseif($Continents -contains $t.ToLower()){ $sel += $allmaps | Where-Object { $_.name -match ('_' + [regex]::Escape($t.ToLower()) + '_') } }
+      else { $sel += $allmaps | Where-Object { $_.name -match ('^' + [regex]::Escape($t) + '_') } }
+    }
+    $sel = $sel | Sort-Object name -Unique
+    if(-not $sel){
+      Log "osmand: no maps matched region '$Region'. Run with -ListRegions to see valid names. Skipping maps."
+    } else {
+      $mb = ($sel | Measure-Object -Property size -Sum).Sum
+      Log ("osmand: {0} map files for '{1}' (~{2:N1} GB download)" -f $sel.Count, $Region, ($mb/1024))
+      if($mb -gt 40000){ Log ("WARNING: that's ~{0:N0} GB of maps - make sure you have room (and time)." -f ($mb/1024)) }
+      foreach($r in $sel){
+        $out = Join-Path $Root "OsmAnd\$($r.name)"
+        Fetch "https://download.osmand.net/download.php?standard=yes&file=$($r.name)" $out
+      }
     }
   }catch{ Log "osmand ERROR: $($_.Exception.Message)" }
 } else { Log '=== [8/8] Maps SKIPPED ===' }
