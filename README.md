@@ -80,7 +80,12 @@ install, and future updates), so plan for more than 60 GB.
 
 ## 🚀 How to download (pick one)
 
-### A) In Claude Code (one prompt)
+### A) Easiest — double-click `install.bat`
+Download/clone the repo, then **double-click `install.bat`**. It opens a window, asks you
+where to save, and downloads everything. No commands, no PowerShell knowledge needed.
+(If Windows SmartScreen warns, click **More info → Run anyway**.)
+
+### B) In Claude Code (one prompt)
 Install this repo's skill, then say:
 ```
 /offline-emergency-library
@@ -88,13 +93,13 @@ Install this repo's skill, then say:
 It will ask **only**: *"Where would you like to save these files?"* — then download
 everything.
 
-### B) PowerShell one-liner (no Claude needed)
+### C) PowerShell one-liner (no Claude needed)
 ```powershell
 irm https://raw.githubusercontent.com/elhajahmadj/offline-emergency-library/main/Get-OfflineLibrary.ps1 | iex
 ```
 It will prompt you for the save location, then download everything.
 
-### C) Clone and run
+### D) Clone and run
 ```powershell
 git clone https://github.com/elhajahmadj/offline-emergency-library.git
 cd offline-emergency-library
