@@ -1,0 +1,11 @@
+# Never commit downloaded payloads or logs — this repo is just scripts + docs
+OfflineLibrary/
+*.log
+*.zim
+*.gguf
+*.bz2
+*.obf.zip
+*.exe
+*.zip
+.DS_Store
+Thumbs.db

@@ -1,0 +1,64 @@
+# 🛟 Offline Emergency Kit — START HERE
+
+This drive is a self-contained **offline survival library + AI**. Everything works with
+**no internet**. This page explains what's here and how to open each part.
+
+> **Two things to read things on this drive:**
+> - **PDFs and these guides (.html)** open in **Edge or any web browser** — no software.
+> - **`.zim` archives** open in **Kiwix** (portable, no install) — see
+>   `E:\Kiwix-Reader\`.
+> - **AI that answers from your PDFs** = **GPT4All** — see `E:\AI-Offline\`.
+
+---
+
+## What's on this drive
+
+| Folder | What it is | How to open | Guide |
+|---|---|---|---|
+| `AI-Offline\` | Offline AI chat (3 models, CPU + GPU) | Double-click a `CHAT-*.bat` | `AI-Offline\HOW-TO-RUN-OFFLINE-AI.html` |
+| `AI-Offline\DocReader-GPT4All\` | AI that reads your PDFs & answers questions | Install once, then offline | `...\HOW-TO-ASK-YOUR-DOCS.html` |
+| `Manuals\` | Survival & repair manuals (Army FMs, iFixit, Appropedia, survival/water/food) | PDF→browser, ZIM→Kiwix | `Manuals\READ-ME-FIRST.html` |
+| `Manuals\Radio-Communications\` | How ham/CB/shortwave radio works + emergency comms | Browser | `RADIO-GUIDE.html` |
+| `Medical\` | Offline medical Wikipedia + first-aid books | ZIM→Kiwix, PDF→browser | `Medical\READ-ME-FIRST.html` |
+| `Wikipedia\` | Full Wikipedia article text (compressed) | Via Kiwix / archival | — |
+| `OsmAnd\` | Offline US maps for the OsmAnd app | OsmAnd app (phone) | — |
+| `Kiwix-Reader\` | The reader for all `.zim` archives | Portable app | `Kiwix-Reader\HOW-TO-USE-KIWIX.html` |
+
+---
+
+## Quick start by need
+
+- **I want to chat with an AI offline:** `AI-Offline\` → double-click `CHAT-3B-light.bat`.
+- **I want the AI to answer from my manuals:** set up `DocReader-GPT4All` (see its guide),
+  point it at `Manuals\ArmyFieldManuals` and `Medical\Manuals-PDF`, ask away.
+- **I need to fix something (car/appliance/plumbing/electrical):** open Kiwix →
+  `Manuals\Repair-iFixit` and `Manuals\DIY-Appropedia`.
+- **Medical / first aid:** open Kiwix → `Medical\WikiMed`; or read the PDFs in
+  `Medical\Manuals-PDF`; Army first aid in `Manuals\ArmyFieldManuals`.
+- **Survival / water / food:** Kiwix → `Manuals\Survival-Water-Food`; plus the Army
+  survival PDFs.
+- **Communicate by radio:** read `Manuals\Radio-Communications\RADIO-GUIDE.html`.
+- **Look something up:** Wikipedia (via Kiwix) and the maps (OsmAnd app).
+
+---
+
+## Dependencies — kept to a minimum
+
+| Content | Needs | Bundled here? |
+|---|---|---|
+| PDFs & `.html` guides | A web browser (Edge is on Windows) | n/a — already on Windows |
+| `.zim` archives | **Kiwix** (portable, no install) | ✅ `E:\Kiwix-Reader\app` |
+| Offline AI chat | Nothing extra (self-contained engine) | ✅ `E:\AI-Offline\engine` |
+| AI doc-Q&A | **GPT4All** (one-time install; self-contained, CPU) | ✅ installer in `DocReader-GPT4All` |
+| Maps | **OsmAnd** app on a phone/tablet | app store (get while online) |
+
+Everything that needs a one-time online step (GPT4All's first run, phone apps) should be
+set up **now, while you still have internet**, so the kit is fully usable offline later.
+
+---
+
+## ⚠️ Reminders
+
+- Offline AIs and old manuals **can be wrong**. Verify anything safety-critical.
+- Keep the drive **backed up** (a second copy on another drive/USB is wise).
+- **Practice** using each tool now so it's familiar in an actual emergency.
