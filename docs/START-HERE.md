@@ -23,6 +23,7 @@ This drive is a self-contained **offline survival library + AI**. Everything wor
 | `Wikipedia\` | Full Wikipedia article text (compressed) | Via Kiwix / archival | — |
 | `OsmAnd\` | Offline US maps — view on **PC (no phone)** or phone | PC: `MapViewer-Desktop\VIEW-MAPS-ON-PC.bat`; phone: bundled APK | `OsmAnd\HOW-TO-VIEW-MAPS.html` |
 | `Kiwix-Reader\` | The reader for all `.zim` archives | Portable app | `Kiwix-Reader\HOW-TO-USE-KIWIX.html` |
+| `Phone-Apps\` | Android apps (Kiwix + OsmAnd) to port the library to a phone, offline | Sideload the APKs | `Phone-Apps\USE-ON-PHONE.html` |
 
 ---
 

@@ -54,7 +54,7 @@ $dirs = @(
  'Manuals','Manuals\ArmyFieldManuals','Manuals\Repair-iFixit','Manuals\DIY-Appropedia',
  'Manuals\Survival-Water-Food','Manuals\Radio-Communications',
  'Medical','Medical\WikiMed','Medical\zimgit-medicine','Medical\Manuals-PDF',
- 'Wikipedia','OsmAnd','Kiwix-Reader','Kiwix-Reader\app'
+ 'Wikipedia','OsmAnd','Kiwix-Reader','Kiwix-Reader\app','Phone-Apps'
 )
 foreach($d in $dirs){ New-Item -ItemType Directory -Force (Join-Path $Root $d) | Out-Null }
 
@@ -252,16 +252,27 @@ call OsmAndMapCreator.bat
 pause
 "@
   Set-Content -Path (Join-Path $mvd 'VIEW-MAPS-ON-PC.bat') -Value $mvbat -Encoding ascii
+}
 
-  # Android app, so a phone can be prepared with NO app store / internet later
+# ================================================================ phone apps
+Log '=== Phone apps (port the library to a phone) ==='
+$pa = Join-Path $Root 'Phone-Apps'
+New-Item -ItemType Directory -Force $pa | Out-Null
+# Kiwix for Android — reads ALL the .zim archives (Wikipedia, medical, repair, survival)
+try{
+  $kr = Invoke-RestMethod 'https://api.github.com/repos/kiwix/kiwix-android/releases/latest' -Headers @{'User-Agent'='ps'}
+  $ka = $kr.assets | Where-Object { $_.name -match 'universal-standalone\.apk$' } | Select-Object -First 1
+  if(-not $ka){ $ka = $kr.assets | Where-Object { $_.name -match '\.apk$' } | Select-Object -First 1 }
+  if($ka){ Log "phone app: Kiwix ($($ka.name))"; Fetch $ka.browser_download_url (Join-Path $pa $ka.name) }
+}catch{ Log "kiwix apk ERROR: $($_.Exception.Message)" }
+# OsmAnd for Android — offline maps (only if maps were downloaded)
+if(-not $SkipMaps){
   try{
-    $pa = Join-Path $Root 'OsmAnd\PhoneApp-Android'
-    New-Item -ItemType Directory -Force $pa | Out-Null
     $api = Invoke-RestMethod 'https://f-droid.org/api/v1/packages/net.osmand.plus' -Headers @{'User-Agent'='ps'}
     $vc = $api.suggestedVersionCode
-    Log "phone app: OsmAnd~ APK (net.osmand.plus_$vc)"
+    Log "phone app: OsmAnd~ (net.osmand.plus_$vc)"
     Fetch "https://f-droid.org/repo/net.osmand.plus_$vc.apk" (Join-Path $pa "OsmAnd-$vc.apk")
-  }catch{ Log "phone app ERROR: $($_.Exception.Message)" }
+  }catch{ Log "osmand apk ERROR: $($_.Exception.Message)" }
 }
 
 # ================================================================ launchers
@@ -354,6 +365,7 @@ PlaceDoc 'Manuals-READ-ME-FIRST.md' (Join-Path $Root 'Manuals\READ-ME-FIRST')   
 PlaceDoc 'Medical-READ-ME-FIRST.md' (Join-Path $Root 'Medical\READ-ME-FIRST')                       'Medical - Read Me First'
 PlaceDoc 'RADIO-GUIDE.md'           (Join-Path $Root 'Manuals\Radio-Communications\RADIO-GUIDE')     'Emergency Radio Communications Guide'
 PlaceDoc 'HOW-TO-VIEW-MAPS.md'      (Join-Path $Root 'OsmAnd\HOW-TO-VIEW-MAPS')                      'Offline Maps - How to View'
+PlaceDoc 'USE-ON-PHONE.md'          (Join-Path $Root 'Phone-Apps\USE-ON-PHONE')                      'Use the Library on a Phone'
 
 Log '=== DONE. Open START-HERE.html in the destination folder. ==='
 Write-Host ''

@@ -26,6 +26,7 @@ works with **no internet**.
 | **Medical books** | *Where There Is No Doctor / No Dentist*, *Ship's Medicine Chest* | ~45 MB | Any browser (PDF) |
 | **Radio guide** | How ham/CB/shortwave/GMRS radio works + emergency comms | tiny | Any browser |
 | **Kiwix reader** | Portable app to read all `.zim` archives (no install) | ~0.15 GB | — |
+| **Phone apps** | Bundled Android APKs (Kiwix + OsmAnd) to port the library to a phone offline | ~0.4 GB | sideload on Android |
 | **Total** | | **≈ 60 GB** | |
 
 Everything is **free and legally redistributable** — open-weight AI models, openly-licensed

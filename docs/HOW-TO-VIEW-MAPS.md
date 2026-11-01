@@ -33,8 +33,8 @@ and the **OsmAndMapCreator** app (`app\`). Nothing else is required — it runs 
 
 No app store or internet needed — the app is bundled.
 
-1. Copy the file in `OsmAnd\PhoneApp-Android\` (e.g. `OsmAnd-XXXXXX.apk`) to your Android
-   device.
+1. Copy the OsmAnd APK from `Phone-Apps\` (e.g. `OsmAnd-XXXXXX.apk`) to your Android
+   device. (See `Phone-Apps\USE-ON-PHONE` for the full phone setup, including Kiwix.)
 2. On the device, tap the APK to install. You may need to allow **"Install unknown apps"**
    for your file manager/browser (Settings → Apps → special access).
 3. Copy the **`.obf.zip`** map files (from `OsmAnd\`) into the OsmAnd maps folder on the
