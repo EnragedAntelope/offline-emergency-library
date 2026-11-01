@@ -17,7 +17,7 @@ works with **no internet**.
 | **Offline AI chat** | 3 local AI models (Llama 3.2 3B, Llama 3.1 8B, Qwen2.5 7B) + CPU & GPU engines (llama.cpp) | ~11 GB | CPU only (GPU optional) |
 | **Offline doc-Q&A** | GPT4All — ask an AI questions about your PDFs, with citations | ~0.7 GB | CPU, one-time install |
 | **Wikipedia** | Full English Wikipedia article text (compressed) | ~24 GB | Kiwix (or archival) |
-| **Offline US maps** | Every US state/region map (OsmAnd `.obf`) + **bundled desktop viewer** (OsmAndMapCreator + portable Java) + **bundled Android app (APK)** | ~17 GB (+~0.4 GB tools) | **PC (no phone) or phone** |
+| **Offline maps** | Maps for the region you pick (**default US**; any country/region/continent — see below) + **bundled desktop viewer** (OsmAndMapCreator + portable Java) + **bundled Android app (APK)** | US ≈17 GB; varies by region (+~0.4 GB tools) | **PC (no phone) or phone** |
 | **Repair archive** | iFixit — cars, appliances, electronics, phones | ~3.4 GB | Kiwix |
 | **DIY archive** | Appropedia — plumbing, electrical, construction, energy, water, food | ~0.6 GB | Kiwix |
 | **Medical** | Offline medical Wikipedia (WikiMed) + curated medical guide | ~1.8 GB | Kiwix |
@@ -136,6 +136,36 @@ and it continues where it left off.
 
 ---
 
+## 🗺️ Choosing your map region (optional — default is US)
+
+The maps default to the **United States**. To download a different country, region, or
+continent, add `-Region` (Windows) / `--region` (macOS/Linux):
+
+```bash
+# Windows
+./Get-OfflineLibrary.ps1 -Destination "E:\" -Region France
+./Get-OfflineLibrary.ps1 -Destination "E:\" -Region "Germany,Austria"
+./Get-OfflineLibrary.ps1 -Destination "E:\" -Region Europe      # whole continent
+# macOS / Linux
+./get-offline-library.sh -d /mnt/usb --region Japan
+./get-offline-library.sh -d /mnt/usb --region US_texas          # a sub-region
+./get-offline-library.sh -d /mnt/usb --region world             # everything (hundreds of GB!)
+```
+
+**Not sure of the name? List what's available (no download):**
+```bash
+./Get-OfflineLibrary.ps1 -ListRegions              # Windows: all countries/regions
+./Get-OfflineLibrary.ps1 -ListRegions -Filter US   # Windows: sub-regions of the US
+./get-offline-library.sh --list-regions            # macOS/Linux: all
+./get-offline-library.sh --list-regions France     # macOS/Linux: sub-regions of France
+```
+
+Accepts a country (`France`), several (`"Germany,Austria"`), a continent (`Europe`,
+`Africa`, `Asia`, `North-America`, `South-America`, `Central-America`,
+`Australia-Oceania`), a sub-region (`US_texas`, `Germany_bayern`), or `world`.
+**Size varies:** US ≈17 GB, a small country <1 GB, a continent tens of GB, `world`
+hundreds of GB — the installer prints the size and warns before large downloads.
+
 ## 🧭 After it finishes
 
 The installer writes a **`README.html`** at the root of the download folder — a full,
@@ -157,11 +187,13 @@ Both pages link to each component's guide:
 
 ## Options (optional, for small drives)
 
-| Flag | Effect | Saves |
-|---|---|---|
-| `-SkipWikipedia` | Don't download the 24 GB Wikipedia dump | ~24 GB |
-| `-SkipMaps` | Don't download the US OsmAnd maps | ~17 GB |
-| `-SkipModels` | Skip the large 8B/7B AI models (keeps the small 3B) | ~9 GB |
+| Flag | Effect |
+|---|---|
+| `-Region <name>` / `--region <name>` | Choose map region (default `US`); country, continent, sub-region, or `world` |
+| `-ListRegions` / `--list-regions [filter]` | List available map regions, then exit (no download) |
+| `-SkipWikipedia` / `--skip-wikipedia` | Don't download the 24 GB Wikipedia dump (~24 GB saved) |
+| `-SkipMaps` / `--skip-maps` | Don't download the maps (~17 GB saved for US) |
+| `-SkipModels` / `--skip-models` | Skip the large 8B/7B AI models, keep the small 3B (~9 GB saved) |
 
 Example: `./Get-OfflineLibrary.ps1 -Destination "F:\" -SkipWikipedia -SkipMaps`
 
