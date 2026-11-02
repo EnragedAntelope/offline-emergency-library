@@ -14,7 +14,7 @@ Offline medical reference for emergencies. **Two kinds of files:**
 |---|---|---|
 | `WikiMed\` | Kiwix (.zim) | **Offline medical Wikipedia** (with images) — ~50,000 health articles |
 | `zimgit-medicine\` | Kiwix (.zim) | Curated offline medical / first-aid guide |
-| `Manuals-PDF\` | Browser (PDF) | *Where There Is No Doctor*, *Where There Is No Dentist*, *Ship's Medicine Chest & First Aid at Sea* |
+| `Manuals-PDF\` | Browser (PDF) | *Where There Is No Doctor*, *Where There Is No Dentist* (Hesperian) |
 
 Also relevant: the **Army first-aid manuals** in `E:\Manuals\ArmyFieldManuals\`.
 

@@ -12,6 +12,50 @@ DEST=""; SKIP_WIKI=0; SKIP_MAPS=0; SKIP_MODELS=0
 REGION="US"; LISTREGIONS=0; FILTER=""
 EDU=0; EDULANG="en"; KOLIBRI=0
 CONTINENTS="africa asia australia-oceania centralamerica europe northamerica southamerica"
+# Map common names / ISO codes to the OsmAnd region token. Unknown input passes through.
+alias_region(){
+  t="$(printf '%s' "$1" | tr 'A-Z' 'a-z')"
+  case "$t" in
+    us|usa|u.s.|u.s.a.|america|united-states|unitedstates) echo "US";;
+    uk|gb|gbr|britain|great-britain|england|united-kingdom) echo "Gb";;
+    deu|ger|germany) echo "Germany";;
+    fra|france) echo "France";;
+    esp|spain) echo "Spain";;
+    ita|italy) echo "Italy";;
+    nld|holland|netherlands) echo "Netherlands";;
+    che|swiss|switzerland) echo "Switzerland";;
+    aut|austria) echo "Austria";;
+    bel|belgium) echo "Belgium";;
+    prt|portugal) echo "Portugal";;
+    irl|ireland) echo "Ireland";;
+    swe|sweden) echo "Sweden";;
+    nor|norway) echo "Norway";;
+    dnk|denmark) echo "Denmark";;
+    fin|finland) echo "Finland";;
+    pol|poland) echo "Poland";;
+    cze|czech|czechia|czech-republic) echo "Czech-republic";;
+    grc|greece) echo "Greece";;
+    can|canada) echo "Canada";;
+    mex|mexico) echo "Mexico";;
+    bra|brazil) echo "Brazil";;
+    arg|argentina) echo "Argentina";;
+    nzl|new-zealand) echo "New-zealand";;
+    jpn|japan) echo "Japan";;
+    kor|korea|south-korea) echo "South-korea";;
+    chn|china) echo "China";;
+    ind|india) echo "India";;
+    idn|indonesia) echo "Indonesia";;
+    rus|russia) echo "Russia";;
+    zaf|south-africa) echo "South-africa";;
+    ken|kenya) echo "Kenya";;
+    egy|egypt) echo "Egypt";;
+    nga|nigeria) echo "Nigeria";;
+    tur|turkey|turkiye) echo "Turkey";;
+    sau|saudi|saudi-arabia) echo "Saudi-arabia";;
+    are|uae|united-arab-emirates) echo "United-arab-emirates";;
+    *) echo "$1";;
+  esac
+}
 while [ $# -gt 0 ]; do
   case "$1" in
     -d|--destination) DEST="$2"; shift 2;;
@@ -34,7 +78,7 @@ HAVE_TAR=1;   command -v tar   >/dev/null 2>&1 || HAVE_TAR=0
 # ---- --list-regions (discovery, no download) ----
 if [ "$LISTREGIONS" = 1 ]; then
   idx="$(mktemp 2>/dev/null || echo /tmp/osmidx.xml)"
-  curl -s "https://download.osmand.net/get_indexes" -o "$idx"
+  curl -sL "https://download.osmand.net/get_indexes" -o "$idx"
   names="$(grep -oE 'name="[^"]+\.obf\.zip"' "$idx" | sed -E 's/name="([^"]+)"/\1/' | grep -viE 'wiki|srtm|depth|road|hillshade|heightmap')"
   if [ -n "$FILTER" ]; then
     echo "Regions / sub-regions matching '$FILTER' (pass any of these to --region):"
@@ -50,11 +94,19 @@ if [ "$LISTREGIONS" = 1 ]; then
 fi
 
 if [ -z "$DEST" ]; then
-  echo ""
-  echo "  Offline Emergency Library installer"
-  echo "  -----------------------------------"
-  printf "Where would you like to save these files? "
-  read -r DEST
+  # When run as `curl ... | bash`, stdin is the script itself — read the answer from the
+  # terminal instead, or tell the user to pass -d if there's no terminal.
+  if [ -r /dev/tty ]; then
+    echo ""
+    echo "  Offline Emergency Library installer"
+    echo "  -----------------------------------"
+    printf "Where would you like to save these files? "
+    read -r DEST < /dev/tty
+  else
+    echo "No destination given and no terminal to prompt."
+    echo "Re-run with a path, e.g.:  bash get-offline-library.sh -d /path/to/drive"
+    exit 1
+  fi
 fi
 [ -z "$DEST" ] && { echo "No destination given. Exiting."; exit 1; }
 ROOT="$DEST/OfflineLibrary"
@@ -91,7 +143,7 @@ gh_asset_latest(){ # repo regex -> asset url from the 'latest' release
    | grep -oE '"browser_download_url"[ ]*:[ ]*"[^"]+"' | sed -E 's/.*"(https[^"]+)"/\1/' \
    | grep -E "$2" | head -n1
 }
-latest_zim(){ curl -s -A "$UA" "$1" | grep -oE "$2[^\"<]*\.zim" | sort -u | tail -n1; }
+latest_zim(){ curl -sL -A "$UA" "$1" | grep -oE "$2[^\"<]*\.zim" | sort -u | tail -n1; }
 
 # ================================================================ 1. AI engine
 log "=== [1/8] Offline AI engine (llama.cpp) ==="
@@ -133,7 +185,7 @@ fi
 # ================================================================ 4. Kiwix reader
 log "=== [4/8] Kiwix reader ==="
 if [ "$PLAT" = linux ] && [ "$CPU" = x64 ]; then
-  ai="$(curl -s -A "$UA" https://download.kiwix.org/release/kiwix-desktop/ | grep -oE 'kiwix-desktop_x86_64_[0-9][^\"]*\.appimage' | sort -u | tail -n1)"
+  ai="$(curl -sL -A "$UA" https://download.kiwix.org/release/kiwix-desktop/ | grep -oE 'kiwix-desktop_x86_64_[0-9][^\"]*\.appimage' | sort -u | tail -n1)"
   if [ -n "$ai" ]; then log "kiwix: $ai"; fetch "https://download.kiwix.org/release/kiwix-desktop/$ai" "$ROOT/Kiwix-Reader/$ai"; chmod +x "$ROOT/Kiwix-Reader/$ai" 2>/dev/null; fi
 else
   log "kiwix desktop: on macOS install 'Kiwix' from the Mac App Store or kiwix.org; on Linux-ARM use the Kiwix website. (ZIMs still work via the bundled Android app or any Kiwix build.)"
@@ -178,13 +230,19 @@ fi
 
 # ================================================================ 6. PDFs
 log "=== [6/8] Public-domain manuals (PDF) ==="
-ia_pdf(){ curl -s -A "$UA" "https://archive.org/metadata/$1" | grep -oE '"name":"[^"]+\.pdf"' | sed -E 's/"name":"([^"]+)"/\1/' | grep -vE '_text\.pdf$' | head -n1; }
+ia_pdf(){ curl -sL -A "$UA" "https://archive.org/metadata/$1" | grep -oE '"name":"[^"]+\.pdf"' | sed -E 's/"name":"([^"]+)"/\1/' | grep -vE '_text\.pdf$' | head -n1; }
 get_pdf(){ # id  localname  destdir
   f="$(ia_pdf "$1")"
-  if [ -n "$f" ]; then
-    enc="$(printf '%s' "$f" | sed 's/ /%20/g')"
-    log "pdf: $2"; fetch "https://archive.org/download/$1/$enc" "$3/$2"
-  else log "pdf: none for $1"; fi
+  if [ -z "$f" ]; then log "pdf: none for $1"; return; fi
+  enc="$(printf '%s' "$f" | sed 's/ /%20/g')"
+  out="$3/$2"
+  log "pdf: $2"
+  # -f so HTTP errors (401 borrow / 500) don't get saved as a .pdf
+  curl -fL -C - --retry 6 --retry-delay 5 --retry-all-errors -s -o "$out" "https://archive.org/download/$1/$enc" || true
+  # validate it's really a PDF; drop error pages / empties
+  if [ -f "$out" ]; then
+    if [ "$(head -c 4 "$out" 2>/dev/null)" != "%PDF" ]; then log "  WARN: $2 was not a valid PDF (removed)"; rm -f "$out"; fi
+  else log "  WARN: $2 failed to download"; fi
 }
 AFM="$ROOT/Manuals/ArmyFieldManuals"; MPDF="$ROOT/Medical/Manuals-PDF"
 get_pdf "fm-21-76-us-army-survival-manual"                    "FM 21-76 Army Survival Manual.pdf" "$AFM"
@@ -198,23 +256,25 @@ get_pdf "tm-9-8000-principles-of-automotive-vehicles-1985"   "TM 9-8000 Principl
 get_pdf "u-s-army-guide-to-rigging"                          "FM 5-125 Army Guide to Rigging.pdf" "$AFM"
 get_pdf "fm-90-3-desert-operations-1993"                     "FM 90-3 Desert Operations.pdf" "$AFM"
 get_pdf "tm-10-412-armed-forces-recipe-service-2003"         "TM 10-412 Armed Forces Recipe Service.pdf" "$AFM"
-get_pdf "bwb_S0-EJI-512"                                     "Where There Is No Doctor.pdf" "$MPDF"
-get_pdf "where-there-is-no-dentist-13th-printing-2010"       "Where There Is No Dentist.pdf" "$MPDF"
-get_pdf "shipsmedicineche0000medi"                           "Ships Medicine Chest and First Aid at Sea.pdf" "$MPDF"
+get_pdf "where-there-is-no-doctor"                           "Where There Is No Doctor.pdf" "$MPDF"
+get_pdf "where-there-is-no-dentist-web-full-book"            "Where There Is No Dentist.pdf" "$MPDF"
 
 # ================================================================ 7. Wikipedia + Maps
 if [ "$SKIP_WIKI" = 0 ]; then
-  log "=== [7/8] Wikipedia (article text, ~24 GB) ==="
-  fetch "https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-pages-articles.xml.bz2" "$ROOT/Wikipedia/enwiki-latest-pages-articles.xml.bz2"
+  log "=== [7/8] Wikipedia (full, no images - Kiwix ZIM, ~49 GB) ==="
+  wk="$(latest_zim 'https://download.kiwix.org/zim/wikipedia/' 'wikipedia_en_all_nopic_')"
+  if [ -n "$wk" ]; then log "zim: $wk"; fetch "https://download.kiwix.org/zim/wikipedia/$wk" "$ROOT/Wikipedia/$wk"
+  else log "Wikipedia: ZIM not found"; fi
 else log "=== [7/8] Wikipedia SKIPPED ==="; fi
 
 if [ "$SKIP_MAPS" = 0 ]; then
   log "=== [8/8] Offline maps (OsmAnd) - region: $REGION ==="
-  curl -s "https://download.osmand.net/get_indexes" -o "$ROOT/OsmAnd/_index.xml"
+  curl -sL "https://download.osmand.net/get_indexes" -o "$ROOT/OsmAnd/_index.xml"
   allnames="$(grep -oE 'name="[^"]+\.obf\.zip"' "$ROOT/OsmAnd/_index.xml" | sed -E 's/name="([^"]+)"/\1/' | grep -viE 'wiki|srtm|depth|road|hillshade|heightmap')"
   : > "$ROOT/OsmAnd/_filelist.txt"
   printf '%s' "$REGION" | tr ',;' '  ' | tr ' ' '\n' | while IFS= read -r tok; do
     [ -z "$tok" ] && continue
+    tok="$(alias_region "$tok")"
     tl="$(printf '%s' "$tok" | tr 'A-Z' 'a-z')"
     if [ "$tl" = world ]; then printf '%s\n' "$allnames" >> "$ROOT/OsmAnd/_filelist.txt"
     elif echo "$CONTINENTS" | grep -qw "$tl"; then printf '%s\n' "$allnames" | grep -iE "_${tl}_" >> "$ROOT/OsmAnd/_filelist.txt"
@@ -272,7 +332,7 @@ ku="$(gh_asset_latest kiwix/kiwix-android 'universal-standalone\.apk$')"
 [ -z "$ku" ] && ku="$(gh_asset_latest kiwix/kiwix-android '\.apk$')"
 [ -n "$ku" ] && { log "phone app: Kiwix $(basename "$ku")"; fetch "$ku" "$PA/$(basename "$ku")"; }
 if [ "$SKIP_MAPS" = 0 ]; then
-  vc="$(curl -s -A "$UA" https://f-droid.org/api/v1/packages/net.osmand.plus | grep -oE '"suggestedVersionCode":[0-9]+' | grep -oE '[0-9]+' | head -n1)"
+  vc="$(curl -sL -A "$UA" https://f-droid.org/api/v1/packages/net.osmand.plus | grep -oE '"suggestedVersionCode":[0-9]+' | grep -oE '[0-9]+' | head -n1)"
   [ -n "$vc" ] && { log "phone app: OsmAnd~ $vc"; fetch "https://f-droid.org/repo/net.osmand.plus_$vc.apk" "$PA/OsmAnd-$vc.apk"; }
 fi
 
