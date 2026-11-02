@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Discussions (questions, ideas, show-and-tell)
+    url: https://github.com/elhajahmadj/offline-emergency-library/discussions
+    about: Ask questions or share how you're using the library.
