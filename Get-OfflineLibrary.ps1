@@ -23,7 +23,8 @@ param(
   [switch]$SkipMaps,        # OsmAnd maps (~17 GB for US); allow skipping
   [switch]$SkipModels,      # the large AI chat models (~11 GB)
   [switch]$Education,        # OPT-IN: add Khan Academy (Kiwix ZIM, ~168 GB with videos)
-  [string]$EduLang = 'en'    # Khan Academy language: en, es, or fr
+  [string]$EduLang = 'en',   # Khan Academy language: en, es, or fr
+  [switch]$Kolibri           # OPT-IN: add the Kolibri learning app (pick subjects/low-res in-app)
 )
 
 $ErrorActionPreference = 'Continue'
@@ -174,6 +175,21 @@ if($Education){
   if($kaName){ Log "zim: $kaName"; Fetch ("https://download.kiwix.org/zim/other/$kaName") (Join-Path $Root "Education\KhanAcademy\$kaName") }
   else { Log "Khan Academy: no ZIM found for language '$EduLang' (try -EduLang en|es|fr)" }
 } else { Log "=== [5b] Education (Khan Academy) not selected - add -Education to include (~168 GB) ===" }
+
+# ================================================================ 5c. Kolibri app (opt-in)
+if($Kolibri){
+  Log "=== [5c] Kolibri learning app (pick subjects + low-res in-app) ==="
+  $kdir = Join-Path $Root 'Education\Kolibri'; New-Item -ItemType Directory -Force $kdir | Out-Null
+  $rel = Gh-ReleaseWith 'learningequality/kolibri' 'windows-setup\.exe'
+  if($rel){
+    foreach($p in @('windows-setup\.exe$','\.dmg$','_all\.deb$','\.pex$')){
+      $a = $rel.assets | Where-Object { $_.name -match $p } | Select-Object -First 1
+      if($a){ Log "kolibri: $($a.name)"; Fetch $a.browser_download_url (Join-Path $kdir $a.name) }
+    }
+    $apk = $rel.assets | Where-Object { $_.name -match 'universal\.apk$' } | Select-Object -First 1
+    if($apk){ New-Item -ItemType Directory -Force (Join-Path $Root 'Phone-Apps') | Out-Null; Log "kolibri apk: $($apk.name)"; Fetch $apk.browser_download_url (Join-Path $Root "Phone-Apps\$($apk.name)") }
+  } else { Log 'Kolibri: no release found' }
+} else { Log "=== [5c] Kolibri not selected - add -Kolibri to include ===" }
 
 # ================================================================ 6. PDFs (Internet Archive)
 Log '=== [6/8] Public-domain manuals (PDF) ==='
@@ -392,6 +408,7 @@ PlaceDoc 'RADIO-GUIDE.md'           (Join-Path $Root 'Manuals\Radio-Communicatio
 PlaceDoc 'HOW-TO-VIEW-MAPS.md'      (Join-Path $Root 'OsmAnd\HOW-TO-VIEW-MAPS')                      'Offline Maps - How to View'
 PlaceDoc 'USE-ON-PHONE.md'          (Join-Path $Root 'Phone-Apps\USE-ON-PHONE')                      'Use the Library on a Phone'
 PlaceDoc 'Education-READ-ME-FIRST.md' (Join-Path $Root 'Education\READ-ME-FIRST')                     'Education - Khan Academy Offline'
+PlaceDoc 'HOW-TO-KOLIBRI.md'          (Join-Path $Root 'Education\HOW-TO-KOLIBRI')                     'Kolibri - Offline Learning App'
 
 # ================================================================ README index
 Log '=== Building README.html (full index of everything) ==='

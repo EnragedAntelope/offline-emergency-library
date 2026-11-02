@@ -7,6 +7,14 @@ without a connection.
 
 It opens in the **Kiwix** reader (already bundled in `Kiwix-Reader/` — no extra software).
 
+> **Two ways to get courses offline:**
+> - **Khan Academy archive** (this file) — one big drop-in file (~168 GB, all videos), opens
+>   in Kiwix, no extra app.
+> - **Kolibri** (`--kolibri`) — a learning app where you **pick subjects and video quality**,
+>   so you can stay in the **tens of GB**. See `Education\HOW-TO-KOLIBRI`.
+>
+> Use either or both.
+
 ---
 
 ## Is it here?

@@ -29,7 +29,7 @@ works with **no internet**.
 | **DIY archive** | Appropedia — plumbing, electrical, construction, energy, water, food | ~0.6 GB | Kiwix |
 | **Medical** | Offline medical Wikipedia (WikiMed) + curated medical guide | ~1.8 GB | Kiwix |
 | **Survival** | Post-disaster, water, food prep, knots (zimgit) | ~0.8 GB | Kiwix |
-| **Education** *(opt-in)* | Khan Academy — full courses + videos (math, science, history…) | **~168 GB** (off by default) | Kiwix |
+| **Education** *(opt-in)* | Khan Academy archive (one file, all videos) **or** Kolibri app (pick subjects/low-res) | KA ZIM ~168 GB; Kolibri = your choice | Kiwix / Kolibri app |
 | **Army manuals** | Public-domain US Army field/technical manuals (survival, first aid, hand tools, carpentry, auto mechanics, rigging, field cooking) | ~0.2 GB | Any browser (PDF) |
 | **Medical books** | *Where There Is No Doctor / No Dentist*, *Ship's Medicine Chest* | ~45 MB | Any browser (PDF) |
 | **Radio guide** | How ham/CB/shortwave/GMRS radio works + emergency comms | tiny | Any browser |
@@ -163,6 +163,7 @@ runs 100% offline afterward:
 | Portable Java | api.adoptium.net (Eclipse Temurin) |
 | Manuals (PDF) | archive.org |
 | Phone apps (APK) | github.com/kiwix/kiwix-android, f-droid.org |
+| Education (optional) | download.kiwix.org (Khan Academy ZIM), github.com/learningequality/kolibri (Kolibri app) |
 
 **Verify the installer before running it.** Each script's SHA-256 is published in
 [`SHA256SUMS.txt`](SHA256SUMS.txt) and CI checks they stay in sync.
@@ -235,6 +236,7 @@ Both pages link to each component's guide:
 - `Manuals\READ-ME-FIRST.html` and `Medical\READ-ME-FIRST.html`
 - `Manuals\Radio-Communications\RADIO-GUIDE.html` — emergency radio comms
 - `Education\READ-ME-FIRST.html` — Khan Academy offline (opt-in)
+- `Education\HOW-TO-KOLIBRI.html` — Kolibri learning app, pick subjects/low-res (opt-in)
 
 ---
 
@@ -244,8 +246,9 @@ Both pages link to each component's guide:
 |---|---|
 | `-Region <name>` / `--region <name>` | Choose map region (default `US`); country, continent, sub-region, or `world` |
 | `-ListRegions` / `--list-regions [filter]` | List available map regions, then exit (no download) |
-| `-Education` / `--education` | **Add Khan Academy** (Kiwix ZIM, ~168 GB with videos) — off by default |
+| `-Education` / `--education` | **Add Khan Academy** archive (Kiwix ZIM, ~168 GB with videos) — off by default |
 | `-EduLang <en\|es\|fr>` / `--edu-lang <…>` | Khan Academy language (default `en`) |
+| `-Kolibri` / `--kolibri` | **Add the Kolibri learning app** (pick subjects + low-res in-app; tens of GB) — off by default |
 | `-SkipWikipedia` / `--skip-wikipedia` | Don't download the 24 GB Wikipedia dump (~24 GB saved) |
 | `-SkipMaps` / `--skip-maps` | Don't download the maps (~17 GB saved for US) |
 | `-SkipModels` / `--skip-models` | Skip the large 8B/7B AI models, keep the small 3B (~9 GB saved) |
