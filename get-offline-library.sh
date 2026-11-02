@@ -67,6 +67,7 @@ while [ $# -gt 0 ]; do
     --skip-wikipedia) SKIP_WIKI=1; shift;;
     --skip-maps)      SKIP_MAPS=1; shift;;
     --skip-models)    SKIP_MODELS=1; shift;;
+    --no-aria)        NO_ARIA=1; shift;;
     *) shift;;
   esac
 done
@@ -113,7 +114,20 @@ ROOT="$DEST/OfflineLibrary"
 mkdir -p "$ROOT" || { echo "Cannot create $ROOT"; exit 1; }
 LOG="$ROOT/_download.log"
 log(){ printf '%s  %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" | tee -a "$LOG"; }
-fetch(){ curl -L -C - --retry 10 --retry-delay 5 --retry-all-errors -s -o "$2" "$1"; }
+# Big-file downloader: use aria2 (multi-connection, resumable) when available for a big
+# speed-up, otherwise fall back to curl. Both resume. Honor --no-aria.
+USE_ARIA=0
+if [ "${NO_ARIA:-0}" != "1" ] && command -v aria2c >/dev/null 2>&1; then USE_ARIA=1; fi
+fetch(){ # url out
+  if [ "$USE_ARIA" = 1 ]; then
+    aria2c -c -x16 -s16 -k1M --max-tries=10 --retry-wait=5 --console-log-level=warn \
+      --summary-interval=0 --allow-overwrite=false --auto-file-renaming=false \
+      -d "$(dirname "$2")" -o "$(basename "$2")" "$1" && return 0
+    echo "  (aria2 failed, falling back to curl)"
+  fi
+  curl -L -C - --retry 10 --retry-delay 5 --retry-all-errors -s -o "$2" "$1"
+}
+if [ "$USE_ARIA" = 1 ]; then log "Downloader: aria2 (fast, multi-connection)"; else log "Downloader: curl (tip: install 'aria2' for much faster downloads)"; fi
 UA="Mozilla/5.0"
 
 # ---- platform detection ----

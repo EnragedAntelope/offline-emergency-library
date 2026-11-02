@@ -24,7 +24,8 @@ param(
   [switch]$SkipModels,      # the large AI chat models (~11 GB)
   [switch]$Education,        # OPT-IN: add Khan Academy (Kiwix ZIM, ~168 GB with videos)
   [string]$EduLang = 'en',   # Khan Academy language: en, es, or fr
-  [switch]$Kolibri           # OPT-IN: add the Kolibri learning app (pick subjects/low-res in-app)
+  [switch]$Kolibri,          # OPT-IN: add the Kolibri learning app (pick subjects/low-res in-app)
+  [switch]$NoAria            # force curl even if aria2c is installed
 )
 
 $ErrorActionPreference = 'Continue'
@@ -80,8 +81,18 @@ catch { Write-Host "Cannot create $Root : $($_.Exception.Message)" -ForegroundCo
 
 $Log = Join-Path $Root '_download.log'
 function Log($m){ $s = "{0}  {1}" -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $m; Add-Content $Log $s; Write-Host $s }
-function Fetch($url,$out){ curl.exe -L -C - --retry 10 --retry-delay 5 --retry-all-errors -s -o $out $url }
+# Use aria2 (multi-connection, resumable) when present for a big speed-up; curl fallback.
+$UseAria = (-not $NoAria) -and [bool](Get-Command aria2c -ErrorAction SilentlyContinue)
+function Fetch($url,$out){
+  if($UseAria){
+    aria2c -c -x16 -s16 -k1M --max-tries=10 --retry-wait=5 --console-log-level=warn --summary-interval=0 --allow-overwrite=false --auto-file-renaming=false -d (Split-Path $out -Parent) -o (Split-Path $out -Leaf) $url
+    if($LASTEXITCODE -eq 0){ return }
+    Log '  (aria2 failed, falling back to curl)'
+  }
+  curl.exe -L -C - --retry 10 --retry-delay 5 --retry-all-errors -s -o $out $url
+}
 function UA(){ 'Mozilla/5.0' }
+if($UseAria){ Log 'Downloader: aria2 (fast, multi-connection)' } else { Log "Downloader: curl (tip: install 'aria2' for much faster downloads)" }
 
 # free-space check (needs roughly 60 GB for everything)
 try {

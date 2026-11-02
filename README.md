@@ -69,6 +69,10 @@ install, and future updates), so plan for more than 60 GB.
 **To download:** any 64-bit **Windows, macOS, or Linux** computer with internet.
 - Windows: uses `curl` + PowerShell (both built in).
 - macOS/Linux: uses `curl` + `tar` (built in); `unzip` enables the desktop map viewer.
+- **Optional but recommended: install [`aria2`](https://aria2.github.io/).** If `aria2c`
+  is on your PATH, the installer uses it automatically for **much faster** multi-connection
+  downloads (big win on the large files). Falls back to `curl` if it's absent or you pass
+  `-NoAria`/`--no-aria`.
 
 Downloading ~85 GB can take several hours.
 
@@ -254,6 +258,7 @@ Both pages link to each component's guide:
 | `-SkipWikipedia` / `--skip-wikipedia` | Don't download the 24 GB Wikipedia dump (~24 GB saved) |
 | `-SkipMaps` / `--skip-maps` | Don't download the maps (~17 GB saved for US) |
 | `-SkipModels` / `--skip-models` | Skip the large 8B/7B AI models, keep the small 3B (~9 GB saved) |
+| `-NoAria` / `--no-aria` | Force `curl` even if `aria2c` is installed |
 
 Example: `./Get-OfflineLibrary.ps1 -Destination "F:\" -SkipWikipedia -SkipMaps`
 
