@@ -23,7 +23,7 @@ works with **no internet**.
 |---|---|---|---|
 | **Offline AI chat** | 3 local AI models (Llama 3.2 3B, Llama 3.1 8B, Qwen2.5 7B) + CPU & GPU engines (llama.cpp) | ~11 GB | CPU only (GPU optional) |
 | **Offline doc-Q&A** | GPT4All — ask an AI questions about your PDFs, with citations | ~0.7 GB | CPU, one-time install |
-| **Wikipedia** | Full English Wikipedia article text (compressed) | ~24 GB | Kiwix (or archival) |
+| **Wikipedia** | Full English Wikipedia (all articles, no images) — Kiwix-readable | ~49 GB | Kiwix |
 | **Offline maps** | Maps for the region you pick (**default US**; any country/region/continent — see below) + **bundled desktop viewer** (OsmAndMapCreator + portable Java) + **bundled Android app (APK)** | US ≈17 GB; varies by region (+~0.4 GB tools) | **PC (no phone) or phone** |
 | **Repair archive** | iFixit — cars, appliances, electronics, phones | ~3.4 GB | Kiwix |
 | **DIY archive** | Appropedia — plumbing, electrical, construction, energy, water, food | ~0.6 GB | Kiwix |
@@ -31,11 +31,11 @@ works with **no internet**.
 | **Survival** | Post-disaster, water, food prep, knots (zimgit) | ~0.8 GB | Kiwix |
 | **Education** *(opt-in)* | Khan Academy archive (one file, all videos) **or** Kolibri app (pick subjects/low-res) | KA ZIM ~168 GB; Kolibri = your choice | Kiwix / Kolibri app |
 | **Army manuals** | Public-domain US Army field/technical manuals (survival, first aid, hand tools, carpentry, auto mechanics, rigging, field cooking) | ~0.2 GB | Any browser (PDF) |
-| **Medical books** | *Where There Is No Doctor / No Dentist*, *Ship's Medicine Chest* | ~45 MB | Any browser (PDF) |
+| **Medical books** | *Where There Is No Doctor / No Dentist* (Hesperian) | ~60 MB | Any browser (PDF) |
 | **Radio guide** | How ham/CB/shortwave/GMRS radio works + emergency comms | tiny | Any browser |
 | **Kiwix reader** | Portable app to read all `.zim` archives (no install) | ~0.15 GB | — |
 | **Phone apps** | Bundled Android APKs (Kiwix + OsmAnd) to port the library to a phone offline | ~0.4 GB | sideload on Android |
-| **Total** | | **≈ 60 GB** | |
+| **Total** | | **≈ 85 GB** | |
 
 Everything is **free and legally redistributable** — open-weight AI models, openly-licensed
 Kiwix archives, and public-domain US-government manuals. **No piracy.**
@@ -44,7 +44,7 @@ Kiwix archives, and public-domain US-government manuals. **No piracy.**
 
 ## 📦 Storage requirements — what kind of drive do I need?
 
-The full library is **~60 GB**. Always leave headroom (for the AI's temp files, GPT4All
+The full library is **~85 GB**. Always leave headroom (for the AI's temp files, GPT4All
 install, and future updates), so plan for more than 60 GB.
 
 | Drive | Recommendation |
@@ -57,7 +57,7 @@ install, and future updates), so plan for more than 60 GB.
 
 > **Tip:** If you only want the reference material (no AI), you can skip the big pieces
 > with `-SkipModels` and still get Wikipedia, maps, and all manuals in ~30 GB. If you also
-> skip Wikipedia and maps (`-SkipWikipedia -SkipMaps`), the AI + manuals fit in ~20 GB.
+> skip Wikipedia and maps (`-SkipWikipedia -SkipMaps`), the AI + manuals fit in ~20 GB. (Wikipedia is now ~49 GB.)
 >
 > **Adding Khan Academy?** It's **opt-in** and **~168 GB with videos** — budget for a
 > **256 GB+** (ideally 512 GB) drive if you include `-Education`.
@@ -70,7 +70,7 @@ install, and future updates), so plan for more than 60 GB.
 - Windows: uses `curl` + PowerShell (both built in).
 - macOS/Linux: uses `curl` + `tar` (built in); `unzip` enables the desktop map viewer.
 
-Downloading ~60 GB can take a few hours.
+Downloading ~85 GB can take several hours.
 
 **To use it afterward (offline):**
 
@@ -158,7 +158,7 @@ runs 100% offline afterward:
 | AI engine (llama.cpp) | github.com/ggml-org/llama.cpp |
 | GPT4All | github.com/nomic-ai/gpt4all |
 | Kiwix reader + ZIM archives | download.kiwix.org |
-| Wikipedia | dumps.wikimedia.org |
+| Wikipedia | download.kiwix.org |
 | Maps + desktop viewer | download.osmand.net |
 | Portable Java | api.adoptium.net (Eclipse Temurin) |
 | Manuals (PDF) | archive.org |
@@ -214,6 +214,8 @@ continent, add `-Region` (Windows) / `--region` (macOS/Linux):
 Accepts a country (`France`), several (`"Germany,Austria"`), a continent (`Europe`,
 `Africa`, `Asia`, `North-America`, `South-America`, `Central-America`,
 `Australia-Oceania`), a sub-region (`US_texas`, `Germany_bayern`), or `world`.
+**Common names and ISO codes also work** (`UK`, `USA`, `GBR`, `DEU`, `JPN`, `UAE`,
+`Holland`, `Czech`, …) — they're translated to the right OsmAnd name automatically.
 **Size varies:** US ≈17 GB, a small country <1 GB, a continent tens of GB, `world`
 hundreds of GB — the installer prints the size and warns before large downloads.
 

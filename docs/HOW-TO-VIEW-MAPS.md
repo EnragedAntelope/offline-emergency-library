@@ -39,6 +39,9 @@ Notes:
   **continent** (`Europe`, `Africa`, `Asia`, `North-America`, `South-America`,
   `Central-America`, `Australia-Oceania`), a **sub-region** (`US_texas`,
   `Germany_bayern`), or **`world`** for everything.
+- **Common names and ISO codes also work** and are translated automatically — e.g. `UK`,
+  `USA`, `GBR`, `DEU`, `FRA`, `JPN`, `UAE`, `Holland`, `Czech`. Anything unrecognized is
+  tried as-is, so you can always use the exact OsmAnd name from `--list-regions`.
 - Big countries are split into many files — picking the country name grabs them all.
 - **Size varies a lot:** US ≈ 17 GB, a small country can be under 1 GB, a whole continent
   is tens of GB, and `world` is hundreds of GB. The installer prints the size before

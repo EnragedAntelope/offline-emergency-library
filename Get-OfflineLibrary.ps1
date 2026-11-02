@@ -19,7 +19,7 @@ param(
                             #   -Region US_texas   -Region world   (see -ListRegions)
   [switch]$ListRegions,     # print available map regions (optionally filtered by -Filter) and exit
   [string]$Filter,          # substring filter used with -ListRegions
-  [switch]$SkipWikipedia,   # Wikipedia is the biggest (~24 GB); allow skipping
+  [switch]$SkipWikipedia,   # Wikipedia is the biggest (~49 GB ZIM); allow skipping
   [switch]$SkipMaps,        # OsmAnd maps (~17 GB for US); allow skipping
   [switch]$SkipModels,      # the large AI chat models (~11 GB)
   [switch]$Education,        # OPT-IN: add Khan Academy (Kiwix ZIM, ~168 GB with videos)
@@ -31,11 +31,25 @@ $ErrorActionPreference = 'Continue'
 $ProgressPreference    = 'SilentlyContinue'
 $RepoRaw = 'https://raw.githubusercontent.com/elhajahmadj/offline-emergency-library/main'
 $Continents = @('africa','asia','australia-oceania','centralamerica','europe','northamerica','southamerica')
+# Common names / ISO codes -> OsmAnd region token (unknown input passes through unchanged)
+$RegionAlias = @{
+  'us'='US';'usa'='US';'america'='US';'united-states'='US'
+  'uk'='Gb';'gb'='Gb';'gbr'='Gb';'britain'='Gb';'great-britain'='Gb';'england'='Gb';'united-kingdom'='Gb'
+  'deu'='Germany';'ger'='Germany';'fra'='France';'esp'='Spain';'ita'='Italy'
+  'nld'='Netherlands';'holland'='Netherlands';'che'='Switzerland';'swiss'='Switzerland'
+  'aut'='Austria';'bel'='Belgium';'prt'='Portugal';'irl'='Ireland';'swe'='Sweden';'nor'='Norway'
+  'dnk'='Denmark';'fin'='Finland';'pol'='Poland';'cze'='Czech-republic';'czech'='Czech-republic';'czechia'='Czech-republic';'grc'='Greece'
+  'can'='Canada';'mex'='Mexico';'bra'='Brazil';'arg'='Argentina';'nzl'='New-zealand';'new-zealand'='New-zealand'
+  'jpn'='Japan';'kor'='South-korea';'korea'='South-korea';'chn'='China';'ind'='India';'idn'='Indonesia';'rus'='Russia'
+  'zaf'='South-africa';'ken'='Kenya';'egy'='Egypt';'nga'='Nigeria';'tur'='Turkey';'turkiye'='Turkey'
+  'sau'='Saudi-arabia';'saudi'='Saudi-arabia';'are'='United-arab-emirates';'uae'='United-arab-emirates'
+}
+function Resolve-RegionToken($t){ $k=$t.ToLower(); if($RegionAlias.ContainsKey($k)){ $RegionAlias[$k] } else { $t } }
 
 # ---------------------------------------------------------------- -ListRegions (discovery, no download)
 if($ListRegions){
   $tmp = Join-Path $env:TEMP 'osmand_idx.xml'
-  curl.exe -s 'https://download.osmand.net/get_indexes' -o $tmp
+  curl.exe -sL 'https://download.osmand.net/get_indexes' -o $tmp
   try { [xml]$ix = Get-Content $tmp } catch { Write-Host "Could not fetch the OsmAnd region index."; return }
   $maps = $ix.osmand_regions.region | Where-Object { $_.type -eq 'map' }
   if($Filter){
@@ -205,34 +219,43 @@ $pdfs = @(
  @{id='u-s-army-guide-to-rigging';                           n='FM 5-125 Army Guide to Rigging.pdf';              d='Manuals\ArmyFieldManuals'}
  @{id='fm-90-3-desert-operations-1993';                      n='FM 90-3 Desert Operations.pdf';                   d='Manuals\ArmyFieldManuals'}
  @{id='tm-10-412-armed-forces-recipe-service-2003';          n='TM 10-412 Armed Forces Recipe Service.pdf';       d='Manuals\ArmyFieldManuals'}
- @{id='bwb_S0-EJI-512';                                      n='Where There Is No Doctor.pdf';                    d='Medical\Manuals-PDF'}
- @{id='where-there-is-no-dentist-13th-printing-2010';        n='Where There Is No Dentist.pdf';                   d='Medical\Manuals-PDF'}
- @{id='shipsmedicineche0000medi';                            n='Ships Medicine Chest and First Aid at Sea.pdf';   d='Medical\Manuals-PDF'}
+ @{id='where-there-is-no-doctor';                            n='Where There Is No Doctor.pdf';                    d='Medical\Manuals-PDF'}
+ @{id='where-there-is-no-dentist-web-full-book';             n='Where There Is No Dentist.pdf';                   d='Medical\Manuals-PDF'}
 )
 foreach($p in $pdfs){
   try{
     $meta = curl.exe -sL "https://archive.org/metadata/$($p.id)" -A (UA) | ConvertFrom-Json
     $f = $meta.files | Where-Object {$_.name -match '\.pdf$' -and $_.name -notmatch '_text\.pdf$'} | Sort-Object {[double]$_.size} -Descending | Select-Object -First 1
-    if($f){ Log "pdf: $($p.n)"; Fetch "https://archive.org/download/$($p.id)/$([uri]::EscapeDataString($f.name))" (Join-Path $Root "$($p.d)\$($p.n)") }
-    else { Log "pdf: NO PDF for $($p.id)" }
+    if($f){
+      $out = Join-Path $Root "$($p.d)\$($p.n)"
+      Log "pdf: $($p.n)"
+      # -f so HTTP errors (401 borrow / 500) aren't saved as a .pdf
+      curl.exe -fL -C - --retry 6 --retry-delay 5 --retry-all-errors -s -o $out "https://archive.org/download/$($p.id)/$([uri]::EscapeDataString($f.name))"
+      if(Test-Path $out){
+        $fs = New-Object IO.FileStream($out,'Open'); $b = New-Object byte[] 4; [void]$fs.Read($b,0,4); $fs.Close()
+        if(-not ([System.Text.Encoding]::ASCII.GetString($b) -eq '%PDF')){ Log "  WARN: $($p.n) not a valid PDF (removed)"; Remove-Item $out -Force }
+      } else { Log "  WARN: $($p.n) failed to download" }
+    } else { Log "pdf: NO PDF for $($p.id)" }
   }catch{ Log "pdf ERROR $($p.n): $($_.Exception.Message)" }
 }
 
 # ================================================================ 7. Wikipedia + Maps
 if(-not $SkipWikipedia){
-  Log '=== [7/8] Wikipedia (article text, compressed ~24 GB) ==='
-  Fetch 'https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-pages-articles.xml.bz2' (Join-Path $Root 'Wikipedia\enwiki-latest-pages-articles.xml.bz2')
+  Log '=== [7/8] Wikipedia (full, no images - Kiwix ZIM, ~49 GB) ==='
+  $wk = Latest-Zim 'https://download.kiwix.org/zim/wikipedia/' 'wikipedia_en_all_nopic_'
+  if($wk){ Log "zim: $wk"; Fetch ("https://download.kiwix.org/zim/wikipedia/$wk") (Join-Path $Root "Wikipedia\$wk") }
+  else { Log 'Wikipedia: ZIM not found' }
 } else { Log '=== [7/8] Wikipedia SKIPPED ===' }
 
 if(-not $SkipMaps){
   Log "=== [8/8] Offline maps (OsmAnd) - region: $Region ==="
   try{
     $idxFile = Join-Path $env:TEMP 'osmand_idx.xml'
-    curl.exe -s 'https://download.osmand.net/get_indexes' -o $idxFile
+    curl.exe -sL 'https://download.osmand.net/get_indexes' -o $idxFile
     [xml]$idx = Get-Content $idxFile
     $allmaps = $idx.osmand_regions.region | Where-Object { $_.type -eq 'map' }
     # resolve the -Region tokens (comma/space separated) to a file set
-    $tokens = ($Region -split '[,; ]') | ForEach-Object { $_.Trim() } | Where-Object { $_ }
+    $tokens = ($Region -split '[,; ]') | ForEach-Object { $_.Trim() } | Where-Object { $_ } | ForEach-Object { Resolve-RegionToken $_ }
     $sel = @()
     foreach($t in $tokens){
       if($t -ieq 'world'){ $sel = $allmaps; break }
@@ -384,18 +407,14 @@ Log '=== Documentation (Markdown + HTML) ==='
 # doc source: local .\docs if present (repo clone), else download pre-rendered files from GitHub raw
 $scriptDir = if($PSScriptRoot){$PSScriptRoot}else{(Get-Location).Path}
 $localDocs = Join-Path $scriptDir 'docs'
-function Get-Doc($name){
-  $lp = Join-Path $localDocs $name
-  if(Test-Path $lp){ return (Get-Content $lp -Raw) }
-  try { return (curl.exe -sL "$RepoRaw/docs/$name" -A (UA)) } catch { return $null }
-}
-# both .md and .html ship in the repo /docs; just place them (no conversion needed)
+# Byte-for-byte copy so UTF-8 (em dashes, emoji) is never re-encoded/garbled.
 function PlaceDoc($srcName,$destPath,$title){
   $base = $srcName -replace '\.md$',''
   foreach($ext in '.md','.html'){
-    $c = Get-Doc ($base + $ext)
-    if($c){ [System.IO.File]::WriteAllText("$destPath$ext",$c,[System.Text.UTF8Encoding]::new($false)) }
-    else { Log "  doc missing: $base$ext" }
+    $dest = "$destPath$ext"
+    $lp = Join-Path $localDocs ($base + $ext)
+    if(Test-Path $lp){ Copy-Item $lp $dest -Force }
+    else { curl.exe -sL "$RepoRaw/docs/$base$ext" -A (UA) -o $dest }
   }
 }
 PlaceDoc 'START-HERE.md'            (Join-Path $Root 'START-HERE')                                  'Offline Emergency Kit - Start Here'
