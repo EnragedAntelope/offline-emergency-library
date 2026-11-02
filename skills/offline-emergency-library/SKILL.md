@@ -55,9 +55,11 @@ When this skill is invoked, your job is simple:
   openly-licensed Kiwix archives, and public-domain US-government manuals. No piracy.
 - If the user is low on disk space, you *may* mention the optional flags
   `-SkipWikipedia`, `-SkipMaps`, `-SkipModels` — but do not prompt for them unless asked.
-- **Khan Academy is opt-in** (it's ~168 GB with videos). Only add it if the user asks for
-  education/courses: pass `-Education` (Windows) / `--education` (macOS/Linux), optionally
-  `-EduLang es|fr` / `--edu-lang es|fr`. Do not include it by default.
+- **Education is opt-in.** Two choices, both off by default:
+  `-Education` / `--education` adds the **Khan Academy** archive (Kiwix ZIM, ~168 GB, all
+  videos; `-EduLang`/`--edu-lang` en|es|fr). `-Kolibri` / `--kolibri` adds the **Kolibri**
+  learning app, where the user picks subjects + video quality in-app (tens of GB). Only add
+  either if the user asks for courses/education.
 - **Maps default to the US.** If the user wants another area, pass `-Region <name>`
   (Windows) / `--region <name>` (macOS/Linux) — e.g. `France`, `"Germany,Austria"`,
   `Europe`, `US_texas`, or `world`. To discover exact names, run with `-ListRegions` /

@@ -10,7 +10,7 @@
 REPO_RAW="https://raw.githubusercontent.com/elhajahmadj/offline-emergency-library/main"
 DEST=""; SKIP_WIKI=0; SKIP_MAPS=0; SKIP_MODELS=0
 REGION="US"; LISTREGIONS=0; FILTER=""
-EDU=0; EDULANG="en"
+EDU=0; EDULANG="en"; KOLIBRI=0
 CONTINENTS="africa asia australia-oceania centralamerica europe northamerica southamerica"
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -19,6 +19,7 @@ while [ $# -gt 0 ]; do
     --list-regions)   LISTREGIONS=1; if [ -n "$2" ] && [ "${2#-}" = "$2" ]; then FILTER="$2"; shift 2; else shift; fi;;
     --education)      EDU=1; shift;;
     --edu-lang)       EDULANG="$2"; shift 2;;
+    --kolibri)        KOLIBRI=1; shift;;
     --skip-wikipedia) SKIP_WIKI=1; shift;;
     --skip-maps)      SKIP_MAPS=1; shift;;
     --skip-models)    SKIP_MODELS=1; shift;;
@@ -159,6 +160,20 @@ if [ "$EDU" = 1 ]; then
   else log "Khan Academy: no ZIM for language '$EDULANG' (try --edu-lang en|es|fr)"; fi
 else
   log "=== [5b] Education (Khan Academy) not selected - add --education to include (~168 GB) ==="
+fi
+
+# ================================================================ 5c. Kolibri app (opt-in)
+if [ "$KOLIBRI" = 1 ]; then
+  log "=== [5c] Kolibri learning app (pick subjects + low-res in-app) ==="
+  kd="$ROOT/Education/Kolibri"; mkdir -p "$kd"
+  for pat in 'windows-setup\.exe$' '\.dmg$' '_all\.deb$' '\.pex$'; do
+    u="$(gh_asset_latest learningequality/kolibri "$pat")"
+    [ -n "$u" ] && { log "kolibri: $(basename "$u")"; fetch "$u" "$kd/$(basename "$u")"; }
+  done
+  ka="$(gh_asset_latest learningequality/kolibri 'universal\.apk$')"
+  [ -n "$ka" ] && { mkdir -p "$ROOT/Phone-Apps"; log "kolibri apk: $(basename "$ka")"; fetch "$ka" "$ROOT/Phone-Apps/$(basename "$ka")"; }
+else
+  log "=== [5c] Kolibri not selected - add --kolibri to include ==="
 fi
 
 # ================================================================ 6. PDFs
@@ -322,6 +337,7 @@ place_doc "RADIO-GUIDE"           "$ROOT/Manuals/Radio-Communications/RADIO-GUID
 place_doc "HOW-TO-VIEW-MAPS"      "$ROOT/OsmAnd/HOW-TO-VIEW-MAPS"
 place_doc "USE-ON-PHONE"          "$ROOT/Phone-Apps/USE-ON-PHONE"
 place_doc "Education-READ-ME-FIRST" "$ROOT/Education/READ-ME-FIRST"
+place_doc "HOW-TO-KOLIBRI"          "$ROOT/Education/HOW-TO-KOLIBRI"
 
 # ================================================================ README index
 log "=== Building README.html (full index of everything) ==="
