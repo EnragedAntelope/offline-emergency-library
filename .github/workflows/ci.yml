@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  schedule:
+    - cron: '0 12 * * 1'   # weekly, Mondays 12:00 UTC (upstream health check)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint installers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bash syntax check
+        run: bash -n get-offline-library.sh
+      - name: PowerShell parse + analyze
+        shell: pwsh
+        run: |
+          $err = $null
+          foreach ($f in 'Get-OfflineLibrary.ps1','build-readme-index.ps1') {
+            [void][System.Management.Automation.Language.Parser]::ParseFile("$PWD/$f", [ref]$null, [ref]$err)
+            if ($err) { $err | ForEach-Object { Write-Error $_.Message }; exit 1 }
+            Write-Host "parse OK: $f"
+          }
+          try {
+            Install-Module PSScriptAnalyzer -Force -Scope CurrentUser -ErrorAction Stop
+            $issues = Invoke-ScriptAnalyzer -Path . -Recurse -Severity Error
+            if ($issues) { $issues | Format-Table | Out-String | Write-Error; exit 1 }
+            Write-Host "PSScriptAnalyzer: no errors"
+          } catch { Write-Host "PSScriptAnalyzer skipped: $($_.Exception.Message)" }
+
+  links:
+    name: Upstream source health
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check that all download sources still resolve
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash .github/scripts/check-links.sh
