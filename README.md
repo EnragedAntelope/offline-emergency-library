@@ -1,5 +1,12 @@
 # 🛟 Offline Emergency Library
 
+[![Stars](https://img.shields.io/github/stars/elhajahmadj/offline-emergency-library?style=flat)](https://github.com/elhajahmadj/offline-emergency-library/stargazers)
+[![Forks](https://img.shields.io/github/forks/elhajahmadj/offline-emergency-library?style=flat)](https://github.com/elhajahmadj/offline-emergency-library/network/members)
+[![Latest release](https://img.shields.io/github/v/release/elhajahmadj/offline-emergency-library)](https://github.com/elhajahmadj/offline-emergency-library/releases)
+[![CI](https://img.shields.io/github/actions/workflow/status/elhajahmadj/offline-emergency-library/ci.yml?label=CI)](https://github.com/elhajahmadj/offline-emergency-library/actions)
+[![License: MIT](https://img.shields.io/github/license/elhajahmadj/offline-emergency-library)](LICENSE)
+![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20macOS%20%7C%20Linux-informational)
+
 **A complete, offline, no-internet "survival knowledge" kit you can download with a single
 command.** Built for emergencies, grid-down scenarios, remote areas, or anyone who wants a
 self-contained offline reference + AI on a drive.
@@ -136,6 +143,45 @@ and it continues where it left off.
 
 ---
 
+## 🔐 Trust & verification
+
+This project **hosts nothing** — it downloads from the official upstream sources below and
+runs 100% offline afterward:
+
+| What | From |
+|---|---|
+| AI models (GGUF) | huggingface.co (bartowski) |
+| AI engine (llama.cpp) | github.com/ggml-org/llama.cpp |
+| GPT4All | github.com/nomic-ai/gpt4all |
+| Kiwix reader + ZIM archives | download.kiwix.org |
+| Wikipedia | dumps.wikimedia.org |
+| Maps + desktop viewer | download.osmand.net |
+| Portable Java | api.adoptium.net (Eclipse Temurin) |
+| Manuals (PDF) | archive.org |
+| Phone apps (APK) | github.com/kiwix/kiwix-android, f-droid.org |
+
+**Verify the installer before running it.** Each script's SHA-256 is published in
+[`SHA256SUMS.txt`](SHA256SUMS.txt) and CI checks they stay in sync.
+
+```bash
+# macOS / Linux
+curl -fsSLO https://raw.githubusercontent.com/elhajahmadj/offline-emergency-library/main/get-offline-library.sh
+sha256sum get-offline-library.sh      # compare against SHA256SUMS.txt
+bash get-offline-library.sh
+```
+```powershell
+# Windows
+irm https://raw.githubusercontent.com/elhajahmadj/offline-emergency-library/main/Get-OfflineLibrary.ps1 -OutFile Get-OfflineLibrary.ps1
+Get-FileHash Get-OfflineLibrary.ps1 -Algorithm SHA256   # compare against SHA256SUMS.txt
+./Get-OfflineLibrary.ps1
+```
+
+The scripts are plain Bash/PowerShell — you're encouraged to read them first. (Hashes match
+the files served by GitHub `raw` and the release assets; a `git clone` on Windows rewrites
+line endings, so local hashes will differ there.)
+
+---
+
 ## 🗺️ Choosing your map region (optional — default is US)
 
 The maps default to the **United States**. To download a different country, region, or
@@ -211,6 +257,14 @@ Example: `./Get-OfflineLibrary.ps1 -Destination "F:\" -SkipWikipedia -SkipMaps`
   archives and public-domain Army technical manuals.
 - Respect your local laws for radio transmission (listening is always fine; see the radio
   guide).
+
+## ⭐ Star history
+[![Star History Chart](https://api.star-history.com/svg?repos=elhajahmadj/offline-emergency-library&type=Date)](https://star-history.com/#elhajahmadj/offline-emergency-library&Date)
+
+## Contributing
+Issues and PRs welcome — see [CONTRIBUTING](.github/CONTRIBUTING.md), the
+[ROADMAP](ROADMAP.md), and issues labeled **good first issue**. Testers for the macOS/Linux
+installers especially wanted.
 
 ## License
 Code and documentation in this repo: **MIT** (see `LICENSE`). Downloaded content retains
