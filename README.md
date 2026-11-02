@@ -66,7 +66,7 @@ Downloading ~60 GB can take a few hours.
 | Task | Needs |
 |---|---|
 | Read PDFs, HTML guides, Wikipedia, maps | **Any computer** with a web browser. Even an old/weak PC. |
-| Read `.zim` archives | **Kiwix** (bundled, portable). Any Windows PC. |
+| Read `.zim` archives | **Kiwix** — bundled portable on Windows & Linux; on macOS install Kiwix (App Store/kiwix.org). |
 | **Offline AI — small model (3B)** | Any 64-bit PC, **~4 GB RAM**. Works on CPU; no graphics card needed. |
 | **Offline AI — big model (8B)** | **~8 GB RAM** recommended. CPU only. |
 | **Offline AI — GPU model (Qwen 7B)** | A graphics card with **~6 GB VRAM** (NVIDIA/AMD/Intel) for a big speed boost. Optional. |
@@ -180,6 +180,8 @@ Both pages link to each component's guide:
 - `AI-Offline\HOW-TO-RUN-OFFLINE-AI.html` — run the offline AI chat
 - `AI-Offline\DocReader-GPT4All\HOW-TO-ASK-YOUR-DOCS.html` — ask AI about your PDFs
 - `Kiwix-Reader\HOW-TO-USE-KIWIX.html` — read the `.zim` archives
+- `OsmAnd\HOW-TO-VIEW-MAPS.html` — view maps on a PC (no phone) or phone
+- `Phone-Apps\USE-ON-PHONE.html` — port the library to a phone
 - `Manuals\READ-ME-FIRST.html` and `Medical\READ-ME-FIRST.html`
 - `Manuals\Radio-Communications\RADIO-GUIDE.html` — emergency radio comms
 
