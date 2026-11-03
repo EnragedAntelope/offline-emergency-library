@@ -446,6 +446,7 @@ chmod +x "$BIN" 2>/dev/null
 LIBDIR="$(dirname "$BIN")"
 export LD_LIBRARY_PATH="$LIBDIR:${LD_LIBRARY_PATH:-}" DYLD_LIBRARY_PATH="$LIBDIR:${DYLD_LIBRARY_PATH:-}"
 echo "__NOTE__"
+echo "The AI is a helper for finding and summarizing info - for anything safety-critical, follow the bundled manuals."
 exec "$BIN" -m "$DIR/models/__MODEL__" __ARGS__
 EOS
 sed -i.bak -e "s|__TOOL__|$2|" -e "s|__MODEL__|$3|" -e "s|__GPU__|$4|" -e "s|__ARGS__|$5|" -e "s|__NOTE__|$6|" "$AO/$1" && rm -f "$AO/$1.bak"
@@ -461,6 +462,7 @@ make_sh "web-ui.sh"          llama-server "Llama-3.2-3B-Instruct-Q4_K_M.gguf"   
 make_bat(){ # file  title  exe  model  args  [note]
   { echo "@echo off"; echo "title $2"; echo 'cd /d "%~dp0"'
     [ -n "$6" ] && printf '%s\n' "$6"
+    echo 'echo The AI is a helper for finding and summarizing info - for anything safety-critical, follow the bundled manuals.'
     echo "\"%~dp0$3\" -m \"%~dp0models\\$4\" $5"; echo "pause"; } | sed 's/$/\r/' > "$AO/$1"
 }
 make_bat "CHAT-3B-light.bat"   "Offline AI - Llama 3.2 3B (light)" 'engine\x64\llama-cli.exe' "Llama-3.2-3B-Instruct-Q4_K_M.gguf" "-c 4096"
