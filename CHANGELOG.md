@@ -12,6 +12,24 @@ Contributor-driven reliability and portability work, from people running the kit
 hardware.
 
 ### Added
+- **Browser maps (opt-in): US street maps in any web browser.** New `-BrowserMaps` /
+  `--browser-maps` (off by default) adds Project NOMAD / Protomaps PMTiles state maps, the
+  MapLibre GL JS viewer and a bundled Caddy local web server, so streets open in any browser
+  on Windows, macOS and Linux — no app and no Java. Follows `-Region` (US ≈16.5 GB for all
+  states; a single state is far less), plus a low-detail world map. Fully attributed
+  (maps MIT; data © OpenStreetMap contributors, ODbL; viewer BSD-3; Caddy Apache-2.0).
+  Resolves #10/#38. _[@boostedchaos](https://github.com/boostedchaos) (Kyle Welch) — PR #38._
+- **Printable radio frequency reference.** A new `RADIO-FREQUENCIES` guide (Markdown +
+  offline HTML) with US frequency/channel tables (weather, FRS/GMRS/MURS/CB, marine,
+  aviation, beacons, amateur band plans), regional cautions and primary sources
+  (NOAA, FCC, USCG, FAA), linked from RADIO-GUIDE and the index. Also corrects the legal
+  note in RADIO-GUIDE: 47 CFR §97.403/§97.405 are amateur-specific, not blanket permission
+  for anyone to transmit on any frequency. Resolves #26.
+  _[@EnragedAntelope](https://github.com/EnragedAntelope) — PR #40._
+- **Lite map-size warning.** Because `--lite` still includes the default US maps (~17 GB),
+  both installers now print the selected map region and the flags to pick a smaller area or
+  skip maps entirely, before prompting for a destination or downloading. Resolves #32.
+  _[@EnragedAntelope](https://github.com/EnragedAntelope) — PR #39._
 - **Drive integrity: `CHECKSUMS-SHA256.txt` + CHECK-DRIVE.** At the end of every run both
   installers now write one SHA-256 per file to `CHECKSUMS-SHA256.txt` at the drive root —
   same format on every OS (`<sha256>  ./path`, byte-sorted, LF), so a drive built on Windows
@@ -52,6 +70,20 @@ hardware.
 - **Manuals-first AI framing.** The guides now treat the bundled manuals as the authority and the AI as the assistant: START-HERE opens with how the kit is meant to be used, spells out the three ways to read and use things (fixing the GPT4All pointer to `AI-Offline\DocReader-GPT4All\`), and points safety-critical answers at the manual itself; HOW-TO-RUN-OFFLINE-AI gains a "How to use the AI well" note (GPT4All LocalDocs shows the sources it used, so medical and survival answers can be checked against the book). Every generated AI launcher now also prints a one-line reminder (the AI is a helper, follow the manuals for anything safety-critical) before the engine starts. Resolves #20. _[@EnragedAntelope](https://github.com/EnragedAntelope) - PR #42._
 
 ### Fixed
+- **Interrupted aria2 download could be kept as a corrupt file.** On Ctrl+C (or any aria2
+  failure that left a `.aria2` control file), `fetch()` fell back to `curl -C -`; because
+  aria2 preallocates the full file size, curl saw a "complete" file and kept it — a drive of
+  gaps/metalink XML that passed the non-empty check and let the install finish silently. Both
+  installers now stop with exit 1 on aria2 exit 7 or a leftover `.aria2` (aria2 resumes
+  cleanly on re-run) and pass `--follow-metalink=mem` so Kiwix's metalink is never saved as
+  the file. Found via the #34 testing. _[@boostedchaos](https://github.com/boostedchaos)
+  (Kyle Welch) — PR #41._
+- **Re-run on a newer llama.cpp build could corrupt the engine.** A resumed download appended
+  the new build onto the old build's archive (and a damaged zip can unpack to nothing with no
+  error on PowerShell 5.1), leaving zero working engines while the run still printed DONE.
+  Archives are now saved per build (`<build>-<asset>`), stale builds removed, an unpack
+  failure exits 1, and the installer verifies `llama-cli` is actually present after unpacking.
+  Resolves #35. _[@boostedchaos](https://github.com/boostedchaos) (Kyle Welch) — PR #37._
 - **Default `US` maps downloaded 0 files on macOS/Linux.** The Bash region loop fed `read`
   a list with no trailing newline, so it dropped the last (and, for `US`, only) region name.
   _[@boostedchaos](https://github.com/boostedchaos) — PR #11._
