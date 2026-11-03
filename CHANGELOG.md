@@ -12,6 +12,12 @@ Contributor-driven reliability and portability work, from people running the kit
 hardware.
 
 ### Added
+- **USDA Complete Guide to Home Canning.** Both installers now download the official
+  2015 revision (Agriculture Information Bulletin 539, a US-government work) as its 8 PDF
+  parts from the USDA-funded National Center for Home Food Preservation, into
+  `Manuals/Food-Preservation/USDA-Complete-Guide-to-Home-Canning-2015/` (~14 MB), each checked to start with `%PDF`.
+  Listed in the README and `Manuals/READ-ME-FIRST`. Resolves #22.
+  _[@boostedchaos](https://github.com/boostedchaos) — PR #44._
 - **Browser maps (opt-in): US street maps in any web browser.** New `-BrowserMaps` /
   `--browser-maps` (off by default) adds Project NOMAD / Protomaps PMTiles state maps, the
   MapLibre GL JS viewer and a bundled Caddy local web server, so streets open in any browser

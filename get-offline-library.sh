@@ -177,7 +177,7 @@ log "Platform: $PLAT/$CPU   Destination: $ROOT"
 # ---- folder tree ----
 for d in AI-Offline AI-Offline/engine AI-Offline/models AI-Offline/DocReader-GPT4All \
          Manuals Manuals/ArmyFieldManuals Manuals/Repair-iFixit Manuals/DIY-Appropedia \
-         Manuals/Survival-Water-Food Manuals/Radio-Communications \
+         Manuals/Survival-Water-Food Manuals/Radio-Communications Manuals/Food-Preservation/USDA-Complete-Guide-to-Home-Canning-2015 \
          Medical Medical/WikiMed Medical/zimgit-medicine Medical/Manuals-PDF \
          Wikipedia OsmAnd Kiwix-Reader Phone-Apps Education; do
   mkdir -p "$ROOT/$d"
@@ -320,13 +320,16 @@ fi
 # ================================================================ 6. PDFs
 log "=== [6/8] Public-domain manuals (PDF) ==="
 ia_pdf(){ curl -sL -A "$UA" "https://archive.org/metadata/$1" | grep -oE '"name":"[^"]+\.pdf"' | sed -E 's/"name":"([^"]+)"/\1/' | grep -vE '_text\.pdf$' | head -n1; }
-get_pdf(){ # id  localname  destdir
+get_pdf(){ # id  localname  destdir   (archive.org item)
   f="$(ia_pdf "$1")"
   if [ -z "$f" ]; then log "pdf: none for $1"; return; fi
   enc="$(printf '%s' "$f" | sed 's/ /%20/g')"
+  get_pdf_url "https://archive.org/download/$1/$enc" "$2" "$3"
+}
+get_pdf_url(){ # url  localname  destdir   (direct link)
   out="$3/$2"
   log "pdf: $2"
-  fetch "https://archive.org/download/$1/$enc" "$out"
+  fetch "$1" "$out"
   # validate it's really a PDF; drop error pages / empties
   if [ -f "$out" ]; then
     if [ "$(head -c 4 "$out" 2>/dev/null)" != "%PDF" ]; then log "  ERROR: $2 was not a valid PDF (removed)"; rm -f "$out"; exit 1; fi
@@ -346,6 +349,17 @@ get_pdf "fm-90-3-desert-operations-1993"                     "FM 90-3 Desert Ope
 get_pdf "tm-10-412-armed-forces-recipe-service-2003"         "TM 10-412 Armed Forces Recipe Service.pdf" "$AFM"
 get_pdf "where-there-is-no-doctor"                           "Where There Is No Doctor.pdf" "$MPDF"
 get_pdf "where-there-is-no-dentist-web-full-book"            "Where There Is No Dentist.pdf" "$MPDF"
+# USDA Complete Guide to Home Canning (Agriculture Information Bulletin 539, revised 2015; US-government work).
+# The official electronic copy is 8 PDFs from the USDA-funded National Center for Home Food Preservation.
+CAN="$ROOT/Manuals/Food-Preservation/USDA-Complete-Guide-to-Home-Canning-2015"
+get_pdf_url "https://nchfp.uga.edu/papers/guide/INTRO_HomeCanrev0715.pdf" "0 Introduction.pdf" "$CAN"
+get_pdf_url "https://nchfp.uga.edu/papers/guide/GUIDE01_HomeCan_rev0715.pdf" "1 Principles of Home Canning.pdf" "$CAN"
+get_pdf_url "https://nchfp.uga.edu/papers/guide/GUIDE02_HomeCan_rev0715.pdf" "2 Fruit and Fruit Products.pdf" "$CAN"
+get_pdf_url "https://nchfp.uga.edu/papers/guide/GUIDE03_HomeCan_rev0715.pdf" "3 Tomatoes and Tomato Products.pdf" "$CAN"
+get_pdf_url "https://nchfp.uga.edu/papers/guide/GUIDE04_HomeCan_rev0715.pdf" "4 Vegetables and Vegetable Products.pdf" "$CAN"
+get_pdf_url "https://nchfp.uga.edu/papers/guide/GUIDE05_HomeCan_rev0715.pdf" "5 Poultry, Red Meats, and Seafoods.pdf" "$CAN"
+get_pdf_url "https://nchfp.uga.edu/papers/guide/GUIDE06_HomeCan_rev0715.pdf" "6 Fermented Foods and Pickled Vegetables.pdf" "$CAN"
+get_pdf_url "https://nchfp.uga.edu/papers/guide/GUIDE07_HomeCan_rev0715.pdf" "7 Jams and Jellies.pdf" "$CAN"
 
 # ================================================================ 7. Wikipedia + Maps
 if [ "$SKIP_WIKI" = 0 ]; then
