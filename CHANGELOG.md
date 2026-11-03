@@ -12,6 +12,15 @@ Contributor-driven reliability and portability work, from people running the kit
 hardware.
 
 ### Added
+- **Drive integrity: `CHECKSUMS-SHA256.txt` + CHECK-DRIVE.** At the end of every run both
+  installers now write one SHA-256 per file to `CHECKSUMS-SHA256.txt` at the drive root —
+  same format on every OS (`<sha256>  ./path`, byte-sorted, LF), so a drive built on Windows
+  verifies on a Mac and back. Alongside it they place **CHECK-DRIVE** (double-click
+  `CHECK-DRIVE.bat` on Windows / `CHECK-DRIVE.command` on macOS, `bash CHECK-DRIVE.sh` on
+  Linux), which re-reads every file and prints only the damaged or missing ones, ending in
+  `RESULT: ALL <n> FILES OK.` or a problem list. An unreadable file aborts the install
+  (exit 1). README gained a "Keep it safe: two copies + CHECK-DRIVE" section and START-HERE
+  links it. Resolves #28. _[@boostedchaos](https://github.com/boostedchaos) (Kyle Welch) — PR #36._
 - **Live download progress.** Each file now shows a running transfer meter —
   percent with `curl`, and size/speed/ETA with `aria2` — so a long multi-GB run is
   no longer silent between "start" and "done". The meter appears only in an
