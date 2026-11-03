@@ -33,6 +33,7 @@ works with **no internet**.
 | **Education** *(opt-in)* | Khan Academy archive (one file, all videos) **or** Kolibri app (pick subjects/low-res) | KA ZIM ~168 GB; Kolibri = your choice | Kiwix / Kolibri app |
 | **Army manuals** | Public-domain US Army field/technical manuals (survival, first aid, hand tools, carpentry, auto mechanics, rigging, field cooking) | ~0.2 GB | Any browser (PDF) |
 | **Medical books** | *Where There Is No Doctor / No Dentist* (Hesperian) | ~60 MB | Any browser (PDF) |
+| **Delayed-care guide** | *A Practical Guide to Prolonged Casualty Care* (USUHS + Henry M. Jackson Foundation, 2025; CC BY-NC-SA 4.0) — advanced care when help is hours or days away; not a substitute for a clinician | ~15 MB | Any browser (PDF) |
 | **Home canning** | *USDA Complete Guide to Home Canning* (2015 revision; US-government work) — safe canning of fruit, tomatoes, vegetables, meat, pickles, jams | ~14 MB | Any browser (PDF) |
 | **Radio guide** | How ham/CB/shortwave/GMRS radio works + emergency comms | tiny | Any browser |
 | **Kiwix reader** | Portable app to read all `.zim` archives (no install) | ~0.15 GB | — |
@@ -40,7 +41,7 @@ works with **no internet**.
 | **Total** | | **≈ 85 GB** | |
 
 Everything is **free and legally redistributable** — open-weight AI models, openly-licensed
-Kiwix archives, and public-domain US-government manuals. **No piracy.**
+Kiwix archives and guides, and public-domain US-government manuals. **No piracy.**
 
 ---
 

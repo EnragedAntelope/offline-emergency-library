@@ -12,6 +12,12 @@ Contributor-driven reliability and portability work, from people running the kit
 hardware.
 
 ### Added
+- **Prolonged-care medical guide.** Both installers now download *A Practical Guide to
+  Prolonged Casualty Care* (Uniformed Services University + Henry M. Jackson Foundation, 2025;
+  CC BY-NC-SA 4.0, not public domain) from `usuhs.edu` into `Medical/Manuals-PDF/` (~15 MB),
+  checked to start with `%PDF`. `Medical/READ-ME-FIRST` names the license and marks it as an
+  advanced reference, not a substitute for a clinician. Resolves #23.
+  _[@boostedchaos](https://github.com/boostedchaos) — PR #45._
 - **Post-install self-check: no bare DONE on a broken kit.** After writing
   `CHECKSUMS-SHA256.txt`, both installers now run read-only checks of what was built and
   only print DONE if they pass — otherwise they end with `FINISHED WITH PROBLEMS`, name the

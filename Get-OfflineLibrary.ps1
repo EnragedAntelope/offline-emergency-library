@@ -305,6 +305,8 @@ $pdfs = @(
  @{id='tm-10-412-armed-forces-recipe-service-2003';          n='TM 10-412 Armed Forces Recipe Service.pdf';       d='Manuals\ArmyFieldManuals'}
  @{id='where-there-is-no-doctor';                            n='Where There Is No Doctor.pdf';                    d='Medical\Manuals-PDF'}
  @{id='where-there-is-no-dentist-web-full-book';             n='Where There Is No Dentist.pdf';                   d='Medical\Manuals-PDF'}
+ # Advanced care when help is delayed: USUHS + Henry M. Jackson Foundation, 2025, CC BY-NC-SA 4.0 (not public domain)
+ @{u='https://www.usuhs.edu/sites/default/files/2025-09/Layperson%27s_Guide_to_Prolonged_Casualty_Care_090825_ACC.pdf'; n='A Practical Guide to Prolonged Casualty Care (USUHS-HJF 2025).pdf'; d='Medical\Manuals-PDF'}
  # USDA Complete Guide to Home Canning (AIB 539, revised 2015; US-government work): 8 official PDFs from the USDA-funded NCHFP
  @{u='https://nchfp.uga.edu/papers/guide/INTRO_HomeCanrev0715.pdf'; n='0 Introduction.pdf'; d='Manuals\Food-Preservation\USDA-Complete-Guide-to-Home-Canning-2015'}
  @{u='https://nchfp.uga.edu/papers/guide/GUIDE01_HomeCan_rev0715.pdf'; n='1 Principles of Home Canning.pdf'; d='Manuals\Food-Preservation\USDA-Complete-Guide-to-Home-Canning-2015'}
