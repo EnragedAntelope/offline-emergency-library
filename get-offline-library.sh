@@ -667,7 +667,94 @@ fi
 rm -f "$ROOT/CHECKSUMS-SHA256.txt.err"; mv -f "$ROOT/CHECKSUMS-SHA256.txt.new" "$ROOT/CHECKSUMS-SHA256.txt"
 log "CHECKSUMS-SHA256.txt: $(grep -c . "$ROOT/CHECKSUMS-SHA256.txt") files. Run CHECK-DRIVE every few months."
 
-log "=== DONE. Open README.html (full index) or START-HERE.html ==="
-echo ""
-echo "  Finished. Your offline library is in: $ROOT"
-echo "  Open README.html for a full index, or START-HERE.html to begin."
+# ================================================================ self-check (#30)
+# Read-only checks of what was built, so a broken kit never ends with a bare DONE.
+# Writes nothing to the drive (CHECKSUMS-SHA256.txt above stays correct).
+log "=== Self-check ==="
+SC_FAIL=0
+sc_pass(){ log "  PASS  $*"; }
+sc_warn(){ log "  WARN  $*"; }
+sc_fail(){ log "  FAIL  $*"; SC_FAIL=$((SC_FAIL+1)); }
+E="$ROOT/AI-Offline/engine"
+# 1. Every engine folder has its program (a failed unpack leaves a folder empty).
+if [ -f "$E/BUILD.txt" ]; then
+  miss=""
+  for x in $LLAMA_ASSETS; do
+    d="${x##*:}"; case "$d" in x64|arm64|vulkan-x64) t=llama-cli.exe;; *) t=llama-cli;; esac
+    [ -n "$(find "$E/$d" -name "$t" -type f 2>/dev/null | head -n1)" ] || miss="$miss $d"
+  done
+  if [ -z "$miss" ]; then sc_pass "AI engine $(cat "$E/BUILD.txt") is on the drive for all 8 platforms"
+  else sc_fail "AI engine program missing in engine/:$miss (re-run the installer)"; fi
+else
+  sc_fail "AI engine was not downloaded (see the [1/8] lines above)"
+fi
+# 2. The engine starts on this computer: same folder and library path as the launchers.
+case "$(uname -s)-$(uname -m)" in
+  Darwin-arm64) P=macos-arm64 ;;
+  Darwin-*) P=macos-x64 ;;
+  Linux-aarch64|Linux-arm64) P=linux-arm64 ;;
+  *) P=linux-x64 ;;
+esac
+BIN="$(find "$E/$P" -name llama-cli -type f 2>/dev/null | head -n1)"
+if [ -n "$BIN" ]; then
+  chmod +x "$BIN" 2>/dev/null
+  LIBDIR="$(dirname "$BIN")"
+  out="$(LD_LIBRARY_PATH="$LIBDIR:${LD_LIBRARY_PATH:-}" DYLD_LIBRARY_PATH="$LIBDIR:${DYLD_LIBRARY_PATH:-}" "$BIN" --version 2>&1)"; rc=$?
+  if [ "$rc" = 0 ]; then
+    sc_pass "AI engine starts on this computer ($P): $(printf '%s\n' "$out" | grep -m1 '^version' | cut -c1-80)"
+  else
+    why="$(printf '%s\n' "$out" | grep -m1 -iE 'error|not found|not loaded|denied' | cut -c1-200)"
+    sc_fail "AI engine does not start on this computer ($P): ${why:-exit code $rc}"
+    case "$out" in
+      *libgomp.so*) log "        Fix: install the GNU OpenMP library (Debian/Ubuntu: sudo apt install libgomp1). The drive itself is fine." ;;
+      *"shared libraries"*) log "        Fix: install the library named above with this computer's package manager. The drive itself is fine." ;;
+      *"Library not loaded"*) log "        A file of the engine is missing on the drive. Re-run the installer to unpack the engine again." ;;
+      *GLIBC*) log "        This Linux is too old for this AI build (it needs a newer glibc/libstdc++; on ARM: Debian 13 or Ubuntu 24.04 or newer). The drive still works on newer computers." ;;
+      *"ermission denied"*) log "        The drive may be mounted 'noexec'. Remount it with exec, or copy AI-Offline to this computer's own disk." ;;
+    esac
+  fi
+elif [ -f "$E/BUILD.txt" ]; then
+  log "  (engine start test skipped: no engine/$P program, see the FAIL above)"
+fi
+# 3. Every ZIM has the ZIM magic number and its full size. The header says where the
+#    file's closing 16-byte MD5 starts, so a cut-off download is caught. (A file of the
+#    right size with damaged insides is not: that needs a full read.)
+zt=0; zbad=""
+while IFS= read -r f; do
+  [ -n "$f" ] || continue; zt=$((zt+1))
+  m="$(head -c 4 "$f" | od -An -tx1 | tr -d ' \n')"
+  cs="$(od -An -t u8 -j 72 -N 8 "$f" 2>/dev/null | tr -d ' \n')"
+  sz="$(wc -c < "$f" | tr -d ' ')"
+  if [ "$m" != 5a494d04 ] || [ -z "$cs" ] || [ "$sz" != "$((cs + 16))" ]; then zbad="$zbad
+        $(relp "$f")"; fi
+done <<ZEOF
+$(find "$ROOT" -type f -name '*.zim' | LC_ALL=C sort)
+ZEOF
+if [ "$zt" = 0 ]; then sc_warn "no Kiwix archives (.zim) found"
+elif [ -z "$zbad" ]; then sc_pass "$zt Kiwix archives (.zim): header and size OK"
+else sc_fail "Kiwix archive(s) not a ZIM or not complete - delete each one and re-run the installer:$zbad"; fi
+# 4. Every PDF starts with %PDF.
+pt=0; pbad=""
+while IFS= read -r f; do
+  [ -n "$f" ] || continue; pt=$((pt+1))
+  [ "$(head -c 4 "$f" 2>/dev/null)" = "%PDF" ] || pbad="$pbad
+        $(relp "$f")"
+done <<PEOF
+$(find "$ROOT" -type f -name '*.pdf' | LC_ALL=C sort)
+PEOF
+if [ "$pt" = 0 ]; then sc_warn "no PDF manuals found"
+elif [ -z "$pbad" ]; then sc_pass "$pt PDF files: all start with %PDF"
+else sc_fail "file(s) named .pdf that are not PDFs - delete each one and re-run the installer:$pbad"; fi
+
+if [ "$SC_FAIL" = 0 ]; then
+  log "=== DONE. Open README.html (full index) or START-HERE.html ==="
+  echo ""
+  echo "  Finished. Your offline library is in: $ROOT"
+  echo "  Open README.html for a full index, or START-HERE.html to begin."
+else
+  log "=== FINISHED WITH PROBLEMS: $SC_FAIL self-check(s) failed - see the FAIL lines above ==="
+  echo ""
+  echo "  Your offline library is in: $ROOT"
+  echo "  Fix the FAIL line(s) above before you rely on it."
+  exit 1
+fi
