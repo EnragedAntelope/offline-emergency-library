@@ -12,6 +12,11 @@ Contributor-driven reliability and portability work, from people running the kit
 hardware.
 
 ### Added
+- **Live download progress.** Each file now shows a running transfer meter —
+  percent with `curl`, and size/speed/ETA with `aria2` — so a long multi-GB run is
+  no longer silent between "start" and "done". The meter appears only in an
+  interactive terminal; with no TTY (cron/CI/piped, or redirected output on Windows)
+  downloads stay quiet so logs aren't filled with progress bars.
 - **Off-grid power and device guide.** A new `POWER-AND-DEVICES` guide (Markdown +
   offline HTML) covering watt-hour budgeting, a worked daily reading budget, solar
   sizing, power banks, vehicle and hand-crank charging, and picking the lowest-power

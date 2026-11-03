@@ -123,14 +123,19 @@ log(){ printf '%s  %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" | tee -a "$LOG"; }
 # speed-up, otherwise fall back to curl. Both resume. Honor --no-aria.
 USE_ARIA=0
 if [ "${NO_ARIA:-0}" != "1" ] && command -v aria2c >/dev/null 2>&1; then USE_ARIA=1; fi
+# Show a live progress meter (percent/size/speed/ETA) only when stdout is a real
+# terminal; stay quiet with no TTY (cron/CI/piped) so logs don't fill with bars.
+DL_TTY=0; [ -t 1 ] && DL_TTY=1
 fetch(){ # url out
   if [ "$USE_ARIA" = 1 ]; then
+    if [ "$DL_TTY" = 1 ]; then aria_prog="--summary-interval=1"; else aria_prog="--summary-interval=0"; fi
     aria2c -c -x16 -s16 -k1M --max-tries=10 --retry-wait=5 --console-log-level=warn \
-      --summary-interval=0 --allow-overwrite=false --auto-file-renaming=false \
+      $aria_prog --allow-overwrite=false --auto-file-renaming=false \
       -d "$(dirname "$2")" -o "$(basename "$2")" "$1" && return 0
     echo "  (aria2 failed, falling back to curl)"
   fi
-  curl -fL -C - --retry 10 --retry-delay 5 --retry-all-errors -sS -o "$2" "$1" || {
+  if [ "$DL_TTY" = 1 ]; then curl_prog="-#"; else curl_prog="-sS"; fi
+  curl -fL -C - --retry 10 --retry-delay 5 --retry-all-errors $curl_prog -o "$2" "$1" || {
     log "ERROR: download failed: $1 -> $2. Re-run the installer to resume."
     exit 1
   }

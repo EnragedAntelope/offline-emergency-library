@@ -85,13 +85,18 @@ $Log = Join-Path $Root '_download.log'
 function Log($m){ $s = "{0}  {1}" -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $m; Add-Content $Log $s; Write-Host $s }
 # Use aria2 (multi-connection, resumable) when present for a big speed-up; curl fallback.
 $UseAria = (-not $NoAria) -and [bool](Get-Command aria2c -ErrorAction SilentlyContinue)
+# Show a live progress meter (percent/size/speed/ETA) only when attached to a real
+# console; stay quiet when output is redirected (CI/logging) so it doesn't fill with bars.
+$DlTty = -not [Console]::IsOutputRedirected
 function Fetch($url,$out){
   if($UseAria){
-    aria2c -c -x16 -s16 -k1M --max-tries=10 --retry-wait=5 --console-log-level=warn --summary-interval=0 --allow-overwrite=false --auto-file-renaming=false -d (Split-Path $out -Parent) -o (Split-Path $out -Leaf) $url
+    $ariaProg = if($DlTty){ '--summary-interval=1' } else { '--summary-interval=0' }
+    aria2c -c -x16 -s16 -k1M --max-tries=10 --retry-wait=5 --console-log-level=warn $ariaProg --allow-overwrite=false --auto-file-renaming=false -d (Split-Path $out -Parent) -o (Split-Path $out -Leaf) $url
     if($LASTEXITCODE -eq 0){ return }
     Log '  (aria2 failed, falling back to curl)'
   }
-  curl.exe -fL -C - --retry 10 --retry-delay 5 --retry-all-errors -sS -o $out $url
+  $curlProg = if($DlTty){ '-#' } else { '-sS' }
+  curl.exe -fL -C - --retry 10 --retry-delay 5 --retry-all-errors $curlProg -o $out $url
   if($LASTEXITCODE -ne 0 -or -not (Test-Path $out -PathType Leaf) -or (Get-Item $out).Length -eq 0){
     Log "ERROR: download failed: $url -> $out. Re-run the installer to resume."
     exit 1
