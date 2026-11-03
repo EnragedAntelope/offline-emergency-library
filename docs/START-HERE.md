@@ -38,6 +38,7 @@ This drive is a self-contained **offline survival library + AI**. Everything wor
 | `Wikipedia\` | Full Wikipedia (all articles, no images) | Kiwix | — |
 | `Education\` | Courses + videos (opt-in): Khan Academy archive (Kiwix) **or** Kolibri app (pick subjects) | Kiwix / Kolibri | `Education\READ-ME-FIRST.html`, `Education\HOW-TO-KOLIBRI.html` |
 | `OsmAnd\` | Offline maps (your chosen region; default US) — view on **PC (no phone)** or phone | PC: `MapViewer-Desktop\VIEW-MAPS-ON-PC.bat`; phone: bundled APK | `OsmAnd\HOW-TO-VIEW-MAPS.html` |
+| `OsmAnd\MAP-AND-COMPASS.html` | Paper-map, compass and natural navigation | Print the guide and carry a paper topo map and compass | `OsmAnd\MAP-AND-COMPASS.html` |
 | `Kiwix-Reader\` | The reader for all `.zim` archives | Portable app | `Kiwix-Reader\HOW-TO-USE-KIWIX.html` |
 | `Maps-Browser\` | Street maps in a web browser (opt-in, US) | `OPEN-MAPS.bat` / `OPEN-MAPS.sh` | `OsmAnd\HOW-TO-VIEW-MAPS.html` |
 | `Phone-Apps\` | Android apps (Kiwix + OsmAnd) to port the library to a phone, offline | Sideload the APKs | `Phone-Apps\USE-ON-PHONE.html` |
@@ -46,6 +47,8 @@ This drive is a self-contained **offline survival library + AI**. Everything wor
 
 ## Quick start by need
 
+- **Navigate without a device:** open `OsmAnd\MAP-AND-COMPASS.html` and print it
+  while preparing the kit. Keep a paper topographic map and compass.
 - **Keep a device charged off-grid:** read [Power and devices](POWER-AND-DEVICES.html)
   for battery sizing, solar/car charging and low-power reading setups.
 - **I want to chat with an AI offline:** `AI-Offline\` → double-click `CHAT-3B-light.bat`

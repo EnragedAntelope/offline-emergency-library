@@ -149,4 +149,6 @@ This is an Apple platform limitation — there's no offline sideloading like And
   and search; routing works in the phone app.
 - The desktop viewer (OsmAndMapCreator) is utilitarian but fully functional for finding
   places, roads, and coordinates offline.
-- Keep a **paper map** as an ultimate backup — electronics fail.
+- Keep a **paper topographic map and compass** as an ultimate backup - electronics fail.
+  Print [Map and compass - navigation without a device](MAP-AND-COMPASS.html)
+  and practice reading terrain, following bearings and finding direction without power.
