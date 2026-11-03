@@ -91,8 +91,15 @@ $DlTty = -not [Console]::IsOutputRedirected
 function Fetch($url,$out){
   if($UseAria){
     $ariaProg = if($DlTty){ '--summary-interval=1' } else { '--summary-interval=0' }
-    aria2c -c -x16 -s16 -k1M --max-tries=10 --retry-wait=5 --console-log-level=warn $ariaProg --allow-overwrite=false --auto-file-renaming=false -d (Split-Path $out -Parent) -o (Split-Path $out -Leaf) $url
+    aria2c -c -x16 -s16 -k1M --max-tries=10 --retry-wait=5 --console-log-level=warn $ariaProg --follow-metalink=mem --allow-overwrite=false --auto-file-renaming=false -d (Split-Path $out -Parent) -o (Split-Path $out -Leaf) $url
     if($LASTEXITCODE -eq 0){ return }
+    # Stop, do not fall back to curl, on Ctrl+C (aria2 exit 7) or when aria2 left a
+    # part-done file: it is preallocated with gaps, so 'curl -C -' would keep a corrupt
+    # copy. aria2 resumes it from its .aria2 control file on the next run.
+    if($LASTEXITCODE -eq 7 -or (Test-Path "$out.aria2")){
+      Log "ERROR: download stopped: $url -> $out. Re-run the installer to resume."
+      exit 1
+    }
     Log '  (aria2 failed, falling back to curl)'
   }
   $curlProg = if($DlTty){ '-#' } else { '-sS' }

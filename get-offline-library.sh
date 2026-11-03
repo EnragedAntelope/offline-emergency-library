@@ -129,9 +129,20 @@ DL_TTY=0; [ -t 1 ] && DL_TTY=1
 fetch(){ # url out
   if [ "$USE_ARIA" = 1 ]; then
     if [ "$DL_TTY" = 1 ]; then aria_prog="--summary-interval=1"; else aria_prog="--summary-interval=0"; fi
+    # --follow-metalink=mem: download.kiwix.org answers aria2 with a Metalink; without
+    # this, aria2 saves that XML at the output path, and a re-run fails "file exists".
     aria2c -c -x16 -s16 -k1M --max-tries=10 --retry-wait=5 --console-log-level=warn \
-      $aria_prog --allow-overwrite=false --auto-file-renaming=false \
-      -d "$(dirname "$2")" -o "$(basename "$2")" "$1" && return 0
+      $aria_prog --follow-metalink=mem --allow-overwrite=false --auto-file-renaming=false \
+      -d "$(dirname "$2")" -o "$(basename "$2")" "$1"
+    arc=$?; [ "$arc" = 0 ] && return 0
+    # Stop, do not fall back to curl, when the user pressed Ctrl+C (aria2 exit 7) or aria2
+    # left a part-done file: it is preallocated to full size with gaps, so 'curl -C -'
+    # would see a "complete" file and keep a corrupt copy. aria2 resumes it from its
+    # .aria2 control file on the next run.
+    if [ "$arc" = 7 ] || [ -e "$2.aria2" ]; then
+      log "ERROR: download stopped: $1 -> $2. Re-run the installer to resume."
+      exit 1
+    fi
     echo "  (aria2 failed, falling back to curl)"
   fi
   if [ "$DL_TTY" = 1 ]; then curl_prog="-#"; else curl_prog="-sS"; fi
