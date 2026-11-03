@@ -70,6 +70,14 @@ if($ListRegions){
 }
 
 # ---------------------------------------------------------------- destination
+if($Lite -and -not $SkipMaps){
+  Write-Host "LITE MAP SIZE: maps for '$Region' are still included. The default US maps alone are about 17 GB." -ForegroundColor Yellow
+  Write-Host '  Keep all US maps: use -Lite with no -Region (the default).'
+  Write-Host '  Smaller area: use -Lite -Region US_delaware (example); sizes vary by region.'
+  Write-Host '  No maps, viewer or OsmAnd app: use -Lite -SkipMaps.'
+  Write-Host '  List available US sub-regions: run with -ListRegions -Filter US (then exit).'
+  Write-Host '  To change this selection, cancel with Ctrl+C and re-run with the flags above.'
+}
 if (-not $Destination) {
   Write-Host ''
   Write-Host '  Offline Emergency Library installer' -ForegroundColor Cyan
