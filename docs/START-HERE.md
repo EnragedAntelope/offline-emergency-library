@@ -3,15 +3,22 @@
 This drive is a self-contained **offline survival library + AI**. Everything works with
 **no internet**. This page explains what's here and how to open each part.
 
+> **How this kit is meant to be used:** the books, manuals and maps are the authority -
+> they were written, reviewed and field-tested by people. The offline AI is a fast
+> **assistant**: it helps you *find and digest* the library - search it, summarize it,
+> cross-reference it. For anything safety-critical (medical doses, water treatment,
+> first-aid steps), read the manual itself and follow it.
+
 > **Windows vs macOS/Linux:** launchers are `.bat` files on Windows and `.sh` files on
 > macOS/Linux (run them from a terminal). The content, PDFs, HTML guides, and phone apps
 > are identical on every platform.
 
-> **Two things to read things on this drive:**
+> **Three ways to read and use things on this drive:**
 > - **PDFs and these guides (.html)** open in **Edge or any web browser** — no software.
 > - **`.zim` archives** open in **Kiwix** (portable, no install) — see
 >   `E:\Kiwix-Reader\`.
-> - **AI that answers from your PDFs** = **GPT4All** — see `E:\AI-Offline\`.
+> - **Ask questions of the bundled docs** = **GPT4All LocalDocs** — see
+>   `E:\AI-Offline\DocReader-GPT4All\`.
 
 ---
 
@@ -19,8 +26,8 @@ This drive is a self-contained **offline survival library + AI**. Everything wor
 
 | Folder | What it is | How to open | Guide |
 |---|---|---|---|
-| `AI-Offline\` | Offline AI chat (3 models, CPU + GPU) | Double-click a `CHAT-*.bat` | `AI-Offline\HOW-TO-RUN-OFFLINE-AI.html` |
-| `AI-Offline\DocReader-GPT4All\` | AI that reads your PDFs & answers questions | Install once, then offline | `...\HOW-TO-ASK-YOUR-DOCS.html` |
+| `AI-Offline\` | Offline AI chat - your helper for brainstorming, checklists and summaries (3 models, CPU + GPU) | Double-click a `CHAT-*.bat` | `AI-Offline\HOW-TO-RUN-OFFLINE-AI.html` |
+| `AI-Offline\DocReader-GPT4All\` | Ask the **bundled manuals** questions (AI quotes the passage it used) - recommended for medical & survival | Install once, then offline | `...\HOW-TO-ASK-YOUR-DOCS.html` |
 | `Manuals\` | Survival & repair manuals (Army FMs, iFixit, Appropedia, survival/water/food) | PDF→browser, ZIM→Kiwix | `Manuals\READ-ME-FIRST.html` |
 | `Manuals\Radio-Communications\` | How ham/CB/shortwave radio works + emergency comms | Browser | `RADIO-GUIDE.html` |
 | `Medical\` | Offline medical Wikipedia + first-aid books | ZIM→Kiwix, PDF→browser | `Medical\READ-ME-FIRST.html` |
@@ -36,9 +43,12 @@ This drive is a self-contained **offline survival library + AI**. Everything wor
 
 - **Keep a device charged off-grid:** read [Power and devices](POWER-AND-DEVICES.html)
   for battery sizing, solar/car charging and low-power reading setups.
-- **I want to chat with an AI offline:** `AI-Offline\` → double-click `CHAT-3B-light.bat`.
-- **I want the AI to answer from my manuals:** set up `DocReader-GPT4All` (see its guide),
-  point it at `Manuals\ArmyFieldManuals` and `Medical\Manuals-PDF`, ask away.
+- **I want to chat with an AI offline:** `AI-Offline\` → double-click `CHAT-3B-light.bat`
+  (great for brainstorming and summaries; for anything safety-critical, follow the manuals).
+- **I want the AI to answer from my manuals - recommended for medical & survival questions:**
+  set up `DocReader-GPT4All` (see its guide); its **LocalDocs** feature answers from the
+  bundled docs and *quotes the exact passage*, so you can verify it. Point it at
+  `Manuals\ArmyFieldManuals` and `Medical\Manuals-PDF`, ask away.
 - **I need to fix something (car/appliance/plumbing/electrical):** open Kiwix →
   `Manuals\Repair-iFixit` and `Manuals\DIY-Appropedia`.
 - **Medical / first aid:** open Kiwix → `Medical\WikiMed`; or read the PDFs in
@@ -72,7 +82,8 @@ set up **now, while you still have internet**, so the kit is fully usable offlin
 
 ## ⚠️ Reminders
 
-- Offline AIs and old manuals **can be wrong**. Verify anything safety-critical.
+- Offline AIs and old manuals **can be wrong**. Use the AI to find and summarize; for
+  anything safety-critical, read the manual itself and follow it.
 - Keep the drive **backed up** (a second copy on another drive/USB is wise), and run
   **CHECK-DRIVE** (`CHECK-DRIVE.bat` on Windows, `CHECK-DRIVE.command` on macOS) every few
   months to find damaged files.
