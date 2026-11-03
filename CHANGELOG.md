@@ -12,6 +12,14 @@ Contributor-driven reliability and portability work, from people running the kit
 hardware.
 
 ### Added
+- **Off-grid power and device guide.** A new `POWER-AND-DEVICES` guide (Markdown +
+  offline HTML) covering watt-hour budgeting, a worked daily reading budget, solar
+  sizing, power banks, vehicle and hand-crank charging, and picking the lowest-power
+  device for the job — with carbon-monoxide and battery-safety warnings, and every
+  figure labelled as an illustrative assumption to re-measure on real hardware. Also
+  documents reading ZIMs on a Raspberry Pi / Linux ARM via `kiwix-serve` in the
+  browser. Linked from START-HERE and the README. Resolves #17.
+  _[@EnragedAntelope](https://github.com/EnragedAntelope) — PR #33._
 - **`-Lite` / `--lite` quick-start preset.** Gets you running fast with the 3B model, AI
   engines, medical/survival archives, PDF manuals, readers, phone apps and regional maps,
   skipping full Wikipedia, the 8B/7B models, GPT4All, iFixit and Appropedia. Not a fixed
