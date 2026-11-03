@@ -96,6 +96,15 @@ if [ "$LISTREGIONS" = 1 ]; then
   rm -f "$idx" 2>/dev/null; exit 0
 fi
 
+if [ "$LITE" = 1 ] && [ "$SKIP_MAPS" = 0 ]; then
+  echo "LITE MAP SIZE: maps for '$REGION' are still included. The default US maps alone are about 17 GB."
+  echo "  Keep all US maps: use --lite with no --region (the default)."
+  echo "  Smaller area: use --lite --region US_delaware (example); sizes vary by region."
+  echo "  No maps, viewer or OsmAnd app: use --lite --skip-maps."
+  echo "  List available US sub-regions: run with --list-regions US (then exit)."
+  echo "  To change this selection, cancel with Ctrl+C and re-run with the flags above."
+fi
+
 if [ -z "$DEST" ]; then
   # When run as `curl ... | bash`, stdin is the script itself — read the answer from the
   # terminal instead, or tell the user to pass -d if there's no terminal.

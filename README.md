@@ -155,6 +155,10 @@ and it continues where it left off.
 
 ### Quick start with a smaller download
 
+**Lite still includes all US maps by default (about 17 GB of maps alone).**
+Before prompting for a destination or starting downloads, the installers show
+the selected map region and flags to choose a smaller area or skip maps.
+
 Use `-Lite` (PowerShell) or `--lite` (Bash) to get the **3B AI model**, AI engines,
 medical and survival archives, PDF manuals, Kiwix reader, phone apps and regional
 maps. It skips full Wikipedia, the 8B/7B models, GPT4All, iFixit and Appropedia.
