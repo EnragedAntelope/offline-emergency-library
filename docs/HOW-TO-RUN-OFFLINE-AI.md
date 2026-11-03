@@ -12,7 +12,7 @@ Once this folder is on your drive, you never need the internet again to use it.
 > **How to use the AI well:** think of it as a fast **assistant** over the kit - great for
 > brainstorming, checklists and summarizing. For medical or survival questions, the best
 > workflow in this kit is **GPT4All LocalDocs** (`AI-Offline\DocReader-GPT4All\`): it answers
-> from the kit's own manuals and *quotes the passage it used*, so you can verify it - see
+> from the kit's own manuals and *shows the sources it used*, so you can check them - see
 > HOW-TO-ASK-YOUR-DOCS.html. Plain chat is the tool for everything else.
 
 ---
@@ -227,9 +227,9 @@ to be installed. This is why it works in an emergency with no internet.
 - **Its knowledge is frozen** at the time the model was trained. It does not know
   about events after its training cutoff and cannot look things up online.
 - **It can be wrong or make things up** ("hallucinate"). For an emergency, treat it
-  as a knowledgeable helper, not an infallible authority — for anything safety-critical
+  as a knowledgeable helper, not an infallible authority - for anything safety-critical
   (medical, legal, survival), the manuals in this kit are the authority: read them and
-  follow them. To ask questions *with the sources quoted*, use GPT4All LocalDocs
+  follow them. To ask questions *with the sources shown*, use GPT4All LocalDocs
   (`AI-Offline\DocReader-GPT4All\`) - see HOW-TO-ASK-YOUR-DOCS.html.
 - These are open-weight models (Meta Llama, Alibaba Qwen) distributed for free. The
   quantized `.gguf` files were produced by the community (bartowski) from the official

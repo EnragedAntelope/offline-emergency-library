@@ -49,7 +49,7 @@ hardware.
   and what doesn't run on iOS. _[@boostedchaos](https://github.com/boostedchaos) — PR #12._
 
 ### Changed
-- **Manuals-first AI framing.** The guides now treat the bundled manuals as the authority and the AI as the assistant: START-HERE opens with how the kit is meant to be used, spells out the three ways to read and use things (fixing the GPT4All pointer to `AI-Offline\DocReader-GPT4All\`), and points safety-critical answers at the manual itself; HOW-TO-RUN-OFFLINE-AI gains a "How to use the AI well" note (GPT4All LocalDocs quotes the passage it used, so medical and survival answers can be verified against the book). Every generated AI launcher now also prints a one-line reminder — the AI is a helper, follow the manuals for anything safety-critical — before the engine starts. Resolves #20. _[@EnragedAntelope](https://github.com/EnragedAntelope) — PR #42._
+- **Manuals-first AI framing.** The guides now treat the bundled manuals as the authority and the AI as the assistant: START-HERE opens with how the kit is meant to be used, spells out the three ways to read and use things (fixing the GPT4All pointer to `AI-Offline\DocReader-GPT4All\`), and points safety-critical answers at the manual itself; HOW-TO-RUN-OFFLINE-AI gains a "How to use the AI well" note (GPT4All LocalDocs shows the sources it used, so medical and survival answers can be checked against the book). Every generated AI launcher now also prints a one-line reminder (the AI is a helper, follow the manuals for anything safety-critical) before the engine starts. Resolves #20. _[@EnragedAntelope](https://github.com/EnragedAntelope) - PR #42._
 
 ### Fixed
 - **Default `US` maps downloaded 0 files on macOS/Linux.** The Bash region loop fed `read`

@@ -3,8 +3,8 @@
 This drive is a self-contained **offline survival library + AI**. Everything works with
 **no internet**. This page explains what's here and how to open each part.
 
-> **How this kit is meant to be used:** the books, manuals and maps are the authority -
-> they were written, reviewed and field-tested by people. The offline AI is a fast
+> **How this kit is meant to be used:** the books, manuals and maps are the authority.
+> The offline AI is a fast
 > **assistant**: it helps you *find and digest* the library - search it, summarize it,
 > cross-reference it. For anything safety-critical (medical doses, water treatment,
 > first-aid steps), read the manual itself and follow it.
@@ -17,7 +17,7 @@ This drive is a self-contained **offline survival library + AI**. Everything wor
 > - **PDFs and these guides (.html)** open in **Edge or any web browser** — no software.
 > - **`.zim` archives** open in **Kiwix** (portable, no install) — see
 >   `E:\Kiwix-Reader\`.
-> - **Ask questions of the bundled docs** = **GPT4All LocalDocs** — see
+> - **Ask questions of the bundled docs** = **GPT4All LocalDocs** - see
 >   `E:\AI-Offline\DocReader-GPT4All\`.
 
 ---
@@ -27,7 +27,7 @@ This drive is a self-contained **offline survival library + AI**. Everything wor
 | Folder | What it is | How to open | Guide |
 |---|---|---|---|
 | `AI-Offline\` | Offline AI chat - your helper for brainstorming, checklists and summaries (3 models, CPU + GPU) | Double-click a `CHAT-*.bat` | `AI-Offline\HOW-TO-RUN-OFFLINE-AI.html` |
-| `AI-Offline\DocReader-GPT4All\` | Ask the **bundled manuals** questions (AI quotes the passage it used) - recommended for medical & survival | Install once, then offline | `...\HOW-TO-ASK-YOUR-DOCS.html` |
+| `AI-Offline\DocReader-GPT4All\` | Ask the **bundled manuals** questions (shows the sources it used) - recommended for medical & survival | Install once, then offline | `...\HOW-TO-ASK-YOUR-DOCS.html` |
 | `Manuals\` | Survival & repair manuals (Army FMs, iFixit, Appropedia, survival/water/food) | PDF→browser, ZIM→Kiwix | `Manuals\READ-ME-FIRST.html` |
 | `Manuals\Radio-Communications\` | How ham/CB/shortwave radio works + emergency comms | Browser | `RADIO-GUIDE.html` |
 | `Medical\` | Offline medical Wikipedia + first-aid books | ZIM→Kiwix, PDF→browser | `Medical\READ-ME-FIRST.html` |
@@ -47,7 +47,7 @@ This drive is a self-contained **offline survival library + AI**. Everything wor
   (great for brainstorming and summaries; for anything safety-critical, follow the manuals).
 - **I want the AI to answer from my manuals - recommended for medical & survival questions:**
   set up `DocReader-GPT4All` (see its guide); its **LocalDocs** feature answers from the
-  bundled docs and *quotes the exact passage*, so you can verify it. Point it at
+  bundled docs and *shows the sources it used*, so you can check them. Point it at
   `Manuals\ArmyFieldManuals` and `Medical\Manuals-PDF`, ask away.
 - **I need to fix something (car/appliance/plumbing/electrical):** open Kiwix →
   `Manuals\Repair-iFixit` and `Manuals\DIY-Appropedia`.
