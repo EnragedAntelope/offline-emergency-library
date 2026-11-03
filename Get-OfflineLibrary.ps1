@@ -186,6 +186,8 @@ try{
       if(Test-Path $dest){ Remove-Item $dest -Recurse -Force }   # fresh unpack: no files left from an older build
       try{ if($x -like '*.zip'){ Expand-Archive $out -DestinationPath $dest -Force } else { Expand-Tgz $out $dest } }
       catch{ Log "ERROR: could not unpack ${x} ($out): $($_.Exception.Message). Delete it and re-run."; exit 1 }
+      # A damaged zip can unpack to nothing with no error on PowerShell 5.1 (#35): check the program is there.
+      if(-not (Get-ChildItem -LiteralPath $dest -Recurse -File -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq 'llama-cli' -or $_.Name -eq 'llama-cli.exe' } | Select-Object -First 1)){ Log "ERROR: unpacked ${x} ($out), but llama-cli is not in it. Delete it and re-run."; exit 1 }
     }
     # Archives from other builds (and the old names without a tag) are no longer needed.
     Get-ChildItem -LiteralPath $e -File | Where-Object { ($_.Name -like '*.zip' -or $_.Name -like '*.tar.gz') -and -not $_.Name.StartsWith("$lt-") } | Remove-Item -Force

@@ -209,6 +209,9 @@ if [ "$HAVE_TAR" = 1 ]; then
         *.zip)    if [ "$HAVE_UNZIP" = 1 ]; then unzip -o -q "$a" -d "$d" || { log "ERROR: could not unpack $f ($a). Delete it and re-run."; exit 1; }; else log "  $f: install 'unzip' to unpack the Windows engine"; fi ;;
         *.tar.gz) untar_real "$a" "$d" || { log "ERROR: could not unpack $f ($a). Delete it and re-run."; exit 1; } ;;
       esac
+      # A damaged archive can unpack to nothing without an error (PowerShell 5.1 does, #35): check the program is there.
+      case "$f" in *.zip) [ "$HAVE_UNZIP" = 1 ] || continue ;; esac
+      [ -n "$(find "$d" -type f \( -name llama-cli -o -name llama-cli.exe \) | head -n 1)" ] || { log "ERROR: unpacked $f ($a), but llama-cli is not in it. Delete it and re-run."; exit 1; }
     done
     # Archives from other builds (and the old names without a tag) are no longer needed.
     for o in "$E"/*.zip "$E"/*.tar.gz; do
