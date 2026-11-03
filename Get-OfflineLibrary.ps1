@@ -435,6 +435,7 @@ WriteBat (Join-Path $ao 'CHAT-3B-light.bat') @"
 @echo off
 title Offline AI - Llama 3.2 3B (light)
 cd /d "%~dp0"
+echo The AI is a helper for finding and summarizing info - for anything safety-critical, follow the bundled manuals.
 "%~dp0engine\x64\llama-cli.exe" -m "%~dp0models\Llama-3.2-3B-Instruct-Q4_K_M.gguf" -c 4096
 pause
 "@
@@ -443,6 +444,7 @@ WriteBat (Join-Path $ao 'CHAT-8B-smart.bat') @"
 @echo off
 title Offline AI - Llama 3.1 8B (smart)
 cd /d "%~dp0"
+echo The AI is a helper for finding and summarizing info - for anything safety-critical, follow the bundled manuals.
 "%~dp0engine\x64\llama-cli.exe" -m "%~dp0models\Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf" -c 4096
 pause
 "@
@@ -452,6 +454,7 @@ title Offline AI - Qwen2.5 7B (GPU)
 cd /d "%~dp0"
 echo If this errors with out-of-memory, your GPU is too small - change -ngl 99 to a lower
 echo number (e.g. -ngl 20) or use a CPU launcher instead.
+echo The AI is a helper for finding and summarizing info - for anything safety-critical, follow the bundled manuals.
 "%~dp0engine\vulkan-x64\llama-cli.exe" -m "%~dp0models\Qwen2.5-7B-Instruct-Q4_K_M.gguf" -c 4096 -ngl 99
 pause
 "@
@@ -461,6 +464,7 @@ WriteBat (Join-Path $ao 'WEB-UI.bat') @"
 title Offline AI - Web UI
 cd /d "%~dp0"
 echo When it says "server listening", open a browser to http://127.0.0.1:8080
+echo The AI is a helper for finding and summarizing info - for anything safety-critical, follow the bundled manuals.
 "%~dp0engine\x64\llama-server.exe" -m "%~dp0models\Llama-3.2-3B-Instruct-Q4_K_M.gguf" -c 4096 --host 127.0.0.1 --port 8080
 pause
 "@
@@ -484,6 +488,7 @@ chmod +x "$BIN" 2>/dev/null
 LIBDIR="$(dirname "$BIN")"
 export LD_LIBRARY_PATH="$LIBDIR:${LD_LIBRARY_PATH:-}" DYLD_LIBRARY_PATH="$LIBDIR:${DYLD_LIBRARY_PATH:-}"
 echo "__NOTE__"
+echo "The AI is a helper for finding and summarizing info - for anything safety-critical, follow the bundled manuals."
 exec "$BIN" -m "$DIR/models/__MODEL__" __ARGS__
 '@
 function WriteSh($name,$tool,$model,$gpu,$argv,$note){
