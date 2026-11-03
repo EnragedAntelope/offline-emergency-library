@@ -273,6 +273,8 @@ Both pages link to each component's guide:
 - `Phone-Apps\USE-ON-PHONE.html` — port the library to a phone
 - `Manuals\READ-ME-FIRST.html` and `Medical\READ-ME-FIRST.html`
 - `Manuals\Radio-Communications\RADIO-GUIDE.html` — emergency radio comms
+- `Manuals\Radio-Communications\RADIO-FREQUENCIES.html` - printable US frequency tables,
+  regional cautions and primary sources (NOAA, FCC, USCG, FAA)
 - `Education\READ-ME-FIRST.html` — Khan Academy offline (opt-in)
 - `Education\HOW-TO-KOLIBRI.html` — Kolibri learning app, pick subjects/low-res (opt-in)
 

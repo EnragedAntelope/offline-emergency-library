@@ -6,12 +6,18 @@ internet and phones are down. It covers what each type of radio is, what it can 
 which frequencies/channels matter in an emergency, and the basic procedures for
 calling for help.
 
-> **Legal note (normal times):** Transmitting on **ham (amateur)** frequencies
-> requires a license (easy to get — see below). **GMRS** requires a cheap license
-> (no test). **CB, FRS, MURS** need **no license**. **Shortwave listening** needs no
-> license (you're only receiving). **In a genuine life-threatening emergency, FCC
-> rules (47 CFR §97.405) let anyone use any means of radio to call for help.**
-> Listening is always legal. Learn and practice *before* you need it.
+**Need actual channel numbers and frequencies?** Open the offline, printable
+[Radio Frequency Reference](RADIO-FREQUENCIES.html) ([Markdown](RADIO-FREQUENCIES.md)).
+It includes weather, personal radio, marine, aviation, beacons and amateur band plans.
+
+> **US legal note:** Amateur and GMRS transmitting normally requires the applicable
+> license. CB, FRS and MURS use license-by-rule with compliant equipment and service
+> limits. Receiving public broadcasts generally needs no transmit license, but
+> local scanner, interception and disclosure restrictions can apply.
+> [47 CFR 97.403](https://www.ecfr.gov/current/title-47/section-97.403) and
+> [97.405](https://www.ecfr.gov/current/title-47/section-97.405) concern **amateur
+> stations** in distress/emergencies; they are not blanket permission for anyone to
+> transmit on any frequency. Follow the rules of the service and country you are in.
 
 ---
 
@@ -105,9 +111,8 @@ study the exact pool):
 3. **Amateur Extra** — full privileges.
 
 > Get at least a **Technician** license now while it's easy, and ideally **General**
-> so you can use HF for long distance. In a true emergency you may legally transmit
-> without a license to save life/property — but you'll be far more effective if you've
-> practiced.
+> so you can use HF for long distance. Learn the emergency rules for your service
+> before you need them, and practice within your license privileges.
 
 ### The main ham bands and what they do
 - **2 meters (144–148 MHz, VHF)** and **70 cm (420–450 MHz, UHF):** local
