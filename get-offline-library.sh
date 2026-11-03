@@ -707,6 +707,7 @@ if [ -n "$BIN" ]; then
     sc_fail "AI engine does not start on this computer ($P): ${why:-exit code $rc}"
     case "$out" in
       *libgomp.so*) log "        Fix: install the GNU OpenMP library (Debian/Ubuntu: sudo apt install libgomp1). The drive itself is fine." ;;
+      *"shared libraries: libllama"*|*"shared libraries: libggml"*|*"shared libraries: libmtmd"*) log "        That library is part of the engine on the drive. Re-run the installer to unpack the engine again." ;;
       *"shared libraries"*) log "        Fix: install the library named above with this computer's package manager. The drive itself is fine." ;;
       *"Library not loaded"*) log "        A file of the engine is missing on the drive. Re-run the installer to unpack the engine again." ;;
       *GLIBC*) log "        This Linux is too old for this AI build (it needs a newer glibc/libstdc++; on ARM: Debian 13 or Ubuntu 24.04 or newer). The drive still works on newer computers." ;;

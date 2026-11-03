@@ -742,13 +742,13 @@ if(Test-Path $build){
 if($env:OS -eq 'Windows_NT'){
   $exe = Join-Path $e 'x64\llama-cli.exe'
   if(Test-Path $exe){
-    $out = (& $exe --version 2>&1 | Out-String); $rc = $LASTEXITCODE
+    $out = @(& $exe --version 2>&1 | ForEach-Object { "$_" }); $rc = $LASTEXITCODE
     if($rc -eq 0){
-      $v = ($out -split "`r?`n" | Where-Object { $_ -match '^version' } | Select-Object -First 1)
+      $v = ($out | Where-Object { $_ -match 'version:' } | Select-Object -First 1)
       ScPass "AI engine starts on this computer (x64): $v"
     } else {
       ScFail "AI engine does not start on this computer (x64): exit code $rc"
-      if($rc -eq -1073741515){ Log '        A DLL is missing (0xC0000135). Install the Microsoft Visual C++ Redistributable (x64), then run the AI again. The drive itself is fine.' }
+      if($rc -eq -1073741515){ Log '        A DLL is missing (0xC0000135). If a file is missing from engine\x64, re-run the installer. Otherwise install the Microsoft Visual C++ Redistributable (x64) and run the AI again.' }
     }
   } elseif(Test-Path $build) { Log '  (engine start test skipped: no engine\x64\llama-cli.exe, see the FAIL above)' }
 } else { ScWarn 'engine start test skipped: not Windows (run get-offline-library.sh to test a Mac/Linux engine)' }
