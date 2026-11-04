@@ -4,13 +4,13 @@ Ideas for where this is headed. Nothing here is promised — it's a place to coo
 Want one of these? Comment on (or open) the matching issue. PRs welcome.
 
 ## Near term
-- [ ] **`--lite` quick-start preset** — a ~2–3 GB "get running in minutes" build (3B AI +
-      medical + survival + regional maps, no 24 GB Wikipedia).
-- [ ] **Checksums on releases** — publish SHA-256 for the installers so people can verify
-      before running.
-- [ ] **Real-hardware testing** of the macOS and Linux installers (help wanted).
-- [ ] **Country-name aliases** — accept `UK`, `USA`, ISO-3 codes, etc. and map them to
-      OsmAnd region names.
+- [x] **`--lite` quick-start preset** — a ~2–3 GB "get running in minutes" build (3B AI +
+      medical + survival + regional maps, no 24 GB Wikipedia). _Done: `-Lite` / `--lite` (see CHANGELOG)._
+- [x] **Checksums on releases** — publish SHA-256 for the installers so people can verify
+      before running. _Done: `SHA256SUMS.txt` is attached to each release since v1.1._
+- [x] **Real-hardware testing** of the macOS and Linux installers (help wanted). _Done: macOS in #1, Linux x64 + Raspberry Pi arm64 in #2._
+- [x] **Country-name aliases** — accept `UK`, `USA`, ISO-3 codes, etc. and map them to
+      OsmAnd region names. _Done in v1.3._
 
 ## Phone experience
 - [ ] **"Phone docs" pack** — a small bundle of the RAG-friendly PDFs + guides, importable
