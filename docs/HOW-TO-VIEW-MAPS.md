@@ -25,6 +25,8 @@ maps cover the **US** only; for other countries, use the OsmAndMapCreator viewer
 - **US only.** These are the US state maps made by Project NOMAD (Protomaps). With `US` (the default) you get
   all 50 states (~16.5 GB). With `-Region US_texas` you get only Texas. Every drive also gets a low-detail
   world map (~0.2 GB). For other countries, use the OsmAnd maps below.
+- **Space:** browser maps come **on top of** the OsmAnd maps, which are always downloaded with them
+  (~17.8 GB for the US). A full US drive with `-BrowserMaps` needs about **34 GB for maps**.
 - They show streets, towns, parks and water. They cannot plan a route; use OsmAnd for directions.
 - Map data © OpenStreetMap contributors (ODbL); maps by [Project NOMAD](https://github.com/Crosstalk-Solutions/project-nomad-maps)
   (MIT) from [Protomaps](https://github.com/protomaps/basemaps); viewer [MapLibre GL JS](https://maplibre.org) (BSD-3);
