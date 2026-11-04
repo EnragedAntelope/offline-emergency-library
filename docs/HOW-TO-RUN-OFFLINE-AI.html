@@ -231,6 +231,15 @@ E:\AI-Offline\
 <li>The engine ships several <code>ggml-cpu-*.dll</code> files and automatically picks the</li>
 </ul>
 <p>  right one for your processor at startup. You don't need to choose.</p>
+<p><strong>Linux: <code>error while loading shared libraries: libgomp.so.1</code></strong></p>
+<ul>
+<li>The engine needs the GNU OpenMP library, which a minimal Linux may not have. Install it once, then run the launcher again: <code>sudo apt install libgomp1</code> (Debian/Ubuntu). On other systems, install the package that has <code>libgomp.so.1</code>.</li>
+<li>The installer's self-check at the end tells you about this. The drive itself is fine.</li>
+</ul>
+<p><strong>Linux: <code>version 'GLIBCXX_...' not found</code> or <code>version 'GLIBC_...' not found</code></strong></p>
+<ul>
+<li>This Linux is too old for this AI build. On a Raspberry Pi or other ARM board, the AI needs Debian 13 or Ubuntu 24.04 or newer. The drive still works on newer computers.</li>
+</ul>
 <hr>
 <h2>7. Important notes &amp; limitations</h2>
 <ul>

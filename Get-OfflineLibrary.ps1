@@ -729,7 +729,80 @@ $listNew = Join-Path $Root 'CHECKSUMS-SHA256.txt.new'
 Move-Item -LiteralPath $listNew (Join-Path $Root 'CHECKSUMS-SHA256.txt') -Force
 Log "CHECKSUMS-SHA256.txt: $($arr.Count) files. Run CHECK-DRIVE every few months."
 
-Log '=== DONE. Open README.html (full index) or START-HERE.html ==='
-Write-Host ''
-Write-Host "  Finished. Your offline library is in: $Root" -ForegroundColor Green
-Write-Host "  Open README.html for a full index, or START-HERE.html to begin." -ForegroundColor Green
+# ================================================================ self-check (#30)
+# Read-only checks of what was built, so a broken kit never ends with a bare DONE.
+# Writes nothing to the drive (CHECKSUMS-SHA256.txt above stays correct).
+Log '=== Self-check ==='
+$scFail = 0
+function ScPass($m){ Log "  PASS  $m" }
+function ScWarn($m){ Log "  WARN  $m" }
+function ScFail($m){ Log "  FAIL  $m"; $script:scFail++ }
+$e = Join-Path $Root 'AI-Offline\engine'
+$build = Join-Path $e 'BUILD.txt'
+# 1. Every engine folder has its program (a failed unpack leaves a folder empty).
+if(Test-Path $build){
+  $miss = @()
+  foreach($d in $LlamaAssets.Values){
+    $t = if($d -in 'x64','arm64','vulkan-x64'){ 'llama-cli.exe' } else { 'llama-cli' }
+    $dir = Join-Path $e $d
+    if(-not ((Test-Path $dir) -and (Get-ChildItem $dir -Recurse -File -Filter $t -ErrorAction SilentlyContinue | Select-Object -First 1))){ $miss += $d }
+  }
+  if(-not $miss){ ScPass "AI engine $((Get-Content $build -TotalCount 1).Trim()) is on the drive for all 8 platforms" }
+  else { ScFail "AI engine program missing in engine\: $($miss -join ' ') (re-run the installer)" }
+} else { ScFail 'AI engine was not downloaded (see the [1/8] lines above)' }
+# 2. The engine starts on this computer: the x64 program the .bat launchers use.
+if($env:OS -eq 'Windows_NT'){
+  $exe = Join-Path $e 'x64\llama-cli.exe'
+  if(Test-Path $exe){
+    $out = @(& $exe --version 2>&1 | ForEach-Object { "$_" }); $rc = $LASTEXITCODE
+    if($rc -eq 0){
+      $v = ($out | Where-Object { $_ -match 'version:' } | Select-Object -First 1)
+      ScPass "AI engine starts on this computer (x64): $v"
+    } else {
+      ScFail "AI engine does not start on this computer (x64): exit code $rc"
+      if($rc -eq -1073741515){ Log '        A DLL is missing (0xC0000135). If a file is missing from engine\x64, re-run the installer. Otherwise install the Microsoft Visual C++ Redistributable (x64) and run the AI again.' }
+    }
+  } elseif(Test-Path $build) { Log '  (engine start test skipped: no engine\x64\llama-cli.exe, see the FAIL above)' }
+} else { ScWarn 'engine start test skipped: not Windows (run get-offline-library.sh to test a Mac/Linux engine)' }
+# 3. Every ZIM has the ZIM magic number and its full size. The header says where the
+#    file's closing 16-byte MD5 starts, so a cut-off download is caught. (A file of the
+#    right size with damaged insides is not: that needs a full read.)
+$zims = @(Get-ChildItem $Root -Recurse -File -Filter *.zim -ErrorAction SilentlyContinue)
+$zbad = @()
+foreach($z in $zims){
+  $ok = $false
+  try{
+    $fs = [System.IO.File]::OpenRead($z.FullName)
+    try{ $b = New-Object byte[] 80; $n = $fs.Read($b,0,80); $len = $fs.Length } finally { $fs.Close() }
+    $ok = ($n -eq 80) -and $b[0] -eq 0x5A -and $b[1] -eq 0x49 -and $b[2] -eq 0x4D -and $b[3] -eq 4 -and
+          (([decimal][System.BitConverter]::ToUInt64($b,72)) + 16) -eq [decimal]$len
+  } catch { $ok = $false }
+  if(-not $ok){ $zbad += (Rel2 $z.FullName) }
+}
+if(-not $zims){ ScWarn 'no Kiwix archives (.zim) found' }
+elseif(-not $zbad){ ScPass "$($zims.Count) Kiwix archives (.zim): header and size OK" }
+else { ScFail ("Kiwix archive(s) not a ZIM or not complete - delete each one and re-run the installer:`n        " + ($zbad -join "`n        ")) }
+# 4. Every PDF starts with %PDF.
+$pdfs = @(Get-ChildItem $Root -Recurse -File -Filter *.pdf -ErrorAction SilentlyContinue)
+$pbad = @()
+foreach($f in $pdfs){
+  $head = ''
+  try{ $fs = [System.IO.File]::OpenRead($f.FullName); try{ $b = New-Object byte[] 4; $n = $fs.Read($b,0,4); $head = [System.Text.Encoding]::ASCII.GetString($b,0,$n) } finally { $fs.Close() } } catch { $head = '' }
+  if($head -ne '%PDF'){ $pbad += (Rel2 $f.FullName) }
+}
+if(-not $pdfs){ ScWarn 'no PDF manuals found' }
+elseif(-not $pbad){ ScPass "$($pdfs.Count) PDF files: all start with %PDF" }
+else { ScFail ("file(s) named .pdf that are not PDFs - delete each one and re-run the installer:`n        " + ($pbad -join "`n        ")) }
+
+if($scFail -eq 0){
+  Log '=== DONE. Open README.html (full index) or START-HERE.html ==='
+  Write-Host ''
+  Write-Host "  Finished. Your offline library is in: $Root" -ForegroundColor Green
+  Write-Host "  Open README.html for a full index, or START-HERE.html to begin." -ForegroundColor Green
+} else {
+  Log "=== FINISHED WITH PROBLEMS: $scFail self-check(s) failed - see the FAIL lines above ==="
+  Write-Host ''
+  Write-Host "  Your offline library is in: $Root" -ForegroundColor Yellow
+  Write-Host "  Fix the FAIL line(s) above before you rely on it." -ForegroundColor Yellow
+  exit 1
+}

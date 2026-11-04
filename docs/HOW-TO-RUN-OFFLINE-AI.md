@@ -218,6 +218,17 @@ to be installed. This is why it works in an emergency with no internet.
 - The engine ships several `ggml-cpu-*.dll` files and automatically picks the
   right one for your processor at startup. You don't need to choose.
 
+**Linux: `error while loading shared libraries: libgomp.so.1`**
+- The engine needs the GNU OpenMP library, which a minimal Linux may not have.
+  Install it once, then run the launcher again: `sudo apt install libgomp1`
+  (Debian/Ubuntu). On other systems, install the package that has `libgomp.so.1`.
+- The installer's self-check at the end tells you about this. The drive itself is fine.
+
+**Linux: `version 'GLIBCXX_...' not found` or `version 'GLIBC_...' not found`**
+- This Linux is too old for this AI build. On a Raspberry Pi or other ARM board,
+  the AI needs Debian 13 or Ubuntu 24.04 or newer. The drive still works on newer
+  computers.
+
 ---
 
 ## 7. Important notes & limitations
