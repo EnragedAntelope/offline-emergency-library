@@ -62,7 +62,8 @@ When this skill is invoked, your job is simple:
   either if the user asks for courses/education.
 - **Browser maps are opt-in.** `-BrowserMaps` / `--browser-maps` adds US street maps that open in
   any web browser (`Maps-Browser\OPEN-MAPS`; ~16.5 GB for all states, follows `-Region`). Only add it
-  if the user asks for maps on a computer without an app.
+  if the user asks for maps on a computer without an app. It adds to the OsmAnd maps (~17.8 GB for the
+  US), so a full US drive needs about 34 GB for maps.
 - **Maps default to the US.** If the user wants another area, pass `-Region <name>`
   (Windows) / `--region <name>` (macOS/Linux) — e.g. `France`, `"Germany,Austria"`,
   `Europe`, `US_texas`, or `world`. To discover exact names, run with `-ListRegions` /
