@@ -34,6 +34,7 @@ works with **no internet**.
 | **Army manuals** | Public-domain US Army field/technical manuals (survival, first aid, hand tools, carpentry, auto mechanics, rigging, field cooking) | ~0.2 GB | Any browser (PDF) |
 | **Medical books** | *Where There Is No Doctor / No Dentist* (Hesperian) | ~60 MB | Any browser (PDF) |
 | **Delayed-care guide** | *A Practical Guide to Prolonged Casualty Care* (USUHS + Henry M. Jackson Foundation, 2025; CC BY-NC-SA 4.0) — advanced care when help is hours or days away; not a substitute for a clinician | ~15 MB | Any browser (PDF) |
+| **Childbirth references** | WHO *Managing complications in pregnancy and childbirth* (2017) + *Recommendations on maternal health* (2025); trained-worker references with update cautions and CC BY-NC-SA 3.0 IGO terms in the [medical guide](docs/Medical-READ-ME-FIRST.md) | ~9 MB | Any browser (PDF) |
 | **Home canning** | *USDA Complete Guide to Home Canning* (2015 revision; US-government work) — safe canning of fruit, tomatoes, vegetables, meat, pickles, jams | ~14 MB | Any browser (PDF) |
 | **Radio guide** | How ham/CB/shortwave/GMRS radio works + emergency comms | tiny | Any browser |
 | **Kiwix reader** | Portable app to read all `.zim` archives (no install) | ~0.15 GB | — |
@@ -207,6 +208,7 @@ runs 100% offline afterward:
 | Browser maps (optional) | github.com/Crosstalk-Solutions/project-nomad-maps (maps, style), unpkg.com (MapLibre GL JS, pmtiles.js), github.com/caddyserver/caddy (web server) |
 | Portable Java | api.adoptium.net (Eclipse Temurin) |
 | Manuals (PDF) | archive.org |
+| WHO childbirth references (PDF) | iris.who.int (WHO); citations and noncommercial redistribution terms in the [medical guide](docs/Medical-READ-ME-FIRST.md) |
 | Phone apps (APK) | github.com/kiwix/kiwix-android, f-droid.org |
 | Education (optional) | download.kiwix.org (Khan Academy ZIM), github.com/learningequality/kolibri (Kolibri app) |
 

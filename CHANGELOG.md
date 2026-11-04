@@ -12,6 +12,14 @@ Contributor-driven reliability and portability work, from people running the kit
 hardware.
 
 ### Added
+- **WHO childbirth and maternal-health references.** Both installers now download two WHO
+  PDFs from `iris.who.int` into `Medical/Manuals-PDF/` (~9 MB), each checked to start with
+  `%PDF`: *Managing complications in pregnancy and childbirth* (2nd ed., 2017) and *WHO
+  recommendations on maternal health* (2nd ed., 2025). Both are CC BY-NC-SA 3.0 IGO (not
+  public domain); `Medical/READ-ME-FIRST` gains a childbirth section with citations, license
+  and redistribution terms, a "get skilled help first" warning, and an edition caution (WHO
+  says several 2017 recommendations have since been updated). The source URLs are added to
+  the link check. Resolves #24.
 - **Psychological first aid guide.** A new `PSYCHOLOGICAL-FIRST-AID` guide (Markdown + offline
   HTML) in `Medical/`, placed by both installers and linked from `Medical/READ-ME-FIRST`, the
   "I need to…" index and the README. Plain-language, original-wording support for helping

@@ -365,6 +365,9 @@ get_pdf "where-there-is-no-doctor"                           "Where There Is No 
 get_pdf "where-there-is-no-dentist-web-full-book"            "Where There Is No Dentist.pdf" "$MPDF"
 # Advanced care when help is delayed: USUHS + Henry M. Jackson Foundation, 2025, CC BY-NC-SA 4.0 (not public domain).
 get_pdf_url "https://www.usuhs.edu/sites/default/files/2025-09/Layperson%27s_Guide_to_Prolonged_Casualty_Care_090825_ACC.pdf" "A Practical Guide to Prolonged Casualty Care (USUHS-HJF 2025).pdf" "$MPDF"
+# WHO childbirth references (CC BY-NC-SA 3.0 IGO); citations, audience and update cautions in Medical/READ-ME-FIRST.
+get_pdf_url "https://iris.who.int/server/api/core/bitstreams/3bda1306-da5d-487d-b2ad-aff995112a7a/content" "WHO Managing Complications in Pregnancy and Childbirth 2017.pdf" "$MPDF"
+get_pdf_url "https://iris.who.int/server/api/core/bitstreams/12fdb499-733d-4614-aafc-88dcbbb3c829/content" "WHO Recommendations on Maternal Health 2025.pdf" "$MPDF"
 # USDA Complete Guide to Home Canning (Agriculture Information Bulletin 539, revised 2015; US-government work).
 # The official electronic copy is 8 PDFs from the USDA-funded National Center for Home Food Preservation.
 CAN="$ROOT/Manuals/Food-Preservation/USDA-Complete-Guide-to-Home-Canning-2015"
