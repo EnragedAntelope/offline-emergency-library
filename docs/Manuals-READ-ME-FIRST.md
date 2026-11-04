@@ -16,6 +16,7 @@ Practical manuals for survival, repair, and self-sufficiency. **Two kinds of fil
 | `Repair-iFixit\` | Kiwix (.zim) | iFixit repair guides — **cars, appliances, electronics, phones, tools** |
 | `DIY-Appropedia\` | Kiwix (.zim) | Appropedia — **plumbing, electrical/wiring, construction, energy, water, food, farming** |
 | `Survival-Water-Food\` | Kiwix (.zim) | Post-disaster survival, water purification, food preparation, knots |
+| `Food-Preservation\USDA-Complete-Guide-to-Home-Canning-2015\` | Browser (PDF) | *USDA Complete Guide to Home Canning* (Agriculture Information Bulletin 539, revised 2015; US-government work), in its 8 official parts: start with `0 Introduction` and `1 Principles of Home Canning`, then the part for your food |
 | `Radio-Communications\` | Browser (md/html) | How ham, CB & shortwave radio work + emergency comms |
 
 ---

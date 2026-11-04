@@ -134,7 +134,7 @@ try {
 $dirs = @(
  'AI-Offline','AI-Offline\engine','AI-Offline\models','AI-Offline\DocReader-GPT4All',
  'Manuals','Manuals\ArmyFieldManuals','Manuals\Repair-iFixit','Manuals\DIY-Appropedia',
- 'Manuals\Survival-Water-Food','Manuals\Radio-Communications',
+ 'Manuals\Survival-Water-Food','Manuals\Radio-Communications','Manuals\Food-Preservation\USDA-Complete-Guide-to-Home-Canning-2015',
  'Medical','Medical\WikiMed','Medical\zimgit-medicine','Medical\Manuals-PDF',
  'Wikipedia','OsmAnd','Kiwix-Reader','Kiwix-Reader\app','Phone-Apps','Education'
 )
@@ -305,15 +305,27 @@ $pdfs = @(
  @{id='tm-10-412-armed-forces-recipe-service-2003';          n='TM 10-412 Armed Forces Recipe Service.pdf';       d='Manuals\ArmyFieldManuals'}
  @{id='where-there-is-no-doctor';                            n='Where There Is No Doctor.pdf';                    d='Medical\Manuals-PDF'}
  @{id='where-there-is-no-dentist-web-full-book';             n='Where There Is No Dentist.pdf';                   d='Medical\Manuals-PDF'}
+ # USDA Complete Guide to Home Canning (AIB 539, revised 2015; US-government work): 8 official PDFs from the USDA-funded NCHFP
+ @{u='https://nchfp.uga.edu/papers/guide/INTRO_HomeCanrev0715.pdf'; n='0 Introduction.pdf'; d='Manuals\Food-Preservation\USDA-Complete-Guide-to-Home-Canning-2015'}
+ @{u='https://nchfp.uga.edu/papers/guide/GUIDE01_HomeCan_rev0715.pdf'; n='1 Principles of Home Canning.pdf'; d='Manuals\Food-Preservation\USDA-Complete-Guide-to-Home-Canning-2015'}
+ @{u='https://nchfp.uga.edu/papers/guide/GUIDE02_HomeCan_rev0715.pdf'; n='2 Fruit and Fruit Products.pdf'; d='Manuals\Food-Preservation\USDA-Complete-Guide-to-Home-Canning-2015'}
+ @{u='https://nchfp.uga.edu/papers/guide/GUIDE03_HomeCan_rev0715.pdf'; n='3 Tomatoes and Tomato Products.pdf'; d='Manuals\Food-Preservation\USDA-Complete-Guide-to-Home-Canning-2015'}
+ @{u='https://nchfp.uga.edu/papers/guide/GUIDE04_HomeCan_rev0715.pdf'; n='4 Vegetables and Vegetable Products.pdf'; d='Manuals\Food-Preservation\USDA-Complete-Guide-to-Home-Canning-2015'}
+ @{u='https://nchfp.uga.edu/papers/guide/GUIDE05_HomeCan_rev0715.pdf'; n='5 Poultry, Red Meats, and Seafoods.pdf'; d='Manuals\Food-Preservation\USDA-Complete-Guide-to-Home-Canning-2015'}
+ @{u='https://nchfp.uga.edu/papers/guide/GUIDE06_HomeCan_rev0715.pdf'; n='6 Fermented Foods and Pickled Vegetables.pdf'; d='Manuals\Food-Preservation\USDA-Complete-Guide-to-Home-Canning-2015'}
+ @{u='https://nchfp.uga.edu/papers/guide/GUIDE07_HomeCan_rev0715.pdf'; n='7 Jams and Jellies.pdf'; d='Manuals\Food-Preservation\USDA-Complete-Guide-to-Home-Canning-2015'}
 )
 foreach($p in $pdfs){
   try{
-    $meta = curl.exe -sL "https://archive.org/metadata/$($p.id)" -A (UA) | ConvertFrom-Json
-    $f = $meta.files | Where-Object {$_.name -match '\.pdf$' -and $_.name -notmatch '_text\.pdf$'} | Sort-Object {[double]$_.size} -Descending | Select-Object -First 1
-    if($f){
+    if($p.u){ $url = $p.u } else {   # direct link, or an archive.org item
+      $meta = curl.exe -sL "https://archive.org/metadata/$($p.id)" -A (UA) | ConvertFrom-Json
+      $f = $meta.files | Where-Object {$_.name -match '\.pdf$' -and $_.name -notmatch '_text\.pdf$'} | Sort-Object {[double]$_.size} -Descending | Select-Object -First 1
+      $url = if($f){ "https://archive.org/download/$($p.id)/$([uri]::EscapeDataString($f.name))" } else { $null }
+    }
+    if($url){
       $out = Join-Path $Root "$($p.d)\$($p.n)"
       Log "pdf: $($p.n)"
-      Fetch "https://archive.org/download/$($p.id)/$([uri]::EscapeDataString($f.name))" $out
+      Fetch $url $out
       if(Test-Path $out){
         $fs = New-Object IO.FileStream($out,'Open'); $b = New-Object byte[] 4; [void]$fs.Read($b,0,4); $fs.Close()
         if(-not ([System.Text.Encoding]::ASCII.GetString($b) -eq '%PDF')){ Log "  ERROR: $($p.n) not a valid PDF (removed)"; Remove-Item $out -Force; exit 1 }
