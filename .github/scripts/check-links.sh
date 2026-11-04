@@ -18,6 +18,8 @@ urls=(
   "https://huggingface.co/bartowski/Qwen2.5-7B-Instruct-GGUF"
   "https://f-droid.org/api/v1/packages/net.osmand.plus"
   "https://archive.org/metadata/fm-21-76-us-army-survival-manual"
+  "https://iris.who.int/server/api/core/bitstreams/3bda1306-da5d-487d-b2ad-aff995112a7a/content"
+  "https://iris.who.int/server/api/core/bitstreams/12fdb499-733d-4614-aafc-88dcbbb3c829/content"
   "https://api.github.com/repos/Crosstalk-Solutions/project-nomad-maps/contents/pmtiles"
   "https://github.com/Crosstalk-Solutions/project-nomad-maps/raw/refs/heads/master/base-assets.tar.gz"
   "https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"

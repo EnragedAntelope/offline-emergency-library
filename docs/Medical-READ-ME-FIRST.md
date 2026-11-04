@@ -14,10 +14,51 @@ Offline medical reference for emergencies. **Two kinds of files:**
 |---|---|---|
 | `WikiMed\` | Kiwix (.zim) | **Offline medical Wikipedia** (with images) — ~50,000 health articles |
 | `zimgit-medicine\` | Kiwix (.zim) | Curated offline medical / first-aid guide |
-| `Manuals-PDF\` | Browser (PDF) | *Where There Is No Doctor*, *Where There Is No Dentist* (Hesperian); *A Practical Guide to Prolonged Casualty Care* (Uniformed Services University + Henry M. Jackson Foundation, 2025; © 2025 Henry M. Jackson Foundation, CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/), included unchanged). **Advanced reference** for when medical help is delayed for hours or days — **not a substitute for a clinician.** |
+| `Manuals-PDF\` | Browser (PDF) | *Where There Is No Doctor*, *Where There Is No Dentist* (Hesperian); *A Practical Guide to Prolonged Casualty Care* (Uniformed Services University + Henry M. Jackson Foundation, 2025; © 2025 Henry M. Jackson Foundation, CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/), included unchanged). **Advanced reference** for when medical help is delayed for hours or days — **not a substitute for a clinician.** WHO childbirth and maternal-health references are in the section below. |
 | `PSYCHOLOGICAL-FIRST-AID.html` | Browser (html) | **Psychological first aid** — plain-language guide to helping people (and yourself) cope with fear, panic, grief and stress during a crisis. Mental health matters as much as physical injury. |
 
 Also relevant: the **Army first-aid manuals** in `E:\Manuals\ArmyFieldManuals\`.
+
+---
+
+## Childbirth and maternal health
+
+**Seek skilled medical help and arrange transport whenever possible.** These WHO
+references support trained health workers; they do not make unassisted childbirth safe
+or replace hands-on training, medicines, equipment or emergency care.
+
+Open these PDFs directly in a browser, without Kiwix or AI:
+
+- [Managing complications in pregnancy and childbirth (second edition, 2017)](Manuals-PDF/WHO%20Managing%20Complications%20in%20Pregnancy%20and%20Childbirth%202017.pdf):
+  a guide for midwives and doctors providing district-hospital care. Use its contents,
+  bookmarks or PDF search to locate pregnancy, childbirth, postpartum and newborn topics.
+- [WHO recommendations on maternal health (second edition, 2025)](Manuals-PDF/WHO%20Recommendations%20on%20Maternal%20Health%202025.pdf):
+  a compilation of WHO's approved maternal-health recommendations (antenatal, labour and
+  birth, postnatal, complications) with the evidence behind them; written for clinicians and
+  programme planners, not a step-by-step birth manual.
+
+**Edition caution:** WHO flags that several recommendations in the 2017 manual have
+subsequently been updated. The 2025 compilation is also a dated snapshot, not a live
+guideline service. Check current WHO and local guidance with qualified clinicians before
+going offline; do not assume either PDF is the latest clinical guidance.
+
+### Sources and redistribution
+
+- World Health Organization. *Managing complications in pregnancy and childbirth:
+  a guide for midwives and doctors*, second edition. Geneva: WHO; 2017.
+  [Official publication and update notice](https://www.who.int/publications/i/item/9789241565493).
+- World Health Organization. *WHO recommendations on maternal health: guidelines
+  approved by the WHO Guidelines Review Committee*, second edition. Geneva: WHO; 2025.
+  [Official publication](https://www.who.int/publications/i/item/9789240080591).
+
+Both PDFs are copyright WHO and licensed **CC BY-NC-SA 3.0 IGO**
+([license](https://creativecommons.org/licenses/by-nc-sa/3.0/igo/)). They are separate
+from this repository's MIT-licensed code and guides. Noncommercial copying and
+redistribution require appropriate citation; retain the PDFs' copyright/license pages
+and this attribution when sharing the library. Adaptations must use the same or an
+equivalent license; translations require the disclaimer specified in the PDFs.
+Separately credited third-party material may require additional permission. Do not
+imply WHO endorsement or use its logo. Commercial use requires permission from WHO.
 
 ---
 
