@@ -349,6 +349,8 @@ get_pdf "fm-90-3-desert-operations-1993"                     "FM 90-3 Desert Ope
 get_pdf "tm-10-412-armed-forces-recipe-service-2003"         "TM 10-412 Armed Forces Recipe Service.pdf" "$AFM"
 get_pdf "where-there-is-no-doctor"                           "Where There Is No Doctor.pdf" "$MPDF"
 get_pdf "where-there-is-no-dentist-web-full-book"            "Where There Is No Dentist.pdf" "$MPDF"
+# Advanced care when help is delayed: USUHS + Henry M. Jackson Foundation, 2025, CC BY-NC-SA 4.0 (not public domain).
+get_pdf_url "https://www.usuhs.edu/sites/default/files/2025-09/Layperson%27s_Guide_to_Prolonged_Casualty_Care_090825_ACC.pdf" "A Practical Guide to Prolonged Casualty Care (USUHS-HJF 2025).pdf" "$MPDF"
 # USDA Complete Guide to Home Canning (Agriculture Information Bulletin 539, revised 2015; US-government work).
 # The official electronic copy is 8 PDFs from the USDA-funded National Center for Home Food Preservation.
 CAN="$ROOT/Manuals/Food-Preservation/USDA-Complete-Guide-to-Home-Canning-2015"
