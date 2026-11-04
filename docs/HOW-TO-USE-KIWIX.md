@@ -20,6 +20,8 @@ PDF manuals do **not** need Kiwix; they open in Edge or any browser.
 | `E:\Manuals\Survival-Water-Food\` | Survival (post-disaster), water, food prep, knots |
 | `E:\Wikipedia\` | Full Wikipedia (all articles, no images) |
 | `E:\Education\KhanAcademy\` | Khan Academy courses + videos (opt-in) |
+| `E:\Extra-Archives\Wikivoyage\` | Wikivoyage travel guide (opt-in, `-ExtraZims`) |
+| `E:\Extra-Archives\Wikibooks\` | Wikibooks open textbooks (opt-in, `-ExtraZims`) |
 
 ---
 

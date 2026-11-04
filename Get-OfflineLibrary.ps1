@@ -27,6 +27,7 @@ param(
   [string]$EduLang = 'en',   # Khan Academy language: en, es, or fr
   [switch]$Kolibri,          # OPT-IN: add the Kolibri learning app (pick subjects/low-res in-app)
   [switch]$BrowserMaps,      # OPT-IN: street maps in any web browser (US states, ~16.5 GB for all of the US)
+  [switch]$ExtraZims,        # OPT-IN: add Wikivoyage travel guide + Wikibooks textbooks (Kiwix ZIM, ~5.8 GB)
   [switch]$NoAria            # force curl even if aria2c is installed
 )
 
@@ -302,6 +303,23 @@ if($Kolibri){
     if($apk){ New-Item -ItemType Directory -Force (Join-Path $Root 'Phone-Apps') | Out-Null; Log "kolibri apk: $($apk.name)"; Fetch $apk.browser_download_url (Join-Path $Root "Phone-Apps\$($apk.name)") }
   } else { Log 'Kolibri: no release found' }
 } else { Log "=== [5c] Kolibri not selected - add -Kolibri to include ===" }
+
+# ================================================================ 5d. Extra archives (opt-in)
+# Wikivoyage (travel guide, ~1.1 GB) + Wikibooks (open textbooks, ~4.7 GB), both CC BY-SA.
+# WikiHow is not included: download.kiwix.org no longer publishes it.
+if($ExtraZims){
+  Log '=== [5d] Extra archives: Wikivoyage + Wikibooks (Kiwix ZIM, ~5.8 GB) ==='
+  $extra = @(
+   @{dir='https://download.kiwix.org/zim/wikivoyage/'; pre='wikivoyage_en_all_maxi_'; d='Extra-Archives\Wikivoyage'}
+   @{dir='https://download.kiwix.org/zim/wikibooks/';  pre='wikibooks_en_all_maxi_';  d='Extra-Archives\Wikibooks'}
+  )
+  foreach($z in $extra){
+    New-Item -ItemType Directory -Force (Join-Path $Root $z.d) | Out-Null
+    $name = Latest-Zim $z.dir $z.pre
+    if($name){ Log "zim: $name"; Fetch ($z.dir+$name) (Join-Path $Root "$($z.d)\$name") }
+    else { Log "zim: NOT FOUND for prefix $($z.pre)" }
+  }
+} else { Log "=== [5d] Extra archives (Wikivoyage + Wikibooks) not selected - add -ExtraZims to include (~5.8 GB) ===" }
 
 # ================================================================ 6. PDFs (Internet Archive)
 Log '=== [6/8] Public-domain manuals (PDF) ==='

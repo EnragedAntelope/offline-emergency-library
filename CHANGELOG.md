@@ -120,6 +120,13 @@ hardware.
 - **Fuller iPhone/iPad phone guide** — plugging in the drive, reading `.zim` archives
   straight off it in Kiwix with no copy (device-tested on iPad), importing maps into OsmAnd,
   and what doesn't run on iOS. _[@boostedchaos](https://github.com/boostedchaos) — PR #12._
+- **Extra Kiwix archives (opt-in): `-ExtraZims` / `--extra-zims`.** Both installers can add the
+  English **Wikivoyage** travel guide (~1.1 GB) and **Wikibooks** open textbooks (~4.7 GB),
+  full builds with images, into `Extra-Archives/`. Off by default; without the flag the log
+  says it was not selected. Both are CC BY-SA 4.0 (Wikibooks is also GFDL). **WikiHow is not
+  included:** download.kiwix.org no longer lists it (the only copy is a 2023 archive build of
+  ~51 GB), and wikiHow stopped licensing new user content under CC BY-NC-SA 3.0 on
+  24 March 2025. The CI link check now covers the two new Kiwix folders.
 
 ### Changed
 - **Lite no longer leaves the AI's trust gap silent.** `--lite` / `-Lite` still omits GPT4All
