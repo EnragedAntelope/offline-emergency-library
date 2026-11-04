@@ -12,6 +12,16 @@ Contributor-driven reliability and portability work, from people running the kit
 hardware.
 
 ### Added
+- **Post-install self-check: no bare DONE on a broken kit.** After writing
+  `CHECKSUMS-SHA256.txt`, both installers now run read-only checks of what was built and
+  only print DONE if they pass — otherwise they end with `FINISHED WITH PROBLEMS`, name the
+  failed check and exit 1. Checks: every engine folder has its `llama-cli` for all 8
+  platforms; the engine for this computer actually starts (`--version`), with targeted hints
+  for a missing VC++ runtime (Windows) or `libgomp.so.1` / too-old glibc (Linux); every
+  `.zim` has the ZIM magic number and its full declared size; every `.pdf` starts with
+  `%PDF`. Nothing is written to the drive. HOW-TO-RUN-OFFLINE-AI gains Linux troubleshooting
+  for the two library errors the self-check surfaces. Resolves #30.
+  _[@boostedchaos](https://github.com/boostedchaos) (Kyle Welch) — PR #43._
 - **USDA Complete Guide to Home Canning.** Both installers now download the official
   2015 revision (Agriculture Information Bulletin 539, a US-government work) as its 8 PDF
   parts from the USDA-funded National Center for Home Food Preservation, into
