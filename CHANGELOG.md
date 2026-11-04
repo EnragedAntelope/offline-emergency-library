@@ -132,6 +132,7 @@ hardware.
   manuals; re-run without the lite flag to add the citing LocalDocs workflow"), and the README
   lite section spells out the no-citation consequence. Resolves #31.
 - **Manuals-first AI framing.** The guides now treat the bundled manuals as the authority and the AI as the assistant: START-HERE opens with how the kit is meant to be used, spells out the three ways to read and use things (fixing the GPT4All pointer to `AI-Offline\DocReader-GPT4All\`), and points safety-critical answers at the manual itself; HOW-TO-RUN-OFFLINE-AI gains a "How to use the AI well" note (GPT4All LocalDocs shows the sources it used, so medical and survival answers can be checked against the book). Every generated AI launcher now also prints a one-line reminder (the AI is a helper, follow the manuals for anything safety-critical) before the engine starts. Resolves #20. _[@EnragedAntelope](https://github.com/EnragedAntelope) - PR #42._
+- **Browser maps: total map size stated.** HOW-TO-VIEW-MAPS, the README options table and the skill now say that browser maps come on top of the OsmAnd maps, so a full US drive with `-BrowserMaps` needs about 34 GB for maps (16.5 + 17.8 GB, measured on a real install). Suggested in #15. _[@EnragedAntelope](https://github.com/EnragedAntelope) - PR #58._
 
 ### Fixed
 - **Blank desktop map on Windows now has a working path.** The bundled OsmAndMapCreator
