@@ -41,6 +41,7 @@ This drive is a self-contained **offline survival library + AI**. Everything wor
 | `Medical\` | Offline medical Wikipedia + first-aid books | ZIM→Kiwix, PDF→browser | `Medical\READ-ME-FIRST.html` |
 | `Wikipedia\` | Full Wikipedia (all articles, no images) | Kiwix | — |
 | `Education\` | Courses + videos (opt-in): Khan Academy archive (Kiwix) **or** Kolibri app (pick subjects) | Kiwix / Kolibri | `Education\READ-ME-FIRST.html`, `Education\HOW-TO-KOLIBRI.html` |
+| `Extra-Archives\` | Travel guide (Wikivoyage) + open textbooks (Wikibooks) (opt-in) | Kiwix | `Kiwix-Reader\HOW-TO-USE-KIWIX.html` |
 | `OsmAnd\` | Offline maps (your chosen region; default US) — view on **PC (no phone)** or phone | PC: `MapViewer-Desktop\VIEW-MAPS-ON-PC.bat`; phone: bundled APK | `OsmAnd\HOW-TO-VIEW-MAPS.html` |
 | `OsmAnd\MAP-AND-COMPASS.html` | Paper-map, compass and natural navigation | Print the guide and carry a paper topo map and compass | `OsmAnd\MAP-AND-COMPASS.html` |
 | `Kiwix-Reader\` | The reader for all `.zim` archives | Portable app | `Kiwix-Reader\HOW-TO-USE-KIWIX.html` |
@@ -72,6 +73,8 @@ This drive is a self-contained **offline survival library + AI**. Everything wor
 - **Communicate by radio:** read `Manuals\Radio-Communications\RADIO-GUIDE.html`.
 - **Learn / study (courses + video):** open `Education\` in Kiwix (if you added Khan Academy
   with `-Education` / `--education`; see `Education\READ-ME-FIRST.html`).
+- **Travel guide / textbooks:** open `Extra-Archives\` in Kiwix (if you added them with
+  `-ExtraZims` / `--extra-zims`).
 - **Look something up:** Wikipedia (via Kiwix) and the maps (`OsmAnd\HOW-TO-VIEW-MAPS.html`
   — works on a PC with no phone).
 

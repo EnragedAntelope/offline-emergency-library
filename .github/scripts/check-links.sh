@@ -10,6 +10,8 @@ urls=(
   "https://download.kiwix.org/zim/ifixit/"
   "https://download.kiwix.org/zim/other/"
   "https://download.kiwix.org/zim/wikipedia/"
+  "https://download.kiwix.org/zim/wikivoyage/"
+  "https://download.kiwix.org/zim/wikibooks/"
   "https://download.kiwix.org/release/kiwix-desktop/"
   "https://download.osmand.net/latest-night-build/OsmAndMapCreator-main.zip"
   "https://api.adoptium.net/v3/binary/latest/21/ga/linux/x64/jre/hotspot/normal/eclipse"

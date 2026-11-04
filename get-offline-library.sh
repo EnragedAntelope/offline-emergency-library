@@ -7,11 +7,12 @@
 #   ./get-offline-library.sh -d /mnt/usb     # non-interactive
 #   flags: --lite  --skip-wikipedia  --skip-maps  --skip-models
 #   opt-in: --browser-maps   street maps in any web browser (US states, ~16.5 GB for all of the US)
+#   opt-in: --extra-zims     Wikivoyage travel guide + Wikibooks textbooks (Kiwix ZIM, ~5.8 GB)
 
 REPO_RAW="https://raw.githubusercontent.com/elhajahmadj/offline-emergency-library/main"
 DEST=""; SKIP_WIKI=0; SKIP_MAPS=0; SKIP_MODELS=0; LITE=0
 REGION="US"; LISTREGIONS=0; FILTER=""
-EDU=0; EDULANG="en"; KOLIBRI=0; BROWSER_MAPS=0
+EDU=0; EDULANG="en"; KOLIBRI=0; BROWSER_MAPS=0; EXTRA_ZIMS=0
 CONTINENTS="africa asia australia-oceania centralamerica europe northamerica southamerica"
 # Map common names / ISO codes to the OsmAnd region token. Unknown input passes through.
 alias_region(){
@@ -65,6 +66,7 @@ while [ $# -gt 0 ]; do
     --education)      EDU=1; shift;;
     --edu-lang)       EDULANG="$2"; shift 2;;
     --kolibri)        KOLIBRI=1; shift;;
+    --extra-zims)     EXTRA_ZIMS=1; shift;;
     --lite)           LITE=1; shift;;
     --browser-maps)   BROWSER_MAPS=1; shift;;
     --skip-wikipedia) SKIP_WIKI=1; shift;;
@@ -329,6 +331,18 @@ if [ "$KOLIBRI" = 1 ]; then
   [ -n "$ka" ] && { mkdir -p "$ROOT/Phone-Apps"; log "kolibri apk: $(basename "$ka")"; fetch "$ka" "$ROOT/Phone-Apps/$(basename "$ka")"; }
 else
   log "=== [5c] Kolibri not selected - add --kolibri to include ==="
+fi
+
+# ================================================================ 5d. Extra archives (opt-in)
+# Wikivoyage (travel guide, ~1.1 GB) + Wikibooks (open textbooks, ~4.7 GB), both CC BY-SA.
+# WikiHow is not included: download.kiwix.org no longer publishes it.
+if [ "$EXTRA_ZIMS" = 1 ]; then
+  log "=== [5d] Extra archives: Wikivoyage + Wikibooks (Kiwix ZIM, ~5.8 GB) ==="
+  mkdir -p "$ROOT/Extra-Archives/Wikivoyage" "$ROOT/Extra-Archives/Wikibooks"
+  add_zim "https://download.kiwix.org/zim/wikivoyage/" "wikivoyage_en_all_maxi_" "$ROOT/Extra-Archives/Wikivoyage"
+  add_zim "https://download.kiwix.org/zim/wikibooks/"  "wikibooks_en_all_maxi_"  "$ROOT/Extra-Archives/Wikibooks"
+else
+  log "=== [5d] Extra archives (Wikivoyage + Wikibooks) not selected - add --extra-zims to include (~5.8 GB) ==="
 fi
 
 # ================================================================ 6. PDFs

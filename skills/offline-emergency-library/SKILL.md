@@ -64,6 +64,9 @@ When this skill is invoked, your job is simple:
   any web browser (`Maps-Browser\OPEN-MAPS`; ~16.5 GB for all states, follows `-Region`). Only add it
   if the user asks for maps on a computer without an app. It adds to the OsmAnd maps (~17.8 GB for the
   US), so a full US drive needs about 34 GB for maps.
+- **Extra archives are opt-in.** `-ExtraZims` / `--extra-zims` adds the **Wikivoyage** travel
+  guide and **Wikibooks** open textbooks (Kiwix ZIM, ~5.8 GB, CC BY-SA) in `Extra-Archives\`. Only
+  add it if the user asks for travel guides or textbooks.
 - **Maps default to the US.** If the user wants another area, pass `-Region <name>`
   (Windows) / `--region <name>` (macOS/Linux) — e.g. `France`, `"Germany,Austria"`,
   `Europe`, `US_texas`, or `world`. To discover exact names, run with `-ListRegions` /
