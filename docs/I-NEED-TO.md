@@ -36,6 +36,7 @@ bookmarks or search (Ctrl+F) for the words in **bold**.
 | **Deliver a baby / childbirth** | [Where There Is No Doctor](Medical/Manuals-PDF/Where%20There%20Is%20No%20Doctor.pdf) | search **"childbirth"** / **"pregnancy"** |
 | **Severe tooth pain / dental** | [Where There Is No Dentist](Medical/Manuals-PDF/Where%20There%20Is%20No%20Dentist.pdf) | the chapter for your problem |
 | **Help someone cope with panic, fear or grief** | [Psychological first aid](Medical/PSYCHOLOGICAL-FIRST-AID.html) | stay calm, keep them safe, listen, reconnect — and look after yourself |
+| **Care for a badly hurt person when help is hours or days away** | [A Practical Guide to Prolonged Casualty Care](Medical/Manuals-PDF/A%20Practical%20Guide%20to%20Prolonged%20Casualty%20Care%20%28USUHS-HJF%202025%29.pdf) | the chapter for the injury — advanced reference, **not a substitute for a clinician** |
 
 **More depth:** the medical archives (open in **Kiwix**) — `Medical\WikiMed\` (medical
 Wikipedia) and `Medical\zimgit-medicine\` (first-aid guide). See the
@@ -49,6 +50,7 @@ Wikipedia) and `Medical\zimgit-medicine\` (first-aid guide). See the
 |---|---|---|
 | **Make water safe to drink** | `Manuals\Survival-Water-Food\` (zimgit-water, in **Kiwix**) · [Where There Is No Doctor](Medical/Manuals-PDF/Where%20There%20Is%20No%20Doctor.pdf) (search **"water"**) | When in doubt, **boil it**: a rolling boil for **1 minute** (**3 minutes** above ~2,000 m / 6,500 ft) kills germs. Use the archive for filtering and chemical treatment. |
 | **Prepare/store food safely** | `Manuals\Survival-Water-Food\` (zimgit-food-preparation, in **Kiwix**) | |
+| **Can (preserve) food safely at home** | [USDA Complete Guide to Home Canning](Manuals/Food-Preservation/USDA-Complete-Guide-to-Home-Canning-2015/0%20Introduction.pdf) · [Principles of Home Canning](Manuals/Food-Preservation/USDA-Complete-Guide-to-Home-Canning-2015/1%20Principles%20of%20Home%20Canning.pdf) | start with these two parts, then open the part for your food in `Manuals\Food-Preservation\USDA-Complete-Guide-to-Home-Canning-2015\` |
 | **Build shelter and stay warm** | [FM 21-76 Survival](Manuals/ArmyFieldManuals/FM%2021-76%20Army%20Survival%20Manual.pdf) | search **"shelter"** / **"fire"** |
 | **Tie the right knot** | `Manuals\Survival-Water-Food\` (zimgit-knots, in **Kiwix**) | |
 | **Get through the first hours of a disaster** | `Manuals\Survival-Water-Food\` (zimgit-post-disaster, in **Kiwix**) | |
