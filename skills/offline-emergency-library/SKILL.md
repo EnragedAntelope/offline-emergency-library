@@ -65,7 +65,7 @@ When this skill is invoked, your job is simple:
   if the user asks for maps on a computer without an app.
 - **Extra archives are opt-in.** `-ExtraZims` / `--extra-zims` adds the **Wikivoyage** travel
   guide and **Wikibooks** open textbooks (Kiwix ZIM, ~5.8 GB, CC BY-SA) in `Extra-Archives\`. Only
-  add it if the user asks for travel guides or textbooks. WikiHow is not available.
+  add it if the user asks for travel guides or textbooks.
 - **Maps default to the US.** If the user wants another area, pass `-Region <name>`
   (Windows) / `--region <name>` (macOS/Linux) — e.g. `France`, `"Germany,Austria"`,
   `Europe`, `US_texas`, or `world`. To discover exact names, run with `-ListRegions` /

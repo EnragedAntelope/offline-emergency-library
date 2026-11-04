@@ -348,7 +348,7 @@ macOS also writes small `._*` files on exFAT drives; CHECK-DRIVE ignores them.
 | `-EduLang <en\|es\|fr>` / `--edu-lang <…>` | Khan Academy language (default `en`) |
 | `-BrowserMaps` / `--browser-maps` | **Add street maps for any web browser** (US states, ~16.5 GB for all; follows `-Region`) — off by default |
 | `-Kolibri` / `--kolibri` | **Add the Kolibri learning app** (pick subjects + low-res in-app; tens of GB) — off by default |
-| `-ExtraZims` / `--extra-zims` | **Add Wikivoyage + Wikibooks** (Kiwix ZIM, ~5.8 GB; CC BY-SA) into `Extra-Archives\` — off by default |
+| `-ExtraZims` / `--extra-zims` | **Add Wikivoyage + Wikibooks** (Kiwix ZIM, ~5.8 GB; CC BY-SA) into `Extra-Archives\` — off by default. WikiHow is not on download.kiwix.org today, so it is not included |
 | `-SkipWikipedia` / `--skip-wikipedia` | Don't download the 24 GB Wikipedia dump (~24 GB saved) |
 | `-SkipMaps` / `--skip-maps` | Don't download the maps (~17 GB saved for US) |
 | `-SkipModels` / `--skip-models` | Skip the large 8B/7B AI models, keep the small 3B (~9 GB saved) |
