@@ -274,6 +274,8 @@ Both pages link to each component's guide:
 - `AI-Offline\DocReader-GPT4All\HOW-TO-ASK-YOUR-DOCS.html` — ask AI about your PDFs
 - `Kiwix-Reader\HOW-TO-USE-KIWIX.html` — read the `.zim` archives
 - `OsmAnd\HOW-TO-VIEW-MAPS.html` — view maps on a PC (no phone) or phone
+- `OsmAnd\MAP-AND-COMPASS.html` - [map and compass guide](docs/MAP-AND-COMPASS.md)
+  ([offline HTML](docs/MAP-AND-COMPASS.html)): print for navigation without a device
 - `Maps-Browser\OPEN-MAPS.bat` / `OPEN-MAPS.sh` — street maps in a web browser (opt-in)
 - `Phone-Apps\USE-ON-PHONE.html` — port the library to a phone
 - `Manuals\READ-ME-FIRST.html` and `Medical\READ-ME-FIRST.html`

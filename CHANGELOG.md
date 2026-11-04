@@ -12,6 +12,13 @@ Contributor-driven reliability and portability work, from people running the kit
 hardware.
 
 ### Added
+- **Map and compass navigation guide.** A new `MAP-AND-COMPASS` guide (Markdown + offline
+  HTML) covers reading a topo map, declination, taking and following a bearing, resection
+  (triangulation) and natural direction finding (sun, shadow-stick, stars), adapted in
+  original wording from public-domain U.S. Army manuals with sources listed. Linked from the
+  maps guide and the "I need to..." index, listed in START-HERE and the README, and placed in
+  `OsmAnd\` by both installers. Reinforces carrying a paper map and compass. Resolves #27.
+  _[@EnragedAntelope](https://github.com/EnragedAntelope) - PR #47._
 - **"I need to…" emergency quick index.** A new high-contrast `I-NEED-TO` page (Markdown +
   offline HTML) at the drive root, placed by both installers and linked prominently from the
   top of START-HERE. Unlike `README.html` (a catalog of everything), this is task-first: rows
