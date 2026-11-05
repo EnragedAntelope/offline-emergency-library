@@ -33,6 +33,7 @@ works with **no internet**.
 | **Education** *(opt-in)* | Khan Academy archive (one file, all videos) **or** Kolibri app (pick subjects/low-res) | KA ZIM ~168 GB; Kolibri = your choice | Kiwix / Kolibri app |
 | **Offline translator** *(opt-in)* | Two-way text translator for talking with someone who speaks another language; a small multilingual AI model (Qwen3 4B, Apache 2.0) on the bundled llama.cpp engine, `-Translate` / `--translate`. Good for widely spoken languages, weak or unusable for some others ([guide](docs/HOW-TO-TRANSLATE.md)) | ~2.5 GB | CPU, ~6 GB RAM |
 | **Extra archives** *(opt-in)* | Wikivoyage travel guide + Wikibooks open textbooks (English, with images), `-ExtraZims` / `--extra-zims` | ~5.8 GB | Kiwix |
+| **Health topics** *(opt-in)* | MedlinePlus plain-language health topic summaries (US National Library of Medicine, public domain), English + Spanish, one searchable page for any browser, `-MedlinePlus` / `--medlineplus`; see the [medical guide](docs/Medical-READ-ME-FIRST.md) | ~30 MB | Any browser |
 | **Army manuals** | Public-domain US Army field/technical manuals (survival, first aid, hand tools, carpentry, auto mechanics, rigging, field cooking) | ~0.2 GB | Any browser (PDF) |
 | **Medical books** | *Where There Is No Doctor / No Dentist* (Hesperian) | ~60 MB | Any browser (PDF) |
 | **Delayed-care guide** | *A Practical Guide to Prolonged Casualty Care* (USUHS + Henry M. Jackson Foundation, 2025; CC BY-NC-SA 4.0) — advanced care when help is hours or days away; not a substitute for a clinician | ~15 MB | Any browser (PDF) |
@@ -215,6 +216,7 @@ runs 100% offline afterward:
 | Phone apps (APK) | github.com/kiwix/kiwix-android, f-droid.org |
 | Education (optional) | download.kiwix.org (Khan Academy ZIM), github.com/learningequality/kolibri (Kolibri app) |
 | Extra archives (optional) | download.kiwix.org (Wikivoyage, Wikibooks ZIM) |
+| Health topics (optional) | medlineplus.gov/xml.html (MedlinePlus health topic XML, US National Library of Medicine; public domain) |
 
 **Verify the installer before running it.** Each script's SHA-256 is published in
 [`SHA256SUMS.txt`](SHA256SUMS.txt) and CI checks they stay in sync.
@@ -354,6 +356,7 @@ macOS also writes small `._*` files on exFAT drives; CHECK-DRIVE ignores them.
 | `-Kolibri` / `--kolibri` | **Add the Kolibri learning app** (pick subjects + low-res in-app; tens of GB) — off by default |
 | `-ExtraZims` / `--extra-zims` | **Add Wikivoyage + Wikibooks** (Kiwix ZIM, ~5.8 GB; CC BY-SA) into `Extra-Archives\` — off by default. WikiHow is not on download.kiwix.org today, so it is not included |
 | `-Translate` / `--translate` | **Add an offline translator** (Qwen3 4B model, ~2.5 GB; Apache 2.0) with `TRANSLATE.bat` / `translate.sh` in `AI-Offline\` - off by default. Uses the bundled AI engine, so nothing else is installed. See [HOW-TO-TRANSLATE](docs/HOW-TO-TRANSLATE.md) for which languages work |
+| `-MedlinePlus` / `--medlineplus` | **Add MedlinePlus health topics** (~30 MB; public domain) as one offline page, `Medical\MedlinePlus\MedlinePlus-Health-Topics.html` - off by default. Summaries only: the copyrighted encyclopedia and drug pages are not included |
 | `-SkipWikipedia` / `--skip-wikipedia` | Don't download the 24 GB Wikipedia dump (~24 GB saved) |
 | `-SkipMaps` / `--skip-maps` | Don't download the maps (~17 GB saved for US) |
 | `-SkipModels` / `--skip-models` | Skip the large 8B/7B AI models, keep the small 3B (~9 GB saved) |
