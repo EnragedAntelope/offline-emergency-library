@@ -191,6 +191,7 @@ hardware.
   page is not updated. Resolves #91. _[@boostedchaos](https://github.com/boostedchaos) - PR #97._
 
 ### Fixed
+- **Desktop viewer needs internet on Windows and macOS: the docs and launchers now say so.** The bundled OsmAndMapCreator has only the Linux offline renderer, so on Windows and macOS it draws online tiles from `tile.osmand.net` and shows a blank map with no internet (reproduced on Windows 11 and macOS). HOW-TO-VIEW-MAPS, the README, START-HERE, POWER-AND-DEVICES and both viewer launchers no longer call it an offline viewer; they point to browser maps (US) or an Android phone. `VIEW-MAPS-ON-PC.sh` also launched a second viewer when the first exited non-zero (`sh ... || bash ...`); it now launches once. Addresses #15. _Tested by [@boostedchaos](https://github.com/boostedchaos) - issue #15._
 - **The upstream link check no longer fails on one-off errors.** `check-links.sh` retries a
   failed URL up to 3 times (5xx, timeouts, resets) before counting it as dead, and sends the
   `GITHUB_TOKEN` on every `api.github.com` URL, not only the release-asset checks, so the
@@ -252,10 +253,11 @@ hardware.
   _Reported by [@boostedchaos](https://github.com/boostedchaos) (issue #1)._
 
 ### Known issues
-- The bundled OsmAndMapCreator desktop viewer itself still renders a blank map on some Windows
-  setups (Linux-only native renderer). The **browser maps** are now the recommended Windows
-  computer viewer and render reliably (US maps); non-US Windows users use the Android path. See
-  the "Blank desktop map on Windows" entry above. Tracking in issue #15 until re-tested.
+- The bundled OsmAndMapCreator desktop viewer cannot draw the drive's maps on Windows or macOS
+  (Linux-only native renderer); it shows online tiles, so it is blank with no internet. The
+  **browser maps** are the offline computer viewer (US maps); non-US users use the Android path.
+  Linux x64 is untested. See the "Desktop viewer needs internet" entry under Fixed. Tracking in
+  issue #15.
   _Reported by [@EnragedAntelope](https://github.com/EnragedAntelope) — issue #15._
 
 ## [v1.4] — 2026-11-02 — faster downloads (aria2)
