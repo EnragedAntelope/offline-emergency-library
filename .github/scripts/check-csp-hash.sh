@@ -26,7 +26,7 @@ for f in "${files[@]}"; do
       my ($attr, $body) = ($1, $2);
       next if $attr =~ /\bsrc\s*=/i;    # external file: not an inline script
       # A type that is not JavaScript (like text/xml data) is not run, so it needs no hash.
-      if ($attr =~ /\btype\s*=\s*["\x27]?([^"\x27\s>]+)/i) { next unless $1 =~ m{^(text/javascript|module)$}i }
+      if ($attr =~ /\btype\s*=\s*["\x27]?([^"\x27\s>]+)/i) { next unless $1 =~ m{^(text/javascript|application/javascript|text/ecmascript|application/ecmascript|module)$}i }
       $n++; my $h = sha256_base64($body) . "=";
       if (index($src, "\x27sha256-$h\x27") >= 0) { printf "ok: %s: script %d (%d bytes) sha256-%s\n", $f, $n, length($body), $h }
       else { printf "FAIL: %s: script %d (%d bytes) sha256-%s is not in script-src. Put \x27sha256-%s\x27 in the CSP.\n", $f, $n, length($body), $h, $h; $fail = 1 }
