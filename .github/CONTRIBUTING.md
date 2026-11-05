@@ -74,6 +74,7 @@ items you checked.
 - Request changes for a wrong result, a license problem, or a missing installer or doc half.
 - Say what you did **not** check, so an approval is not read as more than it is.
 - Small style points are comments, not blockers.
+- One approval from someone other than the PR's author is enough to merge.
 
 ## Reporting bugs
 Open an issue using the template and include your **OS**, **install method**, **region**,
