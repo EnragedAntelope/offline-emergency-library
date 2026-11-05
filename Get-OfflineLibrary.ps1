@@ -29,6 +29,7 @@ param(
   [switch]$BrowserMaps,      # OPT-IN: street maps in any web browser (US states, ~16.5 GB for all of the US)
   [switch]$ExtraZims,        # OPT-IN: add Wikivoyage travel guide + Wikibooks textbooks (Kiwix ZIM, ~5.8 GB)
   [switch]$Translate,        # OPT-IN: offline translator (Qwen3 4B model on the AI engine, ~2.5 GB)
+  [switch]$MedlinePlus,      # OPT-IN: MedlinePlus plain-language health topics (public domain, ~30 MB)
   [switch]$NoAria            # force curl even if aria2c is installed
 )
 
@@ -327,6 +328,38 @@ if($ExtraZims){
     else { Log "zim: NOT FOUND for prefix $($z.pre)" }
   }
 } else { Log "=== [5d] Extra archives (Wikivoyage + Wikibooks) not selected - add -ExtraZims to include (~5.8 GB) ===" }
+
+# ================================================================ 5e. MedlinePlus (opt-in)
+# Plain-language health topic summaries (English + Spanish) from the US National Library of
+# Medicine's daily XML file: public domain. Only the summaries: the MedlinePlus encyclopedia
+# (A.D.A.M.) and drug pages (ASHP) are copyrighted, so the Kiwix MedlinePlus ZIM is not used.
+# The XML goes inside one offline page (medlineplus\MedlinePlus.html) that lists and searches it.
+if($MedlinePlus){
+  Log '=== [5e] MedlinePlus health topics (public domain, ~30 MB) ==='
+  $md = Join-Path $Root 'Medical\MedlinePlus'; New-Item -ItemType Directory -Force $md | Out-Null
+  $mx = [regex]::Matches((curl.exe -sL -A (UA) 'https://medlineplus.gov/xml.html' | Out-String), 'mplus_topics_\d{4}-\d{2}-\d{2}\.xml') | ForEach-Object {$_.Value} | Sort-Object -Unique | Select-Object -Last 1
+  if($mx){
+    $xf = Join-Path $md $mx
+    Log "medlineplus: $mx"; Fetch "https://medlineplus.gov/xml/$mx" $xf
+    $xt = [System.IO.File]::ReadAllText($xf, [System.Text.Encoding]::UTF8)
+    # '</script' would end the data block early; real topic XML never has it (all HTML is escaped).
+    if(-not $xt.StartsWith('<?xml', [StringComparison]::Ordinal) -or -not $xt.Contains('<health-topics') -or $xt -match '(?i)</script'){
+      Remove-Item -LiteralPath $xf -Force; Log "ERROR: $mx is not MedlinePlus topic XML (removed). Re-run the installer."; exit 1 }
+    $sd = if($PSScriptRoot){$PSScriptRoot}else{(Get-Location).Path}
+    $lp = Join-Path $sd 'medlineplus\MedlinePlus.html'; $tpl = Join-Path $md '_MedlinePlus.html'
+    if(Test-Path $lp){ Copy-Item $lp $tpl -Force }
+    else { curl.exe -fLsS "$RepoRaw/medlineplus/MedlinePlus.html" -A (UA) -o $tpl
+      if($LASTEXITCODE -ne 0){ Log 'ERROR: download failed: medlineplus/MedlinePlus.html'; exit 1 } }
+    $page = [System.IO.File]::ReadAllText($tpl, [System.Text.Encoding]::UTF8)
+    $mark = '<script type="text/xml" id="data"></script>'
+    if(-not $page.Contains($mark)){ Log 'ERROR: medlineplus/MedlinePlus.html has no data marker. Re-run the installer.'; exit 1 }
+    $out = Join-Path $md 'MedlinePlus-Health-Topics.html'
+    [System.IO.File]::WriteAllText($out, $page.Replace($mark, '<script type="text/xml" id="data">' + $xt + '</script>'), [System.Text.UTF8Encoding]::new($false))
+    # The page holds all the data: drop the XML (and any older day's copy) and the template.
+    Get-ChildItem -LiteralPath $md -File | Where-Object { $_.Name -like 'mplus_topics_*' -or $_.Name -eq '_MedlinePlus.html' } | Remove-Item -Force
+    Log ("medlineplus: Medical\MedlinePlus\MedlinePlus-Health-Topics.html ({0:N0} MB)" -f ((Get-Item $out).Length/1MB))
+  } else { Log 'medlineplus: NOT FOUND (no topic file listed on medlineplus.gov/xml.html)' }
+} else { Log '=== [5e] MedlinePlus health topics not selected - add -MedlinePlus to include (~30 MB) ===' }
 
 # ================================================================ 6. PDFs (Internet Archive)
 Log '=== [6/8] Public-domain manuals (PDF) ==='
