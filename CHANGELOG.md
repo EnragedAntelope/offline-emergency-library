@@ -142,6 +142,14 @@ hardware.
   it needs about 6 GB RAM. Off by default. The new `HOW-TO-TRANSLATE` guide covers the checks
   that catch mistakes and which languages worked in testing (weak for Swahili, Somali and
   Amharic). Resolves #21. _[@EnragedAntelope](https://github.com/EnragedAntelope) - PR #62._
+- **MedlinePlus health topics (opt-in): `-MedlinePlus` / `--medlineplus`.** Both installers can
+  add the MedlinePlus health topic summaries from the US National Library of Medicine (public
+  domain), English and Spanish, as one searchable page that opens offline in any browser:
+  `Medical/MedlinePlus/MedlinePlus-Health-Topics.html` (~30 MB). It is built from NLM's
+  official XML file, not the Kiwix MedlinePlus ZIM, because the ZIM also contains the
+  copyrighted A.D.A.M. encyclopedia and ASHP drug pages; those are not included. The page
+  makes no network requests. Off by default. Resolves #64.
+  _[@EnragedAntelope](https://github.com/EnragedAntelope) - PR #87._
 
 ### Changed
 - **Lite no longer leaves the AI's trust gap silent.** `--lite` / `-Lite` still omits GPT4All

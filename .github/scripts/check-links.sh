@@ -28,6 +28,7 @@ urls=(
   "https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"
   "https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"
   "https://unpkg.com/pmtiles@4.4.0/dist/pmtiles.js"
+  "https://medlineplus.gov/xml.html"
 )
 
 check() { # url

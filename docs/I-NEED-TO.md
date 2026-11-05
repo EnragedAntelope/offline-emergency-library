@@ -42,6 +42,10 @@ bookmarks or search (Ctrl+F) for the words in **bold**.
 Wikipedia) and `Medical\zimgit-medicine\` (first-aid guide). See the
 [medical read-me](Medical/READ-ME-FIRST.html).
 
+**What is this illness, symptom or test?** If you added it (`-MedlinePlus` /
+`--medlineplus`), [MedlinePlus health topics](Medical/MedlinePlus/MedlinePlus-Health-Topics.html)
+explains health problems and tests in plain language (English and Spanish), in any browser.
+
 ---
 
 ## 💧 Water, food, shelter

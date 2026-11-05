@@ -9,11 +9,12 @@
 #   opt-in: --browser-maps   street maps in any web browser (US states, ~16.5 GB for all of the US)
 #   opt-in: --extra-zims     Wikivoyage travel guide + Wikibooks textbooks (Kiwix ZIM, ~5.8 GB)
 #   opt-in: --translate      offline translator (Qwen3 4B model on the AI engine, ~2.5 GB)
+#   opt-in: --medlineplus    MedlinePlus plain-language health topics (public domain, ~30 MB)
 
 REPO_RAW="https://raw.githubusercontent.com/elhajahmadj/offline-emergency-library/main"
 DEST=""; SKIP_WIKI=0; SKIP_MAPS=0; SKIP_MODELS=0; LITE=0
 REGION="US"; LISTREGIONS=0; FILTER=""
-EDU=0; EDULANG="en"; KOLIBRI=0; BROWSER_MAPS=0; EXTRA_ZIMS=0; TRANSLATE=0
+EDU=0; EDULANG="en"; KOLIBRI=0; BROWSER_MAPS=0; EXTRA_ZIMS=0; TRANSLATE=0; MEDLINEPLUS=0
 CONTINENTS="africa asia australia-oceania centralamerica europe northamerica southamerica"
 # Map common names / ISO codes to the OsmAnd region token. Unknown input passes through.
 alias_region(){
@@ -69,6 +70,7 @@ while [ $# -gt 0 ]; do
     --kolibri)        KOLIBRI=1; shift;;
     --extra-zims)     EXTRA_ZIMS=1; shift;;
     --translate)      TRANSLATE=1; shift;;
+    --medlineplus)    MEDLINEPLUS=1; shift;;
     --lite)           LITE=1; shift;;
     --browser-maps)   BROWSER_MAPS=1; shift;;
     --skip-wikipedia) SKIP_WIKI=1; shift;;
@@ -352,6 +354,41 @@ if [ "$EXTRA_ZIMS" = 1 ]; then
   add_zim "https://download.kiwix.org/zim/wikibooks/"  "wikibooks_en_all_maxi_"  "$ROOT/Extra-Archives/Wikibooks"
 else
   log "=== [5d] Extra archives (Wikivoyage + Wikibooks) not selected - add --extra-zims to include (~5.8 GB) ==="
+fi
+
+# ================================================================ 5e. MedlinePlus (opt-in)
+# Plain-language health topic summaries (English + Spanish) from the US National Library of
+# Medicine's daily XML file: public domain. Only the summaries: the MedlinePlus encyclopedia
+# (A.D.A.M.) and drug pages (ASHP) are copyrighted, so the Kiwix MedlinePlus ZIM is not used.
+# The XML goes inside one offline page (medlineplus/MedlinePlus.html) that lists and searches it.
+if [ "$MEDLINEPLUS" = 1 ]; then
+  log "=== [5e] MedlinePlus health topics (public domain, ~30 MB) ==="
+  md="$ROOT/Medical/MedlinePlus"; mkdir -p "$md"
+  mx="$(curl -sL -A "$UA" 'https://medlineplus.gov/xml.html' | grep -oE 'mplus_topics_[0-9]{4}-[0-9]{2}-[0-9]{2}\.xml' | sort -u | tail -n1)"
+  if [ -n "$mx" ]; then
+    log "medlineplus: $mx"; fetch "https://medlineplus.gov/xml/$mx" "$md/$mx"
+    # '</script' would end the data block early; real topic XML never has it (all HTML is escaped).
+    if [ "$(head -c 5 "$md/$mx")" != "<?xml" ] || ! grep -q '<health-topics' "$md/$mx" || grep -qi '</script' "$md/$mx"; then
+      rm -f "$md/$mx"; log "ERROR: $mx is not MedlinePlus topic XML (removed). Re-run the installer."; exit 1
+    fi
+    SD="$(cd "$(dirname "$0")" && pwd)"; tpl="$md/_MedlinePlus.html"
+    if [ -f "$SD/medlineplus/MedlinePlus.html" ]; then cp "$SD/medlineplus/MedlinePlus.html" "$tpl"
+    else curl -fLsS -A "$UA" "$REPO_RAW/medlineplus/MedlinePlus.html" -o "$tpl" || { log "ERROR: download failed: medlineplus/MedlinePlus.html"; exit 1; }; fi
+    mark='<script type="text/xml" id="data"></script>'
+    grep -qF "$mark" "$tpl" || { log "ERROR: medlineplus/MedlinePlus.html has no data marker. Re-run the installer."; exit 1; }
+    awk -v mark="$mark" -v xf="$md/$mx" '{ i = index($0, mark)
+      if (!i) { print; next }
+      printf "%s<script type=\"text/xml\" id=\"data\">", substr($0, 1, i - 1)
+      while ((getline l < xf) > 0) print l
+      printf "</script>%s\n", substr($0, i + length(mark)) }' "$tpl" > "$md/MedlinePlus-Health-Topics.html"
+    # The page holds all the data: drop the XML (and any older day's copy) and the template.
+    rm -f "$md"/mplus_topics_* "$tpl"
+    log "medlineplus: Medical/MedlinePlus/MedlinePlus-Health-Topics.html ($(( ($(wc -c < "$md/MedlinePlus-Health-Topics.html") + 524288) / 1048576 )) MB)"
+  else
+    log "medlineplus: NOT FOUND (no topic file listed on medlineplus.gov/xml.html)"
+  fi
+else
+  log "=== [5e] MedlinePlus health topics not selected - add --medlineplus to include (~30 MB) ==="
 fi
 
 # ================================================================ 6. PDFs

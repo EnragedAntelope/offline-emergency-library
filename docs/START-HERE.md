@@ -76,6 +76,9 @@ This drive is a self-contained **offline survival library + AI**. Everything wor
 - **Talk with someone who speaks another language:** run `AI-Offline\TRANSLATE.bat` (Windows)
   or `translate.sh` (macOS/Linux), if you added it with `-Translate` / `--translate`; see
   `AI-Offline\HOW-TO-TRANSLATE.html` first.
+- **What is this illness, symptom or test?** open
+  `Medical\MedlinePlus\MedlinePlus-Health-Topics.html` in a browser (if you added it with
+  `-MedlinePlus` / `--medlineplus`).
 - **Travel guide / textbooks:** open `Extra-Archives\` in Kiwix (if you added them with
   `-ExtraZims` / `--extra-zims`).
 - **Look something up:** Wikipedia (via Kiwix) and the maps (`OsmAnd\HOW-TO-VIEW-MAPS.html`
