@@ -172,7 +172,7 @@ hardware.
   inline script can run in it. The installers splice the topic data into the inert
   `<script type="text/xml">` block only, so the hash still matches on the built page. A new CI
   step (`.github/scripts/check-csp-hash.sh`) fails when the script changes and the hash in the
-  page is not updated. Resolves #91. _[@boostedchaos](https://github.com/boostedchaos) (Kyle Welch)._
+  page is not updated. Resolves #91. _[@boostedchaos](https://github.com/boostedchaos) - PR #97._
 
 ### Fixed
 - **Blank desktop map on Windows now has a working path.** The bundled OsmAndMapCreator
