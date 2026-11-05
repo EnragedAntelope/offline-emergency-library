@@ -56,11 +56,14 @@ items you checked.
    regenerates that file from the committed versions (CI fails when it is out of date):
 
    ```bash
-   while read -r _ f; do printf '%s  %s\n' "$(git show "HEAD:$f" | sha256sum | cut -d' ' -f1)" "$f"; done < SHA256SUMS.txt > SHA256SUMS.new && mv SHA256SUMS.new SHA256SUMS.txt
+   while read -r _ f; do f=${f%$'\r'}; printf '%s  %s\n' "$(git show "HEAD:$f" | sha256sum | cut -d' ' -f1)" "$f"; done < SHA256SUMS.txt > SHA256SUMS.new && mv SHA256SUMS.new SHA256SUMS.txt
    ```
 
-   On macOS, use `shasum -a 256` for `sha256sum`. When another PR merges a change to the
-   same file first, rebase and regenerate again.
+   Commit the change first: the command reads `HEAD`, so with uncommitted edits it hashes
+   the old file and CI fails. Then commit `SHA256SUMS.txt` (or amend). On macOS, use
+   `shasum -a 256` for `sha256sum`; on Windows, run it in Git Bash (the `${f%$'\r'}` part
+   makes it work when Git checked the file out with CRLF line endings). When another PR merges
+   a change to the same file first, rebase and regenerate again.
 6. **Link check.** A new download URL is added to `.github/scripts/check-links.sh`.
 7. **Default behavior.** The installer still asks only where to save, maps still default
    to US, and anything new and large is opt-in (off by default).
