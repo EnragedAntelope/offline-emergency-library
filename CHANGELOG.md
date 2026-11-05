@@ -167,6 +167,12 @@ hardware.
   lite section spells out the no-citation consequence. Resolves #31.
 - **Manuals-first AI framing.** The guides now treat the bundled manuals as the authority and the AI as the assistant: START-HERE opens with how the kit is meant to be used, spells out the three ways to read and use things (fixing the GPT4All pointer to `AI-Offline\DocReader-GPT4All\`), and points safety-critical answers at the manual itself; HOW-TO-RUN-OFFLINE-AI gains a "How to use the AI well" note (GPT4All LocalDocs shows the sources it used, so medical and survival answers can be checked against the book). Every generated AI launcher now also prints a one-line reminder (the AI is a helper, follow the manuals for anything safety-critical) before the engine starts. Resolves #20. _[@EnragedAntelope](https://github.com/EnragedAntelope) - PR #42._
 - **Browser maps: total map size stated.** HOW-TO-VIEW-MAPS, the README options table and the skill now say that browser maps come on top of the OsmAnd maps, so a full US drive with `-BrowserMaps` needs about 34 GB for maps (16.5 + 17.8 GB, measured on a real install). Suggested in #15. _[@EnragedAntelope](https://github.com/EnragedAntelope) - PR #58._
+- **MedlinePlus page: inline script allowed by hash, not `'unsafe-inline'`.** The page's
+  Content-Security-Policy now allows only its own script, by its `sha256-` hash, so no other
+  inline script can run in it. The installers splice the topic data into the inert
+  `<script type="text/xml">` block only, so the hash still matches on the built page. A new CI
+  step (`.github/scripts/check-csp-hash.sh`) fails when the script changes and the hash in the
+  page is not updated. Resolves #91. _[@boostedchaos](https://github.com/boostedchaos) (Kyle Welch)._
 
 ### Fixed
 - **Blank desktop map on Windows now has a working path.** The bundled OsmAndMapCreator
