@@ -207,6 +207,7 @@ hardware.
   `GITHUB_TOKEN` on every `api.github.com` URL, not only the release-asset checks, so the
   pmtiles `contents` URL no longer hits the unauthenticated rate limit (403). A real dead link
   (for example a 404) still fails the job at once. Resolves #103. _[@EnragedAntelope](https://github.com/EnragedAntelope) - PR #105._
+- Fix outdated browser-maps note in POWER-AND-DEVICES guide (PR #109) (@imsurya26)
 - **A re-run no longer keeps or corrupts downloads whose name stays the same.** OsmAnd maps,
   OsmAndMapCreator (nightly), the portable Java runtime and the browser-maps style archive
   keep their file name when the source publishes a new edition, so a re-run resumed the new
