@@ -35,6 +35,13 @@ hardware.
   for their own local server before opening the browser and stop it when finished.
   The terminal translator remains available. The guide explains browser chat storage.
   Resolves #75. _[@EnragedAntelope](https://github.com/EnragedAntelope)._
+- **Manual Q&A that works on first launch.** `AI-Offline/Manual-QA/` is a browser reader
+  served by the bundled llama.cpp server: it finds passages in the downloaded manual text,
+  asks the 3B model to answer from those passages only, and links each passage to the PDF.
+  No collection setup, embedding model, Python runtime or internet is needed, and it is
+  included in lite installs too. PDFs whose text is unavailable or has changed are listed
+  instead of being answered from stale text. Source pairing and a scheduled text-freshness
+  check keep it current. Resolves #63. _[@EnragedAntelope](https://github.com/EnragedAntelope) - PR #144._
 - **Interpreter temperature comparison.** `evaluations/issue-73/` records paired
   interpreter replies and chrF++ scores at 0 and 0.2, including repetition and
   mistranslation failures. The existing 0.2 default is retained in both installers.

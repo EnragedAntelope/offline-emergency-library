@@ -378,9 +378,9 @@ try{
   @(
     'GPT4All (offline document Q&A) is NOT included in a -Lite install.',
     '',
-    'This lite drive has only the plain AI chat (the 3B model), which does not cite',
-    'sources. Treat its answers as leads and verify anything safety-critical against the',
-    'manuals on this drive.',
+    'This lite drive includes the source-citing manual reader:',
+    '  AI-Offline\Manual-QA\START-DOCS.bat',
+    'It uses the 3B model and downloaded source text. Check the original PDF before acting.',
     '',
     'To add GPT4All and its source-citing LocalDocs workflow:',
     '  - re-run the installer into this same drive WITHOUT -Lite, or',
@@ -1079,6 +1079,25 @@ PlaceDoc 'Education-READ-ME-FIRST.md' (Join-Path $Root 'Education\READ-ME-FIRST'
 PlaceDoc 'HOW-TO-KOLIBRI.md'          (Join-Path $Root 'Education\HOW-TO-KOLIBRI')                     'Kolibri - Offline Learning App'
 }
 
+# ================================================================ manual Q&A
+$DocQaFailures = 0
+if(-not $Only){
+  $setup = Join-Path $scriptDir 'doc-qa\install.ps1'
+  if(-not (Test-Path -LiteralPath $setup)){
+    $setup = Join-Path $Root 'AI-Offline\install-doc-qa.ps1'
+    if(Test-Path -LiteralPath $setup){ Remove-Item -LiteralPath $setup -Force }
+    # Not Fetch: a failed helper download must not fail a library that otherwise installed.
+    $global:LASTEXITCODE = $null
+    curl.exe -fLsS --retry 3 -A (UA) "$RepoRaw/doc-qa/install.ps1" -o $setup 2>$null
+  }
+  if(Test-Path -LiteralPath $setup){
+    try {
+      . $setup
+      $DocQaFailures = Install-ManualQA $Root $scriptDir
+    } catch { $DocQaFailures = 1; Log "doc-QA ERROR: $($_.Exception.Message)" }
+  } else { $DocQaFailures = 1; Log 'doc-QA ERROR: reader setup helper unavailable; re-run when online' }
+}
+
 # ================================================================ README index
 # CHECK-DRIVE scripts (#28), placed before the index so README.html lists them.
 foreach($f in 'CHECK-DRIVE.sh','check-drive.ps1','CHECK-DRIVE.bat'){
@@ -1165,6 +1184,7 @@ $scFail = 0
 function ScPass($m){ Log "  PASS  $m" }
 function ScWarn($m){ Log "  WARN  $m" }
 function ScFail($m){ Log "  FAIL  $m"; $script:scFail++ }
+if($DocQaFailures){ ScWarn 'manual Q&A source coverage is incomplete (see doc-QA lines above); those PDFs still open directly' }
 $e = Join-Path $Root 'AI-Offline\engine'
 $build = Join-Path $e 'BUILD.txt'
 # 1. Every engine folder has its program (a failed unpack leaves a folder empty).
