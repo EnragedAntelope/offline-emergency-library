@@ -27,6 +27,8 @@ jobs:
         run: bash .github/scripts/check-changelog.sh
       - name: Launcher parity (bash vs PowerShell installer)
         run: bash .github/scripts/check-launchers.sh
+      - name: Catalog ids and sizes match both installers (#139)
+        run: bash .github/scripts/check-catalog.sh
       - name: MedlinePlus page CSP hash (inline script allowed by hash)
         run: bash .github/scripts/check-csp-hash.sh
       - name: PowerShell parse + analyze
@@ -76,6 +78,12 @@ jobs:
         if: runner.os == 'Windows'
         shell: powershell
         run: .\.github\scripts\check-doc-qa.ps1
+      - name: Catalog ids with Windows PowerShell 5.1 (#139)
+        if: runner.os == 'Windows'
+        shell: bash
+        env:
+          OEL_PS: powershell.exe
+        run: bash .github/scripts/check-catalog.sh
 
   links:
     name: Upstream source health
