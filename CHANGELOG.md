@@ -226,6 +226,7 @@ hardware.
   page is not updated. Resolves #91. _[@boostedchaos](https://github.com/boostedchaos) - PR #97._
 
 ### Fixed
+- Self-check: verify the desktop map viewer program and Java runtime are present (#100) (@imsurya26)
 - **Windows self-check no longer passes the AI engine when Windows blocks it.** When Smart App
   Control (or another app-control policy) blocks `llama-cli.exe`, PowerShell throws and keeps the
   old exit code, so the check read 0 and printed "PASS AI engine starts" with no version. It now

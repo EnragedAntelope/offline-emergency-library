@@ -1028,6 +1028,27 @@ elif [ -n "$gbad" ]; then sc_fail "AI model(s) not complete or damaged - delete 
 elif [ -n "$gwarn" ]; then sc_warn "could not reach Hugging Face to check these AI models (not verified):$gwarn"
 else sc_pass "$gt AI models (.gguf): size and SHA-256 match Hugging Face"; fi
 
+# 6. Desktop map viewer (OsmAndMapCreator + portable Java runtime) (#100)
+MVD="$ROOT/OsmAnd/MapViewer-Desktop"
+if [ "$SKIP_MAPS" = 0 ]; then
+  BAT="$MVD/app/OsmAndMapCreator.sh"
+  JRE="$(find "$MVD/jre" -name java -type f 2>/dev/null | head -n1)"
+  if [ -f "$BAT" ] && [ -n "$JRE" ]; then
+    sc_pass "desktop map viewer (OsmAndMapCreator + Java runtime) ready"
+  else
+    mv_miss=""
+    [ -f "$BAT" ] || mv_miss="$mv_miss app/OsmAndMapCreator.sh"
+    [ -n "$JRE" ] || mv_miss="$mv_miss jre/bin/java"
+    sc_fail "desktop map viewer not complete - missing:$mv_miss - delete OsmAnd/MapViewer-Desktop/OsmAndMapCreator.zip (or the Java archive) and re-run the installer"
+  fi
+elif [ -d "$MVD" ]; then
+  if [ -n "$ONLY" ]; then
+    sc_warn "desktop map viewer not part of this run"
+  else
+    sc_warn "desktop map viewer skipped (--skip-maps)"
+  fi
+fi
+
 if [ "$SC_FAIL" = 0 ]; then
   log "=== DONE. Open README.html (full index) or START-HERE.html ==="
   echo ""
