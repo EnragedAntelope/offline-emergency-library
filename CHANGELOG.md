@@ -12,6 +12,15 @@ Contributor-driven reliability and portability work, from people running the kit
 hardware.
 
 ### Added
+- **Public-domain survival, water, food and knots guides, replacing the removed zimgit
+  collections.** Four openly-usable references now ship on every drive, in
+  `Manuals/Survival-Preparedness/` and `Manuals/Food-Preservation/`: **FEMA *Are You Ready? —
+  An In-Depth Guide to Citizen Preparedness*** (IS-22, US-government work), **EPA *Emergency
+  Disinfection of Drinking Water*** (US-government work), USDA ***Canning, Freezing, Storing
+  Garden Produce*** (Agriculture Information Bulletin 410, 1977, US-government work), and ***Knots,
+  Splices and Rope Work*** (A. Hyatt Verrill, 1912, public domain, 150+ illustrations). All are
+  public domain, so they restore the survival/water/food/knots coverage dropped with the zimgit
+  ZIMs (#122) without the licensing problem. Follow-up sources are tracked in #78/#130.
 - **Interpreter temperature comparison.** `evaluations/issue-73/` records paired
   interpreter replies and chrF++ scores at 0 and 0.2, including repetition and
   mistranslation failures. The existing 0.2 default is retained in both installers.
