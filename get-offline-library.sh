@@ -330,7 +330,7 @@ log "Platform: $PLAT/$CPU   Destination: $ROOT"
 [ -n "$ONLY" ] && log "Adding to the finished library: $ONLY (nothing else is downloaded)"
 for d in AI-Offline AI-Offline/engine AI-Offline/models AI-Offline/DocReader-GPT4All \
          Manuals Manuals/ArmyFieldManuals Manuals/Repair-iFixit Manuals/DIY-Appropedia Manuals/Household-DIY \
-         Manuals/Survival-Preparedness Manuals/Radio-Communications Manuals/Food-Preservation/USDA-Complete-Guide-to-Home-Canning-2015 \
+         Manuals/Survival-Preparedness Manuals/Radio-Communications Manuals/Food-Preservation/USDA-Complete-Guide-to-Home-Canning-2015 Manuals/Food-Growing \
          Medical Medical/WikiMed Medical/Manuals-PDF Medical/Natural-Medicine Medical/Emergency-Childbirth \
          Wikipedia OsmAnd Kiwix-Reader Phone-Apps Education; do
   [ -z "$ONLY" ] && mkdir -p "$ROOT/$d"
@@ -716,6 +716,14 @@ get_pdf "kingsamericandis01kinguoft" "Kings American Dispensatory Vol 1.pdf" "$N
 get_pdf "kingsamericandis02kinguoft" "Kings American Dispensatory Vol 2.pdf" "$NAT"
 # Culpeper's Complete Herbal (public domain): classic English herbal. Historical reference only; do not attempt the remedies.
 get_pdf "53357467.6000.emory.edu" "Culpepers Complete Herbal.pdf" "$NAT"
+# Food growing & raising animals (public-domain classics; #130). Core skills are timeless; some
+# pest/disease/chemical advice is dated — read as background, not current pesticide guidance.
+FG="$ROOT/Manuals/Food-Growing"
+# Pin the exact .pdf by direct link: these two items also carry a larger _bw.pdf, which the
+# PowerShell installer (largest file) would otherwise pick, differing from bash (#184 review).
+get_pdf_url "https://archive.org/download/productiveveget00lloy/productiveveget00lloy.pdf" "Productive Vegetable Growing (Lloyd 1918).pdf" "$FG"
+get_pdf "productivepoult02lewigoog"  "Productive Poultry Husbandry (Lewis 1913).pdf" "$FG"
+get_pdf_url "https://archive.org/download/cu31924003227729/cu31924003227729.pdf" "Langstroth on the Hive and the Honey-Bee (1904).pdf" "$FG"
 # Emergency Childbirth (US Office of Civil Defense + Public Health Service; US-government work, public domain).
 # Project Gutenberg #26923 e-text (HTML + figures), header kept. Emergency-delivery reference for when help is delayed.
 EC="$ROOT/Medical/Emergency-Childbirth"
