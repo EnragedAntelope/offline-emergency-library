@@ -36,6 +36,8 @@ jobs:
         run: bash .github/scripts/check-launchers.sh
       - name: Catalog ids and sizes match both installers (#139)
         run: bash .github/scripts/check-catalog.sh
+      - name: Picker catalog.js matches catalog.json (#188)
+        run: bash .github/scripts/build-catalog-js.sh --check
       - name: About page is up to date with CONTRIBUTORS (#189)
         run: bash .github/scripts/build-about.sh --check
       - name: doc-qa reader allowlist covers every sources.tsv folder
