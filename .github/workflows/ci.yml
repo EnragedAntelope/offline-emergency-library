@@ -28,6 +28,8 @@ jobs:
         run: node --test doc-qa/retrieval.test.mjs
       - name: Browser-only additions preserve OsmAnd metadata
         run: bash .github/scripts/check-browser-map-isolation.sh
+      - name: OffRoad cross-platform viewer launcher
+        run: bash .github/scripts/check-offroad-viewer.sh
       - name: Changelog fragments have valid names and content
         run: bash .github/scripts/compile-changelog.sh > /dev/null
       - name: Changelog compiler regression checks
@@ -89,6 +91,10 @@ jobs:
         if: runner.os == 'Windows'
         shell: bash
         run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File .github/scripts/check-map-refresh.ps1
+      - name: OffRoad Windows launcher, stale junction and relocation
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: .\.github\scripts\check-offroad-viewer.ps1
       - name: Manual Q&A source pairing and relocation (PowerShell and Git Bash)
         if: runner.os == 'Windows'
         shell: powershell

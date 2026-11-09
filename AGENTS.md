@@ -4,7 +4,7 @@ Portable installers assemble an offline reference library. Read
 `.github/CONTRIBUTING.md` and the PR template before changing files.
 
 ## Current state
-_Last verified: 2026-11-07_
+_Last verified: 2026-11-09_
 
 - Status: issue 72 documents the tested chat context limit; issue 102 corrects state
   browser-map estimates and uses a conservative space budget; browser-only additions
@@ -13,7 +13,11 @@ _Last verified: 2026-11-07_
   manual Q&A reader (`doc-qa/`) that reuses the bundled llama.cpp server and model (the
   GPT4All database is deliberately not shipped because its stored paths do not survive
   relocation). Issue 160 improves lexical retrieval with frequency scoring and
-  topic headings, covered by an offline question set.
+  topic headings, covered by an offline question set. Issue 107 adds the bundled
+  OffRoad desktop viewer, which renders the drive's OBF maps offline on Windows,
+  macOS and Linux for any region. Review fixes put Windows's private junction on local
+  NTFS so exFAT drives and relocation work, and replace SQLite JDBC on Apple Silicon
+  with an ARM64-compatible build (Windows runtime QA; macOS and Linux not tested here).
 - Works: aria2 fallback, cancellation and partial-file protection have offline regression checks;
   large-model chat launchers follow the model selection in both installers (issue 168);
   changelog compilation rejects invalid bullet starts and missing numeric PR references,
@@ -54,6 +58,11 @@ to exercise the installer's real downloader against local executable fixtures, a
 `.github/scripts/check-doc-sources.sh` verifies that published manual text still matches
 `sources.tsv`; a changed publisher file must be reviewed, not silently re-hashed.
 Maintenance notes for the reader live in `doc-qa/README.md`.
+`.github/scripts/check-offroad-viewer.sh` verifies the OffRoad launcher links the
+prepared OBF folder without copying it, passes the Java 21 compatibility flag, starts
+the bundled jar, and applies the ARM64 SQLite package only on Apple Silicon.
+`.github/scripts/check-offroad-viewer.ps1` executes the real generated Windows launcher
+against stale junctions and relocation with a fake Java, without network access.
 `.github/scripts/check-launchers.sh` runs model placement with local download fixtures
 and checks generated launcher model references across full, Lite, skipped-model and
 translator selections. It runs in the existing lint job on PRs and the weekly schedule.
