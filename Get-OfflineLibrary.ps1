@@ -772,6 +772,12 @@ $pdfs = @(
  @{u='https://archive.org/download/cu31924001786965/cu31924001786965.pdf'; n='Useful Wild Plants of the United States and Canada (Saunders 1920).pdf'; d='Manuals\Survival-Preparedness'}
  # Household do-it-yourself from common materials (public domain). Dated; some projects unsafe by modern standards -- see Manuals\READ-ME-FIRST
  @{id='boymechanicthing01unse';                              n='The Boy Mechanic Vol 1 - 700 Things to Do (1913).pdf'; d='Manuals\Household-DIY'}
+ # Old household self-reliance skills from common materials (public-domain classics; #130): a practical-recipes encyclopedia, farm/home devices, soap making and home leather tanning
+ @{id='cu31924089480218';                                     n='Household Discoveries - Encyclopaedia of Practical Recipes (Morse 1909).pdf'; d='Manuals\Household-DIY'}
+ # Handy Farm Devices: Library of Congress colour scan, pinned by direct link (item also has a _bw.pdf; #184)
+ @{u='https://archive.org/download/handyfarmdevices00cobl/handyfarmdevices00cobl.pdf'; n='Handy Farm Devices and How to Make Them (Cobleigh 1910).pdf'; d='Manuals\Household-DIY'}
+ @{id='soap-making-manual-a-practical-handbook-edgar-george-thomssen'; n='Soap-Making Manual (Thomssen 1922).pdf'; d='Manuals\Household-DIY'}
+ @{id='CAT87202829';                                          n='Home Tanning of Leather and Small Fur Skins (USDA Farmers Bulletin 1334, 1923).pdf'; d='Manuals\Household-DIY'}
  # Household food and clothing skills (public domain; #130): baking bread at home, and sewing/mending
  @{id='CAT87202530';                                         n='Bread and Bread Making in the Home (USDA Farmers Bulletin 807, 1917).pdf'; d='Manuals\Household-DIY'}
  @{u='https://archive.org/download/goodwinscoursein00good/goodwinscoursein00good.pdf'; n='Goodwins Course in Sewing - Practical Instruction in Needlework (1910).pdf'; d='Manuals\Household-DIY'}
