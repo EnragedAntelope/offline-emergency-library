@@ -1,6 +1,10 @@
 @echo off
+setlocal
 title Offline Emergency Library - Installer
 cd /d "%~dp0"
+rem A PowerShell 7 window passes down its module path, and Windows PowerShell then
+rem fails to load its own commands (#117). Cleared, Windows PowerShell uses its default.
+set "PSModulePath="
 echo ================================================================
 echo   OFFLINE EMERGENCY LIBRARY - INSTALLER
 echo.

@@ -6,9 +6,9 @@
 # llama.cpp build the real way (a build that has the files for all 8 platforms), so a missing
 # file for any OS fails the run. Then it moves the folder to a new path and, from there: scans
 # every file for the old path, runs each .bat launcher with --version, and runs CHECK-DRIVE.
-# Run it with Windows PowerShell 5.1 (what most Windows users have, and what CI uses). From
-# PowerShell 7 the CHECK-DRIVE step fails: CHECK-DRIVE.bat starts powershell.exe, which breaks
-# on the PSModulePath that PowerShell 7 passes down.
+# Run it with Windows PowerShell 5.1 (what most Windows users have, and what CI uses).
+# CHECK-DRIVE.bat started from PowerShell 7 (it clears the PSModulePath PowerShell 7 passes
+# down) is covered by check-pwsh7-bat.ps1 (#117).
 # Set GITHUB_TOKEN to avoid the API rate limit. Used by CI (smoke job).
 $ErrorActionPreference = 'Continue'   # same as the installer
 $ProgressPreference = 'SilentlyContinue'

@@ -57,8 +57,10 @@ _Last verified: 2026-11-12_
   and the website mirror rewrites drive-relative links (issues 254, 253).
 - In progress: the front-end direction beyond the HTML picker — desktop app, then phone
   (issues 66, 84, 139); more public-domain manuals, licenses first (issues 130, 78); and the
-  outstanding test rounds for the OffRoad viewer and reader on Linux x64/arm64 and the wider
-  CI matrix (issues 108, 159, 117).
+  outstanding test rounds for the OffRoad viewer and reader on Linux x64/arm64 (issues 108, 159).
+  The CI smoke test covers Linux x64 and arm64, macOS arm64 and Intel, and Windows x64; still
+  open in issue 117: the Vulkan/GPU launchers (need a GPU, only the static engine-folder check
+  reaches them) and the installers' own `fetch`/`Fetch` downloader in the smoke test.
 - Known gaps: the `Publish picker site` GitHub Pages workflow is manual-dispatch only — Pages
   was never enabled and its workflow token cannot create the site, so the live host is Fly, not
   Pages (issue 252, #259); on Windows 10 before 1803 (no `tar.exe`) zips still unpack with
@@ -89,6 +91,15 @@ to exercise the installer's real downloader against local executable fixtures (p
 `.github/scripts/check-space-estimate.ps1`, which runs the installer's space-estimate block
 (from its `(#68): Get-SpaceEstimate, defined above.` comment to the `folder tree` rule) with
 no PSDrive, as on a network share, and requires the estimate lines.
+The per-OS smoke job (`check-smoke.sh` / `check-smoke.ps1`) runs on `ubuntu-latest`,
+`ubuntu-24.04-arm`, `macos-latest` (arm64), `macos-15-intel` and `windows-latest`; each OS case in
+`check-smoke.sh` names the one engine it downloads, so a launcher picking another folder fails.
+Every `.bat` that starts Windows PowerShell runs `setlocal` and `set "PSModulePath="` first: from a
+PowerShell 7 window, cmd.exe passes PowerShell 7's module path to `powershell.exe`, which then cannot
+load `Get-FileHash` (issue 117). `.github/scripts/check-pwsh7-bat.ps1` (Windows smoke job) checks
+that line in every repo, installer and picker `.bat`, runs CHECK-DRIVE.bat with a simulated
+PowerShell 7 module path (plus a self-test that the unfixed copy fails), and from real `pwsh`
+(`OEL_REQUIRE_PWSH=1` in CI; skipped locally without it).
 `.github/scripts/check-doc-sources.sh` verifies that published manual text still matches
 `sources.tsv`; a changed publisher file must be reviewed, not silently re-hashed. Archive.org timeouts and 5xx are warnings; only a 4xx or changed text fails.
 Maintenance notes for the reader live in `doc-qa/README.md`.

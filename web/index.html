@@ -433,6 +433,8 @@ footer{margin-top:28px;border-top:1px solid var(--line);padding-top:14px;color:v
         "set \"PS1=%TEMP%\\Get-OfflineLibrary.ps1\"",
         "curl.exe -fLsS -o \"%PS1%\" \"" + RAW_BASE + "/Get-OfflineLibrary.ps1\"",
         "if errorlevel 1 ( echo Could not download the installer engine. Check your internet. & pause & exit /b 1 )",
+        "rem Started from PowerShell 7, Windows PowerShell would load its modules and fail (#117).",
+        "set \"PSModulePath=\"",
         "powershell -NoProfile -ExecutionPolicy Bypass -File \"%PS1%\" -Selection \"%SEL%\"",
         "pause"
       ].join("\r\n") + "\r\n";

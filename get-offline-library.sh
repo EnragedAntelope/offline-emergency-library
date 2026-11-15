@@ -1303,7 +1303,10 @@ EOS
 chmod +x "$AO/translate-browser.command" 2>/dev/null
 cat <<'EOS' | sed 's/$/\r/' > "$AO/TRANSLATE-BROWSER.bat"
 @echo off
+setlocal
 title Offline translator - browser
+rem Started from PowerShell 7, Windows PowerShell would load its modules and fail (#117).
+set "PSModulePath="
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0translate-browser.ps1"
 set "RC=%ERRORLEVEL%"
 pause
