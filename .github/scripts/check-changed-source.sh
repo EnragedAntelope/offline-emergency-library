@@ -45,11 +45,13 @@ ps_path(){ cygpath -w "$1" 2>/dev/null || printf '%s' "$1"; }
 ps_run(){ OEL_INSTALLER="$(ps_path "$PWD/Get-OfflineLibrary.ps1")" "$PS" -NoProfile -ExecutionPolicy Bypass -File "$(ps_path "$T/run.ps1")" "$URL" "$(ps_path "$T/ps/manual.pdf")" > "$T/ps.log" 2>&1; }
 
 check(){ # name
-  sh_run || { echo "FAIL [$1] bash: exited non-zero"; sed 's/^/    /' "$T/sh.log"; fail=1; }
-  cmp -s "$T/src/manual.pdf" "$T/sh/manual.pdf" && echo "  OK   [$1] bash" || { echo "FAIL [$1] bash: drive copy differs from the source"; fail=1; }
+  if ! sh_run; then echo "FAIL [$1] bash: exited non-zero"; sed 's/^/    /' "$T/sh.log"; fail=1
+  elif cmp -s "$T/src/manual.pdf" "$T/sh/manual.pdf"; then echo "  OK   [$1] bash"
+  else echo "FAIL [$1] bash: drive copy differs from the source"; fail=1; fi
   [ -z "$PS" ] && return
-  ps_run || { echo "FAIL [$1] PowerShell: exited non-zero"; sed 's/^/    /' "$T/ps.log"; fail=1; }
-  cmp -s "$T/src/manual.pdf" "$T/ps/manual.pdf" && echo "  OK   [$1] PowerShell" || { echo "FAIL [$1] PowerShell: drive copy differs from the source"; fail=1; }
+  if ! ps_run; then echo "FAIL [$1] PowerShell: exited non-zero"; sed 's/^/    /' "$T/ps.log"; fail=1
+  elif cmp -s "$T/src/manual.pdf" "$T/ps/manual.pdf"; then echo "  OK   [$1] PowerShell"
+  else echo "FAIL [$1] PowerShell: drive copy differs from the source"; fail=1; fi
 }
 put v1 200 a; check "first download"
 put v2 600 b; check "publisher replaced it with a bigger file"
