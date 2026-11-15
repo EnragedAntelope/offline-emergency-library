@@ -617,12 +617,12 @@ elif [ "$HAVE_TAR" = 1 ]; then
       [ -f "$o" ] || continue
       case "$(basename "$o")" in "$LT-"*) ;; *) rm -f "$o" ;; esac
     done
-    # BUILD.txt names the build every engine folder holds. With the Windows engines left out it
-    # would be wrong, so an existing one stays; a new drive gets the tag plus a note.
+    # BUILD.txt line 1 is the build just unpacked. With the Windows engines left out, line 2 says
+    # so, because their folders hold an older build or nothing (readers use line 1 only).
     if [ -z "$WINSKIP" ]; then echo "$LT" > "$E/BUILD.txt"
     else
       log "engine: Windows engine not updated:$WINSKIP. Install 'unzip' and run the installer again to add or update it."
-      [ -f "$E/BUILD.txt" ] || printf '%s\nWindows engine not unpacked (unzip was missing):%s\n' "$LT" "$WINSKIP" > "$E/BUILD.txt"
+      printf '%s\nWindows engine not updated (unzip was missing):%s\n' "$LT" "$WINSKIP" > "$E/BUILD.txt"
     fi
   fi
 else

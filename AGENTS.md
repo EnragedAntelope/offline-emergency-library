@@ -102,7 +102,8 @@ and checks generated launcher model references across full, Lite, skipped-model 
 translator selections. It runs in the existing lint job on PRs and the weekly schedule.
 `.github/scripts/check-engine-unzip.sh` runs the bash installer's engine section (marker
 `# 1. AI engine` to `# 2. AI models`) with local fixtures and no `unzip`: the drive's Windows
-engine folders and `BUILD.txt` must stay, no zip is fetched, and the tar.gz engines still unpack.
+engine folders must stay, no zip is fetched, the tar.gz engines still unpack, and `BUILD.txt`
+keeps the new build on line 1 with a second line saying the Windows engine was not updated.
 Kiwix archives download through `fetch_zim` / `Fetch-Zim`, which remove other monthly editions
 (`<prefix>YYYY-MM.zim`) of the same archive once the new one is complete;
 `.github/scripts/check-zim-editions.sh` runs both against a `file://` source.

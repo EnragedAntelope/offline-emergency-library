@@ -42,9 +42,10 @@ done
 ls "$E"/*.zip >/dev/null 2>&1 && bad "A: a Windows zip was downloaded although it cannot be unpacked"
 grep -q '\.zip' "$T/fetched" && bad "A: fetch was called for a .zip"
 [ -f "$E/macos-arm64/llama-cli" ] && [ -f "$E/linux-x64/llama-cli" ] || bad "A: the tar.gz engines were not unpacked"
-[ "$(cat "$E/BUILD.txt")" = b1000 ] || bad "A: BUILD.txt changed although the Windows engines were not updated: $(cat "$E/BUILD.txt")"
+[ "$(head -n1 "$E/BUILD.txt")" = "$TAG" ] || bad "A: BUILD.txt line 1 is not the build just unpacked: $(cat "$E/BUILD.txt")"
+grep -q 'Windows engine not updated' "$E/BUILD.txt" || bad "A: BUILD.txt does not say the Windows engine was not updated"
 grep -q "left as it is" "$T/out" || bad "A: no 'left as it is' line"
-[ "$fail" = 0 ] && echo "  OK   existing Windows engine kept, no zip fetched, BUILD.txt kept"
+[ "$fail" = 0 ] && echo "  OK   existing Windows engine kept, no zip fetched, BUILD.txt notes it"
 
 # B: new drive: no Windows folders created, BUILD.txt names the build and says Windows is missing.
 R="$T/b"; E="$R/AI-Offline/engine"
