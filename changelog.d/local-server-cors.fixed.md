@@ -1,0 +1,2 @@
+- **Local AI servers answer only their own page.** The chat, translator and manual reader launchers now start llama-server with `--cors-origins localhost`. Before, the engine allowed any origin, so any web page open in the same browser could read drive files served by the reader or drive the model. Other origins and `file://` pages now get a 403; the reader's own page keeps working. Full protection needs llama.cpp b12311 or newer; a full re-run while online updates the engine. Measured by boostedchaos. Resolves #279.
+  _[@imsurya26](https://github.com/imsurya26) - PR #0._

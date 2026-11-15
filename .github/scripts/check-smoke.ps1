@@ -120,6 +120,13 @@ try {
     Write-Host "  ok: $($b.Name): $v"
   }
 
+  Write-Host '== engine still accepts --cors-origins (the launchers pass it, #279)'
+  $srv = Get-ChildItem (Join-Path $ao 'engine') -Filter llama-server.exe -File -Recurse | Select-Object -First 1
+  if(-not $srv){ Fail 'no llama-server.exe found under the moved engine folder' }
+  $help = (cmd /c "`"$($srv.FullName)`" --help 2>&1" | Out-String)
+  if($help -notmatch '--cors-origins'){ Fail "this llama-server build has no --cors-origins option; the launchers pass it:`n$help" }
+  Write-Host '  ok'
+
   Write-Host '== generated browser launcher rejects missing and invalid models without opening a browser'
   # Intercept only the browser action. Engine execution is the generated launcher's real code.
   $wrapper = Join-Path $tmp 'browser-check.ps1'
