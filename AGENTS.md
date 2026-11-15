@@ -105,7 +105,8 @@ Kiwix archives download through `fetch_zim` / `Fetch-Zim`, which remove other mo
 `.github/scripts/check-zim-editions.sh` runs both against a `file://` source.
 PDFs and models download through `fetch_remote` / `Fetch-Remote` (size-named part file, never a
 resume onto a replaced file); `.github/scripts/check-changed-source.sh` runs both installers'
-real helpers against a `file://` source that changes size between runs.
+real helpers against a `file://` source that changes size between runs, and against a local
+python3 HTTP server whose HEAD answers 503, 405 or a redirect (only a 2xx answer's length counts, #289).
 `.github/scripts/check-readme-index.sh` builds README.html with both installers' index code and
 `build-readme-index.ps1` on a fixture drive whose names hold `' # % &`, and requires every link
 to open its file; it extracts each installer's block by its `README index` start and

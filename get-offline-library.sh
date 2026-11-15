@@ -414,8 +414,10 @@ fetch(){ # url out
   }
   [ -s "$2" ] || { log "ERROR: download is missing or empty: $2"; exit 1; }
 }
-# Size of a remote file in bytes after redirects (empty if the server does not say).
-remote_size(){ curl -sIL -A "${UA:-Mozilla/5.0}" "$1" 2>/dev/null | tr -d '\r' | awk 'tolower($1)=="content-length:"{n=$2} END{if(n>0)print n}'; }
+# Size of a remote file in bytes after redirects (empty if the server does not say). Only a 2xx
+# answer counts: an error page's or a redirect's own length is not the file's (#289). ok starts
+# true because a file:// source prints no status line.
+remote_size(){ curl -sIL -A "${UA:-Mozilla/5.0}" "$1" 2>/dev/null | tr -d '\r' | awk 'BEGIN{ok=1} toupper($1) ~ /^HTTP/{ok=($2 ~ /^2/); n=""} ok && tolower($1)=="content-length:"{n=$2} END{if(n>0)print n}'; }
 # fetch_sized url out bytes [soft]: for a file whose name stays the same when the source
 # publishes a new edition (#57). A file of the right size is kept. Otherwise the new
 # edition goes to a part file whose name carries its size, so a re-run never resumes
