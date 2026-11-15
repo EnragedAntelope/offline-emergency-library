@@ -422,12 +422,20 @@ remote_size(){ curl -sIL -A "${UA:-Mozilla/5.0}" "$1" 2>/dev/null | tr -d '\r' |
 # publishes a new edition (#57). A file of the right size is kept. Otherwise the new
 # edition goes to a part file whose name carries its size, so a re-run never resumes
 # one edition into another, and it replaces the old file only once it is complete.
-# With no size known, this is a plain fetch. With a 4th arg (soft), a size mismatch from
+# With no size known (#289), a finished copy is kept and a missing one downloads whole to
+# "$2.unknown.part": never a resume, which could join two editions. With a 4th arg (soft), a size mismatch from
 # the source changing mid-download is not fatal: it returns 1 so an optional download (the
 # desktop viewer) can be skipped and the run continues (#99). A failed download still exits
 # (fetch), so run a soft call in ( ... ): the exit then ends only the subshell (#272).
 fetch_sized(){ # url out bytes [soft]
-  [ -n "$3" ] || { fetch "$1" "$2"; return; }
+  if [ -z "$3" ]; then
+    # Size unknown (the HEAD failed or gave no length): never resume, since the copy on the
+    # drive may be an older edition (#289). Keep a finished copy; else download it whole.
+    if [ -f "$2" ] && [ ! -e "$2.aria2" ]; then log "  kept: $(basename "$2") (source size unknown; a re-run checks for a new edition)"; return 0; fi
+    part="$2.unknown.part"; rm -f "$part" "$part.aria2"
+    fetch "$1" "$part"; rm -f "$2.aria2"; mv -f "$part" "$2"
+    for o in "$2".*.part; do [ -e "$o" ] && rm -f "$o" "$o.aria2"; done; return 0
+  fi
   if [ -f "$2" ] && [ ! -e "$2.aria2" ] && [ "$(wc -c < "$2" | tr -d ' ')" = "$3" ]; then return 0; fi
   part="$2.$3.part"
   for o in "$2".*.part; do [ -e "$o" ] && [ "$o" != "$part" ] && rm -f "$o" "$o.aria2"; done
@@ -442,7 +450,7 @@ fetch_sized(){ # url out bytes [soft]
   rm -f "$2.aria2"; mv -f "$part" "$2"
 }
 # A file a publisher can replace under the same URL (PDFs, models): never resume one
-# version into another (#274). One HEAD request; with no size known, a plain fetch.
+# version into another (#274). One HEAD request; with no size known, see fetch_sized.
 fetch_remote(){ fetch_sized "$1" "$2" "$(remote_size "$1")"; }
 if [ "$USE_ARIA" = 1 ]; then log "Downloader: aria2 (fast, multi-connection)"; else log "Downloader: curl (tip: install 'aria2' for much faster downloads)"; fi
 [ "$SELECT_SET" = 1 ] && log "Selection from $SELECT:$SEL_LIST (same as:$SAME)"

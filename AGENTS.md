@@ -107,6 +107,8 @@ PDFs and models download through `fetch_remote` / `Fetch-Remote` (size-named par
 resume onto a replaced file); `.github/scripts/check-changed-source.sh` runs both installers'
 real helpers against a `file://` source that changes size between runs, and against a local
 python3 HTTP server whose HEAD answers 503, 405 or a redirect (only a 2xx answer's length counts, #289).
+With the size unknown, a finished copy is kept and a missing one downloads whole to `<file>.unknown.part`,
+never a resume onto an older edition; the server honors `Range` so the check would see such a resume (#289).
 `.github/scripts/check-readme-index.sh` builds README.html with both installers' index code and
 `build-readme-index.ps1` on a fixture drive whose names hold `' # % &`, and requires every link
 to open its file; it extracts each installer's block by its `README index` start and

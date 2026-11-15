@@ -44,13 +44,14 @@ PS=""; command -v pwsh >/dev/null 2>&1 && PS=pwsh
 ps_path(){ cygpath -w "$1" 2>/dev/null || printf '%s' "$1"; }
 ps_run(){ OEL_INSTALLER="$(ps_path "$PWD/Get-OfflineLibrary.ps1")" "$PS" -NoProfile -ExecutionPolicy Bypass -File "$(ps_path "$T/run.ps1")" "$URL" "$(ps_path "$T/ps/manual.pdf")" > "$T/ps.log" 2>&1; }
 
-check(){ # name
+check(){ # name [file the drive copy must equal; default: the source]
+  want="${2:-$T/src/manual.pdf}"
   if ! sh_run; then echo "FAIL [$1] bash: exited non-zero"; sed 's/^/    /' "$T/sh.log"; fail=1
-  elif cmp -s "$T/src/manual.pdf" "$T/sh/manual.pdf"; then echo "  OK   [$1] bash"
+  elif cmp -s "$want" "$T/sh/manual.pdf" && ! ls "$T"/sh/*.part >/dev/null 2>&1; then echo "  OK   [$1] bash"
   else echo "FAIL [$1] bash: drive copy differs from the source"; fail=1; fi
   [ -z "$PS" ] && return
   if ! ps_run; then echo "FAIL [$1] PowerShell: exited non-zero"; sed 's/^/    /' "$T/ps.log"; fail=1
-  elif cmp -s "$T/src/manual.pdf" "$T/ps/manual.pdf"; then echo "  OK   [$1] PowerShell"
+  elif cmp -s "$want" "$T/ps/manual.pdf" && ! ls "$T"/ps/*.part >/dev/null 2>&1; then echo "  OK   [$1] PowerShell"
   else echo "FAIL [$1] PowerShell: drive copy differs from the source"; fail=1; fi
 }
 put v1 200 a; check "first download"
@@ -67,18 +68,26 @@ for c in python3 python; do command -v "$c" >/dev/null 2>&1 && "$c" -c 'import h
 if [ -z "$PY" ]; then echo "  skip HEAD-error cases: no python3"; else
   cat > "$T/srv.py" <<'EOF'
 import sys, http.server
-body = open(sys.argv[1], 'rb').read()
 class H(http.server.BaseHTTPRequestHandler):
     def log_message(self, *a): pass
     def do_HEAD(self):
+        body = open(sys.argv[1], 'rb').read()
         mode = self.path.split('/')[1]
         if mode == '503': self.send_response(503); self.send_header('Content-Length', '170')
         elif mode == '405': self.send_response(405); self.send_header('Content-Length', '150')
         elif mode == '302': self.send_response(302); self.send_header('Location', '/ok/manual.pdf'); self.send_header('Content-Length', '95')
+        elif mode == 'len': self.send_response(200); self.send_header('Content-Length', str(len(body)))
         else: self.send_response(200)  # a 200 that states no length
         self.end_headers()
     def do_GET(self):
-        self.send_response(200); self.send_header('Content-Length', str(len(body))); self.end_headers(); self.wfile.write(body)
+        body = open(sys.argv[1], 'rb').read()  # read per request: a case replaces the file
+        r = self.headers.get('Range', '')      # honor 'bytes=N-' like a real server, so a resume shows
+        s = int(r[6:-1]) if r.startswith('bytes=') and r.endswith('-') else 0
+        if 0 < s < len(body):
+            self.send_response(206); self.send_header('Content-Range', 'bytes %d-%d/%d' % (s, len(body) - 1, len(body)))
+            self.send_header('Content-Length', str(len(body) - s)); self.end_headers(); self.wfile.write(body[s:])
+        else:
+            self.send_response(200); self.send_header('Content-Length', str(len(body))); self.end_headers(); self.wfile.write(body)
 s = http.server.HTTPServer(('127.0.0.1', 0), H)
 open(sys.argv[2], 'w').write(str(s.server_address[1]))
 s.serve_forever()
@@ -93,6 +102,18 @@ EOF
       cp "$T/src/manual.pdf" "$T/sh/manual.pdf"; cp "$T/src/manual.pdf" "$T/ps/manual.pdf"
       check "HEAD answers $m, correct copy on the drive"
     done
+    # The publisher replaced the file with a bigger one and the HEAD fails: the older copy on the
+    # drive must stay whole, never be resumed into a mix of both editions (#289) ...
+    P="http://127.0.0.1:$(cat "$T/port")"
+    cp "$T/src/manual.pdf" "$T/old.pdf"; put v5 6000 e
+    URL="$P/503/manual.pdf"; check "HEAD answers 503, older copy on the drive" "$T/old.pdf"
+    # ... and the next run with a working HEAD replaces it with the new edition.
+    URL="$P/len/manual.pdf"; check "HEAD works again, new edition replaces the older copy"
+    # With nothing on the drive, a failed HEAD still downloads the file whole, and a part file
+    # left by an earlier sized download is removed once the file is in place (check fails on *.part).
+    rm -f "$T/sh/manual.pdf" "$T/ps/manual.pdf"
+    printf 'stale' > "$T/sh/manual.pdf.4999.part"; printf 'stale' > "$T/ps/manual.pdf.4999.part"
+    URL="$P/503/manual.pdf"; check "HEAD answers 503, empty drive"
   fi
 fi
 
