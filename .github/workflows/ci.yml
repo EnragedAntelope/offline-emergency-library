@@ -36,6 +36,8 @@ jobs:
         run: bash .github/scripts/check-changelog.sh
       - name: Launcher parity (bash vs PowerShell installer)
         run: bash .github/scripts/check-launchers.sh
+      - name: Without unzip the Windows engine on the drive is kept
+        run: bash .github/scripts/check-engine-unzip.sh
       - name: A new Kiwix edition replaces the old one (#275)
         run: bash .github/scripts/check-zim-editions.sh
       - name: Changed PDF or model is fetched whole, not resumed (#274)

@@ -100,6 +100,9 @@ against stale junctions and relocation with a fake Java, without network access.
 `.github/scripts/check-launchers.sh` runs model placement with local download fixtures
 and checks generated launcher model references across full, Lite, skipped-model and
 translator selections. It runs in the existing lint job on PRs and the weekly schedule.
+`.github/scripts/check-engine-unzip.sh` runs the bash installer's engine section (marker
+`# 1. AI engine` to `# 2. AI models`) with local fixtures and no `unzip`: the drive's Windows
+engine folders and `BUILD.txt` must stay, no zip is fetched, and the tar.gz engines still unpack.
 Kiwix archives download through `fetch_zim` / `Fetch-Zim`, which remove other monthly editions
 (`<prefix>YYYY-MM.zim`) of the same archive once the new one is complete;
 `.github/scripts/check-zim-editions.sh` runs both against a `file://` source.

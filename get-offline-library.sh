@@ -590,18 +590,26 @@ elif [ "$HAVE_TAR" = 1 ]; then
   else
     log "engine: llama.cpp $LT"
     E="$ROOT/AI-Offline/engine"
+    WINSKIP=""
     for x in $LLAMA_ASSETS; do
       # The build tag is in the file name: a re-run on a newer build must not resume into
       # the old build's archive (curl -C - / aria2 -c would append to it - see #35).
       f="${x%%:*}"; d="$E/${x##*:}"; a="$E/$LT-$f"
+      # No 'unzip': do not download the Windows engine and do not touch its folder - wiping it
+      # would leave the drive's working Windows engine empty. Keep what is there.
+      if [ "${f%.zip}" != "$f" ] && [ "$HAVE_UNZIP" != 1 ]; then
+        WINSKIP="$WINSKIP ${x##*:}"
+        if [ -n "$(find "$d" -type f -name llama-cli.exe 2>/dev/null | head -n 1)" ]; then log "engine: $f: 'unzip' not found - the Windows engine in engine/${x##*:} was left as it is (older build)"
+        else log "engine: $f: 'unzip' not found - engine/${x##*:} (Windows) was not unpacked"; fi
+        continue
+      fi
       log "engine: $f"; fetch "https://github.com/ggml-org/llama.cpp/releases/download/$LT/llama-$LT-bin-$f" "$a"
       rm -rf "$d"; mkdir -p "$d"   # fresh unpack: no files left from an older build
       case "$f" in
-        *.zip)    if [ "$HAVE_UNZIP" = 1 ]; then unzip -o -q "$a" -d "$d" || { log "ERROR: could not unpack $f ($a). Delete it and re-run."; exit 1; }; else log "  $f: install 'unzip' to unpack the Windows engine"; fi ;;
+        *.zip)    unzip -o -q "$a" -d "$d" || { log "ERROR: could not unpack $f ($a). Delete it and re-run."; exit 1; } ;;
         *.tar.gz) untar_real "$a" "$d" || { log "ERROR: could not unpack $f ($a). Delete it and re-run."; exit 1; } ;;
       esac
       # A damaged archive can unpack to nothing without an error (PowerShell 5.1 does, #35): check the program is there.
-      case "$f" in *.zip) [ "$HAVE_UNZIP" = 1 ] || continue ;; esac
       [ -n "$(find "$d" -type f \( -name llama-cli -o -name llama-cli.exe \) | head -n 1)" ] || { log "ERROR: unpacked $f ($a), but llama-cli is not in it. Delete it and re-run."; exit 1; }
     done
     # Archives from other builds (and the old names without a tag) are no longer needed.
@@ -609,7 +617,13 @@ elif [ "$HAVE_TAR" = 1 ]; then
       [ -f "$o" ] || continue
       case "$(basename "$o")" in "$LT-"*) ;; *) rm -f "$o" ;; esac
     done
-    echo "$LT" > "$E/BUILD.txt"
+    # BUILD.txt names the build every engine folder holds. With the Windows engines left out it
+    # would be wrong, so an existing one stays; a new drive gets the tag plus a note.
+    if [ -z "$WINSKIP" ]; then echo "$LT" > "$E/BUILD.txt"
+    else
+      log "engine: Windows engine not updated:$WINSKIP. Install 'unzip' and run the installer again to add or update it."
+      [ -f "$E/BUILD.txt" ] || printf '%s\nWindows engine not unpacked (unzip was missing):%s\n' "$LT" "$WINSKIP" > "$E/BUILD.txt"
+    fi
   fi
 else
   log "engine: skipped (no 'tar')"
