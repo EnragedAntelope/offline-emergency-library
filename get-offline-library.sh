@@ -417,7 +417,19 @@ fetch(){ # url out
 # Size of a remote file in bytes after redirects (empty if the server does not say). Only a 2xx
 # answer counts: an error page's or a redirect's own length is not the file's (#289). ok starts
 # true because a file:// source prints no status line.
-remote_size(){ curl -sIL -A "${UA:-Mozilla/5.0}" "$1" 2>/dev/null | tr -d '\r' | awk 'BEGIN{ok=1} toupper($1) ~ /^HTTP/{ok=($2 ~ /^2/); n=""} ok && tolower($1)=="content-length:"{n=$2} END{if(n>0)print n}'; }
+# When HEAD gives no size (iris.who.int answers every HEAD with 500 and no length), ask for one
+# byte and take the total from a 206's Content-Range ("bytes 0-0/*" gives none). A server that
+# ignores Range answers 200: that gives no size, and --max-filesize 1 stops the body (--max-time
+# bounds a 200 of no stated length, which an older curl does not cut off). http(s) only: a
+# file:// source has no status line, and its HEAD already gives the size.
+remote_size(){
+  local n
+  n="$(curl -sIL -A "${UA:-Mozilla/5.0}" "$1" 2>/dev/null | tr -d '\r' | awk 'BEGIN{ok=1} toupper($1) ~ /^HTTP/{ok=($2 ~ /^2/); n=""} ok && tolower($1)=="content-length:"{n=$2} END{if(n>0)print n}')"
+  if [ -z "$n" ]; then case "$1" in http://*|https://*)
+    n="$(curl -sL -r 0-0 --max-filesize 1 --max-time 30 -A "${UA:-Mozilla/5.0}" -D - -o /dev/null "$1" 2>/dev/null | tr -d '\r' | awk 'toupper($1) ~ /^HTTP\//{ok=($2=="206"); n=""} ok && tolower($1)=="content-range:"{n=$NF; sub(/.*\//, "", n)} END{if(n ~ /^[0-9]+$/ && n+0 > 0) print n}')" ;;
+  esac; fi
+  if [ -n "$n" ]; then printf '%s\n' "$n"; fi
+}
 # fetch_sized url out bytes [soft]: for a file whose name stays the same when the source
 # publishes a new edition (#57). A file of the right size is kept. Otherwise the new
 # edition goes to a part file whose name carries its size, so a re-run never resumes
@@ -450,7 +462,8 @@ fetch_sized(){ # url out bytes [soft]
   rm -f "$2.aria2"; mv -f "$part" "$2"
 }
 # A file a publisher can replace under the same URL (PDFs, models): never resume one
-# version into another (#274). One HEAD request; with no size known, see fetch_sized.
+# version into another (#274). One HEAD request (and a one-byte GET if it gives no size, see
+# remote_size); with no size known, see fetch_sized.
 fetch_remote(){ fetch_sized "$1" "$2" "$(remote_size "$1")"; }
 if [ "$USE_ARIA" = 1 ]; then log "Downloader: aria2 (fast, multi-connection)"; else log "Downloader: curl (tip: install 'aria2' for much faster downloads)"; fi
 [ "$SELECT_SET" = 1 ] && log "Selection from $SELECT:$SEL_LIST (same as:$SAME)"
