@@ -153,6 +153,40 @@ else
   echo "SKIP: aria2 Ctrl+C test (no perl to start a process group)"
 fi
 
+# aria2 output (#34): no terminal gets no readout and no results table; a terminal keeps the
+# one-line live readout but never the 5-line summary block (--summary-interval=1). A fake aria2c
+# records its argv and writes the output file; the installer's real fetch runs with DL_TTY 0 and 1.
+qx="$tmp/quietfx"; mkdir -p "$qx/bin"
+cat > "$qx/bin/aria2c" <<'EOS'
+#!/bin/sh
+printf '%s\n' "$*" > "$ARGV_OUT"
+d=.; n=x
+while [ $# -gt 1 ]; do case "$1" in -d) d="$2" ;; -o) n="$2" ;; esac; shift; done
+echo data > "$d/$n"
+EOS
+chmod +x "$qx/bin/aria2c"
+for tty in 0 1; do
+  { echo 'log(){ printf "%s\n" "$*"; }'; echo "USE_ARIA=1; DL_TTY=$tty"
+    awk '/^fetch\(\)\{/{go=1} go{print} go&&/^\}/{exit}' get-offline-library.sh
+    echo 'fetch "https://example.invalid/x.bin" "$1/x.bin"'
+  } > "$qx/run$tty.sh"
+  rm -f "$qx/x.bin"
+  ARGV_OUT="$qx/argv$tty" PATH="$qx/bin:$PATH" bash "$qx/run$tty.sh" "$qx" > "$qx/out$tty.txt" 2>&1 || true
+  if [ ! -s "$qx/argv$tty" ]; then bad "aria2 argv test: fake aria2c did not run (DL_TTY=$tty): $(tr '\n' ' ' < "$qx/out$tty.txt")"; continue; fi
+  av="$(cat "$qx/argv$tty")"
+  case " $av " in *" --summary-interval=0 "*) ;; *) bad "aria2 (DL_TTY=$tty) does not pass --summary-interval=0: $av" ;; esac
+  case "$av" in *--summary-interval=[1-9]*) bad "aria2 (DL_TTY=$tty) prints a summary block every few seconds: $av" ;; esac
+  if [ "$tty" = 0 ]; then
+    case " $av " in *" --show-console-readout=false "*) r=1 ;; *) r=0 ;; esac
+    case " $av " in *" --download-result=hide "*) h=1 ;; *) h=0 ;; esac
+    [ "$r$h" = 11 ] && ok "no terminal: aria2 readout and results table are off" || bad "no terminal: aria2 is not quiet: $av"
+  else
+    case "$av" in *--show-console-readout=false*|*--download-result=hide*) bad "terminal: aria2 live readout was turned off: $av" ;; *) ok "terminal: aria2 keeps its one-line live readout, no summary block" ;; esac
+  fi
+done
+# neither installer may ask aria2 for a periodic summary (the PowerShell half runs in check-fetch.ps1)
+if grep -n 'summary-interval=[1-9]' get-offline-library.sh Get-OfflineLibrary.ps1 | grep -q .; then bad "an installer still passes --summary-interval=1 or more"; else ok "neither installer passes a periodic aria2 summary"; fi
+
 if [ "$fail" -ne 0 ]; then
   echo "OffRoad viewer checks failed."
   exit 1

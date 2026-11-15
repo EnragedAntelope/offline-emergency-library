@@ -331,10 +331,13 @@ $DlTty = -not [Console]::IsOutputRedirected
 # ending the run, so the caller's try/catch can skip it (#272). Ctrl+C (aria2 exit 7) still stops.
 function Fetch($url,$out,[switch]$Soft){
   if($UseAria){
-    $ariaProg = if($DlTty){ '--summary-interval=1' } else { '--summary-interval=0' }
+    # --summary-interval=0 always: any other value prints a 5-line block that scrolls the screen,
+    # while the one-line live readout needs no flag. With no console, also turn the readout (about a
+    # line a second) and the results table off; errors still print (#34).
+    $ariaQuiet = if($DlTty){ @() } else { @('--show-console-readout=false', '--download-result=hide') }
     # A native program that cannot start leaves LASTEXITCODE unchanged (#132).
     $global:LASTEXITCODE = $null
-    aria2c -c -x16 -s16 -k1M --max-tries=10 --retry-wait=5 --console-log-level=warn $ariaProg --follow-metalink=mem --allow-overwrite=false --auto-file-renaming=false -d (Split-Path $out -Parent) -o (Split-Path $out -Leaf) $url
+    aria2c -c -x16 -s16 -k1M --max-tries=10 --retry-wait=5 --console-log-level=warn --summary-interval=0 @ariaQuiet --follow-metalink=mem --allow-overwrite=false --auto-file-renaming=false -d (Split-Path $out -Parent) -o (Split-Path $out -Leaf) $url
     if($LASTEXITCODE -eq 0 -and (Test-Path $out -PathType Leaf)){ return }
     # Stop, do not fall back to curl, on Ctrl+C (aria2 exit 7) or when aria2 left a
     # part-done file: it is preallocated with gaps, so 'curl -C -' would keep a corrupt
