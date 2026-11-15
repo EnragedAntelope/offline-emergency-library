@@ -589,8 +589,8 @@ elif [ "$HAVE_TAR" = 1 ]; then
   if [ -z "$LT" ]; then log "engine: no recent llama.cpp build has all 8 platform files"
   else
     log "engine: llama.cpp $LT"
+    WINSKIP=""   # Windows engines left out (no unzip); kept above E= because check-smoke.sh finds the loop right after it
     E="$ROOT/AI-Offline/engine"
-    WINSKIP=""
     for x in $LLAMA_ASSETS; do
       # The build tag is in the file name: a re-run on a newer build must not resume into
       # the old build's archive (curl -C - / aria2 -c would append to it - see #35).
