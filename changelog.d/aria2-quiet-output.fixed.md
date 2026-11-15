@@ -5,6 +5,6 @@
   a second plus a "Download Results" table, so the installers now also pass
   `--show-console-readout=false --download-result=hide`; a failed download still prints its error
   and stops the run as before. curl behaviour and Ctrl+C handling are unchanged. Offline checks
-  record aria2's arguments in both installers. Found and measured by @boostedchaos on macOS,
+  record aria2's arguments in both installers. Found and measured by boostedchaos on macOS,
   Linux and Windows. Resolves part of #34.
-  _[@imsurya26](https://github.com/imsurya26) - PR #0._
+  _[@imsurya26](https://github.com/imsurya26) - PR #292._

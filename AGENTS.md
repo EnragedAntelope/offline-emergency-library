@@ -94,7 +94,9 @@ no PSDrive, as on a network share, and requires the estimate lines.
 Maintenance notes for the reader live in `doc-qa/README.md`.
 `.github/scripts/check-offroad-viewer.sh` verifies the OffRoad launcher links the
 prepared OBF folder without copying it, passes the Java 21 compatibility flag, starts
-the bundled jar, and applies the ARM64 SQLite package only on Apple Silicon.
+the bundled jar, and applies the ARM64 SQLite package only on Apple Silicon. It also runs
+the bash installer's real `fetch` with a fake `aria2c`: soft downloads and Ctrl+C (#272), and the
+aria2 output flags with and without a terminal (#34; the PowerShell half is in `check-fetch.ps1`).
 `.github/scripts/check-offroad-viewer.ps1` executes the real generated Windows launcher
 against stale junctions and relocation with a fake Java, without network access.
 `.github/scripts/check-launchers.sh` runs model placement with local download fixtures
