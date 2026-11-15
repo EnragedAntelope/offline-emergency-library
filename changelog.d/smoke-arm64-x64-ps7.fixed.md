@@ -4,4 +4,4 @@
   translator, the desktop map viewers and the picker's installer now clear that setting before
   they start Windows PowerShell. The per-OS smoke test now also runs on Linux arm64 and macOS
   Intel, so a wrong AI engine pick there fails CI. Resolves part of #117.
-  _[@imsurya26](https://github.com/imsurya26) - PR #0._
+  _[@imsurya26](https://github.com/imsurya26) - PR #297._
