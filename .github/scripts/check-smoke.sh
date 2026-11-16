@@ -100,7 +100,7 @@ echo "== engine still accepts --cors-origins (the launchers pass it, #279)"
 BIN="$(find "$NEW/AI-Offline/engine" -name llama-server -type f 2>/dev/null | head -n1)"
 [ -n "$BIN" ] || die "no llama-server found under the moved engine folder"
 out="$(LD_LIBRARY_PATH="$(dirname "$BIN")" DYLD_LIBRARY_PATH="$(dirname "$BIN")" "$BIN" --help 2>&1 </dev/null)"
-echo "$out" | grep -q -- '--cors-origins' || die "this llama-server build has no --cors-origins option; the launchers pass it:
+grep -q -- '--cors-origins' <<<"$out" || die "this llama-server build has no --cors-origins option; the launchers pass it:
 $out"
 echo "  ok"
 

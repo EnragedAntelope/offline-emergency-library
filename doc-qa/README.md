@@ -30,7 +30,7 @@ the browser on first opening; no manual collection setup is needed.
 ## Local server access
 
 The launchers start the engine with `--cors-origins localhost`, so the reader only
-answers its own page. Other web pages and `file://` pages are refused. Full
+answers its own page. A page on another local port or a `file://` page is refused. Full
 protection (same-origin and Host-header checks) needs llama.cpp b12311 or newer; the
 option itself is accepted from b10010. A full re-run of the installer while online
 updates the engine. `.github/scripts/check-doc-launchers.sh` asserts the flag.

@@ -128,8 +128,8 @@ its paths added to `RH` / `$rh` in both installers.
 `.github/scripts/check-selfcheck-browser-maps.sh` runs both installers' browser-maps self-check
 block (`# 7. Browser maps`, ending before the guided-command line) on fixture drives and requires
 the same PASS/FAIL/WARN line; keep that marker if the self-check is reordered.
-Every `llama-server` launcher passes `--cors-origins localhost` (#279) so web pages
-from other origins cannot read the drive or drive the model; `check-launchers.sh` and
+Every `llama-server` launcher passes `--cors-origins localhost` (#279) so a page on
+another local port or a `file://` page cannot read the drive or drive the model; `check-launchers.sh` and
 `check-doc-launchers.sh/.ps1` assert it, and the smoke checks confirm the engine knows the option.
 `node --test doc-qa/retrieval.test.mjs` checks ranking without inference; the CI
 lint job runs it on PRs and the existing weekly schedule.
