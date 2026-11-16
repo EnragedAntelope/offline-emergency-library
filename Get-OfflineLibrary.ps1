@@ -376,7 +376,7 @@ function Fetch-Sized($url,$out,$bytes,[switch]$Soft){
   if(-not $bytes){
     # Size unknown (the HEAD failed or gave no length): never resume, since the copy on the
     # drive may be an older edition (#289). Keep a finished copy; else download it whole.
-    if((Test-Path $out -PathType Leaf) -and -not (Test-Path "$out.aria2")){ Log "  kept: $(Split-Path $out -Leaf) (source size unknown; a re-run checks for a new edition)"; return }
+    if((Test-Path $out -PathType Leaf) -and (Get-Item $out).Length -gt 0 -and -not (Test-Path "$out.aria2")){ Log "  kept: $(Split-Path $out -Leaf) (source size unknown; a re-run checks for a new edition)"; return }
     $part = "$out.unknown.part"; Remove-Item -LiteralPath $part, "$part.aria2" -Force -ErrorAction SilentlyContinue
     Fetch $url $part -Soft:$Soft
     Remove-Item -LiteralPath "$out.aria2" -Force -ErrorAction SilentlyContinue; Move-Item -LiteralPath $part -Destination $out -Force

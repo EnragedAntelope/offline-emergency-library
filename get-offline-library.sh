@@ -431,7 +431,7 @@ fetch_sized(){ # url out bytes [soft]
   if [ -z "$3" ]; then
     # Size unknown (the HEAD failed or gave no length): never resume, since the copy on the
     # drive may be an older edition (#289). Keep a finished copy; else download it whole.
-    if [ -f "$2" ] && [ ! -e "$2.aria2" ]; then log "  kept: $(basename "$2") (source size unknown; a re-run checks for a new edition)"; return 0; fi
+    if [ -s "$2" ] && [ ! -e "$2.aria2" ]; then log "  kept: $(basename "$2") (source size unknown; a re-run checks for a new edition)"; return 0; fi
     part="$2.unknown.part"; rm -f "$part" "$part.aria2"
     fetch "$1" "$part"; rm -f "$2.aria2"; mv -f "$part" "$2"
     for o in "$2".*.part; do [ -e "$o" ] && rm -f "$o" "$o.aria2"; done; return 0
