@@ -36,7 +36,7 @@ _Last verified: 2026-11-12_
   (#239, #244, issue 67). Both installers run a guided install when given no flags (#221).
   The live site is the Fly deployment (`sine-nexu.fly.dev`, #218); the GitHub Pages workflow
   is a known gap below.
-- Works: aria2 fallback, cancellation and partial-file protection have offline regression checks, and aria2 shows one live line on a terminal and nothing without one (issue 34);
+- Works: aria2 fallback, cancellation and partial-file protection have offline regression checks, and aria2 shows one live line on a terminal and only errors without one (issue 34);
   large-model chat launchers follow the model selection in both installers (issue 168);
   changelog compilation rejects invalid bullet starts and missing numeric PR references,
   with offline fixture regressions in the lint job;
