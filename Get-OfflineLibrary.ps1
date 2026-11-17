@@ -356,10 +356,12 @@ function Fetch($url,$out,[switch]$Soft){
   }
 }
 function UA(){ 'Mozilla/5.0' }
-# Size of a remote file in bytes after redirects ('' if the server does not say).
+# Size of a remote file in bytes after redirects ('' if the server does not say). Only a 2xx
+# answer counts: an error page's or a redirect's own length is not the file's (#289). $ok starts
+# true because a file:// source prints no status line.
 function Remote-Size($url){
-  $n = ''
-  foreach($l in (curl.exe -sIL -A (UA) $url 2>$null)){ if("$l" -match '^\s*content-length:\s*(\d+)'){ $n = $Matches[1] } }
+  $n = ''; $ok = $true
+  foreach($l in (curl.exe -sIL -A (UA) $url 2>$null)){ if("$l" -match '^HTTP/\S+\s+(\d)'){ $ok = $Matches[1] -eq '2'; $n = '' } elseif($ok -and "$l" -match '^\s*content-length:\s*(\d+)'){ $n = $Matches[1] } }
   if($n -and [int64]$n -gt 0){ $n } else { '' }
 }
 # Fetch-Sized url out bytes [-Soft]: for a file whose name stays the same when the source

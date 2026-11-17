@@ -45,17 +45,56 @@ ps_path(){ cygpath -w "$1" 2>/dev/null || printf '%s' "$1"; }
 ps_run(){ OEL_INSTALLER="$(ps_path "$PWD/Get-OfflineLibrary.ps1")" "$PS" -NoProfile -ExecutionPolicy Bypass -File "$(ps_path "$T/run.ps1")" "$URL" "$(ps_path "$T/ps/manual.pdf")" > "$T/ps.log" 2>&1; }
 
 check(){ # name
-  sh_run || { echo "FAIL [$1] bash: exited non-zero"; sed 's/^/    /' "$T/sh.log"; fail=1; }
-  cmp -s "$T/src/manual.pdf" "$T/sh/manual.pdf" && echo "  OK   [$1] bash" || { echo "FAIL [$1] bash: drive copy differs from the source"; fail=1; }
+  if ! sh_run; then echo "FAIL [$1] bash: exited non-zero"; sed 's/^/    /' "$T/sh.log"; fail=1
+  elif cmp -s "$T/src/manual.pdf" "$T/sh/manual.pdf"; then echo "  OK   [$1] bash"
+  else echo "FAIL [$1] bash: drive copy differs from the source"; fail=1; fi
   [ -z "$PS" ] && return
-  ps_run || { echo "FAIL [$1] PowerShell: exited non-zero"; sed 's/^/    /' "$T/ps.log"; fail=1; }
-  cmp -s "$T/src/manual.pdf" "$T/ps/manual.pdf" && echo "  OK   [$1] PowerShell" || { echo "FAIL [$1] PowerShell: drive copy differs from the source"; fail=1; }
+  if ! ps_run; then echo "FAIL [$1] PowerShell: exited non-zero"; sed 's/^/    /' "$T/ps.log"; fail=1
+  elif cmp -s "$T/src/manual.pdf" "$T/ps/manual.pdf"; then echo "  OK   [$1] PowerShell"
+  else echo "FAIL [$1] PowerShell: drive copy differs from the source"; fail=1; fi
 }
 put v1 200 a; check "first download"
 put v2 600 b; check "publisher replaced it with a bigger file"
 put v3 50 c;  check "publisher replaced it with a smaller file"
 check "unchanged re-run"
 [ -z "$PS" ] && echo "  skip PowerShell half: no pwsh or powershell.exe"
+
+# A failed HEAD (error page, or a redirect hop with its own length) must not be taken as the
+# file's size: a correct copy on the drive stays and the run exits 0 (#289). Needs a real HTTP
+# server, since a file:// source cannot answer with a status.
+PY=""
+for c in python3 python; do command -v "$c" >/dev/null 2>&1 && "$c" -c 'import http.server' >/dev/null 2>&1 && { PY="$c"; break; }; done
+if [ -z "$PY" ]; then echo "  skip HEAD-error cases: no python3"; else
+  cat > "$T/srv.py" <<'EOF'
+import sys, http.server
+body = open(sys.argv[1], 'rb').read()
+class H(http.server.BaseHTTPRequestHandler):
+    def log_message(self, *a): pass
+    def do_HEAD(self):
+        mode = self.path.split('/')[1]
+        if mode == '503': self.send_response(503); self.send_header('Content-Length', '170')
+        elif mode == '405': self.send_response(405); self.send_header('Content-Length', '150')
+        elif mode == '302': self.send_response(302); self.send_header('Location', '/ok/manual.pdf'); self.send_header('Content-Length', '95')
+        else: self.send_response(200)  # a 200 that states no length
+        self.end_headers()
+    def do_GET(self):
+        self.send_response(200); self.send_header('Content-Length', str(len(body))); self.end_headers(); self.wfile.write(body)
+s = http.server.HTTPServer(('127.0.0.1', 0), H)
+open(sys.argv[2], 'w').write(str(s.server_address[1]))
+s.serve_forever()
+EOF
+  put v4 5000 d
+  "$PY" "$T/srv.py" "$T/src/manual.pdf" "$T/port" > "$T/srv.log" 2>&1 &
+  SRV=$!; trap 'kill $SRV 2>/dev/null; rm -rf "$T"' EXIT
+  for _ in $(seq 1 50); do [ -s "$T/port" ] && break; sleep 0.1; done
+  if [ ! -s "$T/port" ]; then echo "FAIL: test HTTP server did not start"; sed 's/^/    /' "$T/srv.log"; fail=1; else
+    for m in 503 405 302; do
+      URL="http://127.0.0.1:$(cat "$T/port")/$m/manual.pdf"
+      cp "$T/src/manual.pdf" "$T/sh/manual.pdf"; cp "$T/src/manual.pdf" "$T/ps/manual.pdf"
+      check "HEAD answers $m, correct copy on the drive"
+    done
+  fi
+fi
 
 # The PDFs and models must go through the helper in both installers.
 for pat in '^  fetch_remote "\$1" "\$out"' '^if \[ -z "\$ONLY" \]; then fetch_remote "\$M3B"' '^  fetch_remote "\$M8B"' '^  fetch_remote "\$MQ7"' '^  fetch_remote "\$MTR"'; do
