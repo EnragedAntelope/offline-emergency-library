@@ -1234,7 +1234,7 @@ title Offline AI - Web UI
 cd /d "%~dp0"
 echo When it says "server listening", open a browser to http://127.0.0.1:8080
 echo The AI is a helper for finding and summarizing info - for anything safety-critical, follow the bundled manuals.
-"%~dp0engine\x64\llama-server.exe" -m "%~dp0models\Llama-3.2-3B-Instruct-Q4_K_M.gguf" -c 4096 --host 127.0.0.1 --port 8080
+"%~dp0engine\x64\llama-server.exe" -m "%~dp0models\Llama-3.2-3B-Instruct-Q4_K_M.gguf" -c 4096 --host 127.0.0.1 --port 8080 --cors-origins localhost
 pause
 "@
 }
@@ -1272,7 +1272,7 @@ if(-not $Lite -and -not $SkipModels){
 WriteSh 'chat-8B-smart.sh'   'llama-cli'    'Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf' '0' '-c 4096' 'Offline AI - Llama 3.1 8B (smart). Ctrl+C to quit.'
 WriteSh 'chat-GPU-Qwen7B.sh' 'llama-cli'    'Qwen2.5-7B-Instruct-Q4_K_M.gguf'        '1' '-c 4096 -ngl 99' 'Offline AI - Qwen2.5 7B on the GPU (Metal on a Mac, Vulkan on Linux).'
 }
-WriteSh 'web-ui.sh'          'llama-server' 'Llama-3.2-3B-Instruct-Q4_K_M.gguf'      '0' '-c 4096 --host 127.0.0.1 --port 8080' "Open http://127.0.0.1:8080 when it says 'server is listening'."
+WriteSh 'web-ui.sh'          'llama-server' 'Llama-3.2-3B-Instruct-Q4_K_M.gguf'      '0' '-c 4096 --host 127.0.0.1 --port 8080 --cors-origins localhost' "Open http://127.0.0.1:8080 when it says 'server is listening'."
 }
 if($Translate){
 # Same text as get-offline-library.sh. No batch special characters in the prompt or notes.
@@ -1325,7 +1325,7 @@ trap 'exit 143' TERM HUP
 URL=http://127.0.0.1:8087
 ALIAS="oel-translator-$$-$(date +%s)"
 echo "Starting offline translator (up to 120 seconds). Ctrl+C stops the server."
-"$BIN" -m "$DIR/models/__MODEL__" -c 4096 -ngl 0 --temp 0.2 --offline --host 127.0.0.1 --port 8087 --alias "$ALIAS" --webui-config-file "$DIR/translate-webui.json" >"$LOG" 2>&1 &
+"$BIN" -m "$DIR/models/__MODEL__" -c 4096 -ngl 0 --temp 0.2 --offline --host 127.0.0.1 --port 8087 --cors-origins localhost --alias "$ALIAS" --webui-config-file "$DIR/translate-webui.json" >"$LOG" 2>&1 &
 PID=$!
 READY=0
 SECONDS=0
@@ -1393,7 +1393,7 @@ try {
   $logs = @((Join-Path ([IO.Path]::GetTempPath()) "$id.out"), (Join-Path ([IO.Path]::GetTempPath()) "$id.err"))
   $url = 'http://127.0.0.1:8087'
   Write-Host 'Starting offline translator (up to 120 seconds). Ctrl+C stops the server.'
-  $argv = "-m `"$model`" -c 4096 -ngl 0 --temp 0.2 --offline --host 127.0.0.1 --port 8087 --alias $id --webui-config-file `"$config`""
+  $argv = "-m `"$model`" -c 4096 -ngl 0 --temp 0.2 --offline --host 127.0.0.1 --port 8087 --cors-origins localhost --alias $id --webui-config-file `"$config`""
   $server = Start-Process -FilePath $bin.FullName -ArgumentList $argv -WorkingDirectory $bin.DirectoryName -NoNewWindow -PassThru -RedirectStandardOutput $logs[0] -RedirectStandardError $logs[1]
   $timer = [Diagnostics.Stopwatch]::StartNew()
   $ready = $false

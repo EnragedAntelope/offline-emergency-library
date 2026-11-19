@@ -96,6 +96,14 @@ $out"
   echo "  ok: $(basename "$s"): $v"
 done
 
+echo "== engine still accepts --cors-origins (the launchers pass it, #279)"
+BIN="$(find "$NEW/AI-Offline/engine" -name llama-server -type f 2>/dev/null | head -n1)"
+[ -n "$BIN" ] || die "no llama-server found under the moved engine folder"
+out="$(LD_LIBRARY_PATH="$(dirname "$BIN")" DYLD_LIBRARY_PATH="$(dirname "$BIN")" "$BIN" --help 2>&1 </dev/null)"
+grep -q -- '--cors-origins' <<<"$out" || die "this llama-server build has no --cors-origins option; the launchers pass it:
+$out"
+echo "  ok"
+
 echo "== generated browser launcher rejects missing and invalid models without opening a browser"
 mkdir -p "$T/browser-bin" "$NEW/AI-Offline/models"
 printf '#!/usr/bin/env bash\necho UNEXPECTED_BROWSER_OPEN\n' > "$T/browser-bin/open"

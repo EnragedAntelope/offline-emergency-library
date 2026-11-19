@@ -190,7 +190,7 @@ memory and only postpones the limit.
 
 ### Web interface by hand
    ```
-   "E:\AI-Offline\engine\x64\llama-server.exe" -m "E:\AI-Offline\models\Llama-3.2-3B-Instruct-Q4_K_M.gguf" -c 4096 --host 127.0.0.1 --port 8080
+   "E:\AI-Offline\engine\x64\llama-server.exe" -m "E:\AI-Offline\models\Llama-3.2-3B-Instruct-Q4_K_M.gguf" -c 4096 --host 127.0.0.1 --port 8080 --cors-origins localhost
    ```
    Then open **http://127.0.0.1:8080** in any browser.
 

@@ -32,7 +32,7 @@ ROOT="$T/moved here/Library copy"
 HERE="$ROOT/AI-Offline/Manual-QA"
 export OEL_DOC_ARGS="$T/actual" OEL_DOC_LIBPATH="$T/libpath"
 printf '%s\n' -m "$HERE/../models/Llama-3.2-3B-Instruct-Q4_K_M.gguf" \
-  -c 4096 -ngl 0 -t 4 --offline --host 127.0.0.1 --port 8081 --path "$HERE/../.." > "$T/expected"
+  -c 4096 -ngl 0 -t 4 --offline --host 127.0.0.1 --port 8081 --cors-origins localhost --path "$HERE/../.." > "$T/expected"
 for launcher in start-docs.sh start-docs.command; do
   # Launch outside the library to catch accidental dependencies on the caller's cwd.
   # Unset the library path first so an empty entry (the old "$LIBDIR:" bug) would show (#178).

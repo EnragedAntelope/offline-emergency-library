@@ -27,7 +27,7 @@ public class DocLauncherFixture {
   $here = Join-Path $moved 'AI-Offline\Manual-QA'
   $env:OEL_DOC_ARGS = Join-Path $tmp 'actual'
   $expected = @('-m',"$here\..\models\Llama-3.2-3B-Instruct-Q4_K_M.gguf",
-    '-c','4096','-ngl','0','-t','4','--offline','--host','127.0.0.1','--port','8081','--path',"$here\..\..")
+    '-c','4096','-ngl','0','-t','4','--offline','--host','127.0.0.1','--port','8081','--cors-origins','localhost','--path',"$here\..\..")
   foreach($arch in 'AMD64','ARM64'){
     $engineRoot = Join-Path $moved 'AI-Offline\engine'
     if(Test-Path -LiteralPath $engineRoot){ Remove-Item -LiteralPath $engineRoot -Recurse -Force }

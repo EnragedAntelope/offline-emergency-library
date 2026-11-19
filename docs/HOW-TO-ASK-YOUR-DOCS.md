@@ -27,6 +27,10 @@ It uses keyword search over downloaded text, then the bundled 3B model explains 
 passages it was given. Keep the launcher window open; press Ctrl+C to stop. The reader
 works from any folder, including a different drive letter, because its paths are relative.
 
+The reader only answers its own page. The AI engine refuses requests from pages on
+other local ports and from `file://` pages, so neither can read your drive through it. Full protection needs llama.cpp b12311 or newer. A full re-run of the
+installer while online updates the engine.
+
 A manual whose text cannot be downloaded, or whose PDF changes after its text was
 published, is left out rather than guessed at. Its name appears under "Unavailable
 sources" in the reader, and the installer self-check reports the gap.

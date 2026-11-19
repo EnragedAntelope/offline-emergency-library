@@ -65,6 +65,12 @@ for skip in 0 1; do
     for model in $(grep -hoE '[A-Za-z0-9_.-]+\.gguf' "$out"/*.* | sort -u); do
       [ -s "$out/models/$model" ] || { echo "FAIL: $out launcher names missing model $model"; fail=1; }
     done
+    # Every local server must answer only its own page: --cors-origins localhost (#279).
+    for launcher in web-ui.sh WEB-UI.bat translate-browser.sh translate-browser.ps1; do
+      if [ -e "$out/$launcher" ] && ! grep -qF -- '--cors-origins localhost' "$out/$launcher"; then
+        echo "FAIL: $out/$launcher lacks --cors-origins localhost"; fail=1
+      fi
+    done
     for launcher in chat-8B-smart.sh chat-GPU-Qwen7B.sh CHAT-8B-smart.bat CHAT-GPU-Qwen7B.bat; do
       if [ "$lite$skip_models" = 00 ]; then
         [ -s "$out/$launcher" ] || { echo "FAIL: full install lost $launcher"; fail=1; }
@@ -152,7 +158,7 @@ for platform in Darwin-arm64 Darwin-x86_64 Linux-aarch64 Linux-arm64 Linux-x86_6
       # (current-directory) entry: no leading, trailing or doubled colon (#161).
       grep -qE '(^|:):|:$' "$run/libdir" && { echo "FAIL: $platform library path has an empty entry: $(cat "$run/libdir")"; fail=1; }
       grep -qxF 'http://127.0.0.1:8087' "$run/opened" || { echo "FAIL: browser URL"; fail=1; }
-      for arg in --offline --webui-config-file "$F/translate-webui.json" "$F/models/$TR_MODEL"; do
+      for arg in --offline --cors-origins localhost --webui-config-file "$F/translate-webui.json" "$F/models/$TR_MODEL"; do
         grep -qxF -- "$arg" "$run/args" || { echo "FAIL: missing generated server argument $arg"; fail=1; }
       done
     elif [ "$rc" != 1 ] || [ -e "$run/opened" ]; then
@@ -178,7 +184,7 @@ for platform in Darwin-arm64 Darwin-x86_64 Linux-aarch64 Linux-x86_64; do
   run="$T/docs-$platform"; mkdir -p "$run"; rm -f "$run/docs-args"
   out="$(PATH="$T/bin:$PATH" OEL_PLATFORM="$platform" OEL_FIXTURE="$run" bash "$D/Manual-QA/start-docs.command" 2>&1)"; rc=$?
   if [ "$rc" != 0 ] || [ ! -s "$run/docs-args" ]; then echo "FAIL: $platform Manual Q&A launcher did not start the engine (exit $rc): $out"; fail=1; continue; fi
-  for arg in --offline 8081 "$D/Manual-QA/../models/Llama-3.2-3B-Instruct-Q4_K_M.gguf"; do
+  for arg in --offline 8081 --cors-origins localhost "$D/Manual-QA/../models/Llama-3.2-3B-Instruct-Q4_K_M.gguf"; do
     grep -qxF -- "$arg" "$run/docs-args" || { echo "FAIL: $platform Manual Q&A launcher lost server argument $arg"; fail=1; }
   done
 done
