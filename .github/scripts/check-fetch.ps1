@@ -30,6 +30,8 @@ public class AriaFixture {
     }
     string mode = Environment.GetEnvironmentVariable("OEL_FETCH_MODE");
     string output = Path.Combine(dir, name);
+    string argLog = Environment.GetEnvironmentVariable("OEL_ARGS_LOG");
+    if (!string.IsNullOrEmpty(argLog)) File.WriteAllText(argLog, string.Join(" ", args));
     if (mode == "cancel") return 7;
     if (mode == "partial") {
       File.WriteAllText(output, "unfinished");
@@ -51,6 +53,10 @@ public class AriaFixture {
     # built above. Fetch then falls back to curl, so aria-success fails locally with
     # 'wrong fallback behavior'. That is the #132 fix working, not a regression (#140).
     @{ Name='aria-success'; Mode='success'; Stale=3; Exit=0; Bytes=$true; Fallback=$false },
+    # aria2 output (#34): no console gets no live readout and no results table; a console keeps the
+    # live readout but never a periodic summary block. The stub records the arguments it was given.
+    @{ Name='aria-args-no-console'; Mode='success'; Stale=0; Exit=0; Bytes=$true; Fallback=$false; Args=$true; Tty=$false },
+    @{ Name='aria-args-console'; Mode='success'; Stale=0; Exit=0; Bytes=$true; Fallback=$false; Args=$true; Tty=$true },
     @{ Name='aria-missing-output'; Mode='missing'; Stale=0; Exit=0; Bytes=$true; Fallback=$true },
     @{ Name='aria-nonzero'; Mode='failure'; Stale=0; Exit=0; Bytes=$true; Fallback=$true },
     @{ Name='aria-cancel'; Mode='cancel'; Stale=0; Exit=1; Bytes=$false; Fallback=$false },
@@ -88,12 +94,14 @@ public class AriaFixture {
       default     { "Fetch $q" }
     }
     if($case.Soft){ $call = "try { $call; Write-Host 'SOFT-NO-THROW' } catch { Write-Host ('SOFT-THROW: ' + `$_.Exception.Message) }" }
+    $argLog = Join-Path $dir 'aria-args.txt'
     $body = @"
 `$ErrorActionPreference = 'Continue'
 `$env:PATH = '$($dir.Replace("'", "''"));' + `$env:PATH
 `$env:OEL_FETCH_MODE = '$($case.Mode)'
 `$UseAria = `$$($case.Mode -notin 'curl','curlfail')
-`$DlTty = `$false
+`$DlTty = `$$([bool]$case.Tty)
+`$env:OEL_ARGS_LOG = '$($argLog.Replace("'", "''"))'
 function Log(`$m){ Write-Host `$m }
 $($fetch.Extent.Text)
 $($fsized.Extent.Text)
@@ -115,6 +123,15 @@ exit 0
     }
     if(($text -match 'falling back to curl') -ne $case.Fallback){ throw "$($case.Name): wrong fallback behavior" }
     if($case.Soft -and $case.Exit -eq 0 -and ($text -notmatch 'SOFT-THROW: ' -or $text -notmatch 'RUN-WENT-ON')){ throw "$($case.Name): a soft download failure did not throw to the caller" }
+    if($case.Args){
+      # An aria2c blocked on this PC (Smart App Control, #140) never ran: no arguments to check.
+      if(-not (Test-Path $argLog)){ throw "$($case.Name): the aria2c fixture did not run (blocked?)" }
+      $argText = [IO.File]::ReadAllText($argLog)
+      if($argText -notmatch '(^| )--summary-interval=0( |$)' -or $argText -match '--summary-interval=[1-9]'){ throw "$($case.Name): aria2 must get --summary-interval=0: $argText" }
+      $quiet = ($argText -match '(^| )--show-console-readout=false( |$)') -and ($argText -match '(^| )--download-result=hide( |$)')
+      if(-not $case.Tty -and -not $quiet){ throw "$($case.Name): no console, but aria2 is not quiet: $argText" }
+      if($case.Tty -and ($argText -match '--show-console-readout=false|--download-result=hide')){ throw "$($case.Name): console, but aria2's live readout was turned off: $argText" }
+    }
     if($case.Mode -eq 'partial' -and ([IO.File]::ReadAllText($out) -cne 'unfinished' -or -not (Test-Path "$out.aria2"))){
       throw 'partial file or resume control was changed'
     }

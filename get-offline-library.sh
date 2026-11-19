@@ -387,11 +387,14 @@ if [ "${NO_ARIA:-0}" != "1" ] && command -v aria2c >/dev/null 2>&1; then USE_ARI
 DL_TTY=0; [ -t 1 ] && DL_TTY=1
 fetch(){ # url out
   if [ "$USE_ARIA" = 1 ]; then
-    if [ "$DL_TTY" = 1 ]; then aria_prog="--summary-interval=1"; else aria_prog="--summary-interval=0"; fi
+    # --summary-interval=0 always: any other value prints a 5-line block that scrolls the
+    # screen, while the one-line live readout needs no flag. With no terminal, also turn the
+    # readout (about a line a second) and the results table off; errors still print (#34).
+    aria_quiet=""; [ "$DL_TTY" = 1 ] || aria_quiet="--show-console-readout=false --download-result=hide"
     # --follow-metalink=mem: download.kiwix.org answers aria2 with a Metalink; without
     # this, aria2 saves that XML at the output path, and a re-run fails "file exists".
     aria2c -c -x16 -s16 -k1M --max-tries=10 --retry-wait=5 --console-log-level=warn \
-      $aria_prog --follow-metalink=mem --allow-overwrite=false --auto-file-renaming=false \
+      --summary-interval=0 $aria_quiet --follow-metalink=mem --allow-overwrite=false --auto-file-renaming=false \
       -d "$(dirname "$2")" -o "$(basename "$2")" "$1"
     arc=$?; [ "$arc" = 0 ] && return 0
     # Stop, do not fall back to curl, when the user pressed Ctrl+C (aria2 exit 7) or aria2

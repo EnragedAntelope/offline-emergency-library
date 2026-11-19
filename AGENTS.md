@@ -36,7 +36,7 @@ _Last verified: 2026-11-12_
   (#239, #244, issue 67). Both installers run a guided install when given no flags (#221).
   The live site is the Fly deployment (`sine-nexu.fly.dev`, #218); the GitHub Pages workflow
   is a known gap below.
-- Works: aria2 fallback, cancellation and partial-file protection have offline regression checks;
+- Works: aria2 fallback, cancellation and partial-file protection have offline regression checks, and aria2 shows one live line on a terminal and only errors without one (issue 34);
   large-model chat launchers follow the model selection in both installers (issue 168);
   changelog compilation rejects invalid bullet starts and missing numeric PR references,
   with offline fixture regressions in the lint job;
@@ -94,7 +94,9 @@ no PSDrive, as on a network share, and requires the estimate lines.
 Maintenance notes for the reader live in `doc-qa/README.md`.
 `.github/scripts/check-offroad-viewer.sh` verifies the OffRoad launcher links the
 prepared OBF folder without copying it, passes the Java 21 compatibility flag, starts
-the bundled jar, and applies the ARM64 SQLite package only on Apple Silicon.
+the bundled jar, and applies the ARM64 SQLite package only on Apple Silicon. It also runs
+the bash installer's real `fetch` with a fake `aria2c`: soft downloads and Ctrl+C (#272), and the
+aria2 output flags with and without a terminal (#34; the PowerShell half is in `check-fetch.ps1`).
 `.github/scripts/check-offroad-viewer.ps1` executes the real generated Windows launcher
 against stale junctions and relocation with a fake Java, without network access.
 `.github/scripts/check-launchers.sh` runs model placement with local download fixtures
