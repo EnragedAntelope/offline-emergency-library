@@ -371,11 +371,22 @@ function Remote-Size($url){
 # publishes a new edition (#57). A file of the right size is kept. Otherwise the new
 # edition goes to a part file whose name carries its size, so a re-run never resumes
 # one edition into another, and it replaces the old file only once it is complete.
-# With no size known, this is a plain Fetch. With -Soft, a size mismatch from the source
+# With no size known (#289), a finished copy is kept and a missing one downloads whole to
+# "$out.unknown.part": never a resume, which could join two editions. With -Soft, a size mismatch from the source
 # changing mid-download is not fatal: it throws (caught by the optional viewer's try) so
 # the run continues (#99). -Soft also reaches Fetch, so a failed download throws too (#272).
 function Fetch-Sized($url,$out,$bytes,[switch]$Soft){
-  if(-not $bytes){ Fetch $url $out -Soft:$Soft; return }
+  if(-not $bytes){
+    # Size unknown (the HEAD failed or gave no length): never resume, since the copy on the
+    # drive may be an older edition (#289). Keep a finished copy; else download it whole.
+    if((Test-Path $out -PathType Leaf) -and (Get-Item $out).Length -gt 0 -and -not (Test-Path "$out.aria2")){ Log "  kept: $(Split-Path $out -Leaf) (source size unknown; a re-run checks for a new edition)"; return }
+    $part = "$out.unknown.part"; Remove-Item -LiteralPath $part, "$part.aria2" -Force -ErrorAction SilentlyContinue
+    Fetch $url $part -Soft:$Soft
+    Remove-Item -LiteralPath "$out.aria2" -Force -ErrorAction SilentlyContinue; Move-Item -LiteralPath $part -Destination $out -Force
+    Get-ChildItem -Path (Split-Path $out -Parent) -Filter ((Split-Path $out -Leaf) + '.*.part') -ErrorAction SilentlyContinue |
+      ForEach-Object { Remove-Item -LiteralPath $_.FullName, ($_.FullName + '.aria2') -Force -ErrorAction SilentlyContinue }
+    return
+  }
   if((Test-Path $out -PathType Leaf) -and -not (Test-Path "$out.aria2") -and (Get-Item $out).Length -eq [int64]$bytes){ return }
   $part = "$out.$bytes.part"
   Get-ChildItem -Path (Split-Path $out -Parent) -Filter ((Split-Path $out -Leaf) + '.*.part') -ErrorAction SilentlyContinue |
@@ -394,7 +405,7 @@ function Fetch-Sized($url,$out,$bytes,[switch]$Soft){
   Move-Item -LiteralPath $part -Destination $out -Force
 }
 # A file a publisher can replace under the same URL (PDFs, models): never resume one
-# version into another (#274). One HEAD request; with no size known, a plain Fetch.
+# version into another (#274). One HEAD request; with no size known, see Fetch-Sized.
 function Fetch-Remote($url,$out){ Fetch-Sized $url $out (Remote-Size $url) }
 if($UseAria){ Log 'Downloader: aria2 (fast, multi-connection)' } else { Log "Downloader: curl (tip: install 'aria2' for much faster downloads)" }
 if($Lite -and -not $PSBoundParameters.ContainsKey('Selection') -and -not $Guided){ Log "Lite preset: 3B AI, medical/survival references and maps for '$Region' (unless skipped). Size depends on region; use -Region for a small area or -SkipMaps. Re-run without -Lite to add the full library." }
