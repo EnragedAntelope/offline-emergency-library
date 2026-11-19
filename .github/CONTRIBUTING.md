@@ -62,7 +62,8 @@ Look for issues labeled **`good first issue`** and **`help wanted`**.
   case in an existing one) that fails without your fix. Keep it to seconds and off the network;
   checks that need the internet belong in `check-links.sh`.
 - CI (lint, upstream link check, and the per-OS smoke test) is green. The smoke test runs the
-  installer's engine, launcher and CHECK-DRIVE code on Windows, macOS and Linux, then moves the
+  installer's engine, launcher and CHECK-DRIVE code on Windows, macOS (Apple Silicon and Intel)
+  and Linux (x64 and arm64), then moves the
   folder and runs from the new path; it fails if a launcher picks an engine folder the installer
   does not fill, or any generated file names the folder it was built in.
 

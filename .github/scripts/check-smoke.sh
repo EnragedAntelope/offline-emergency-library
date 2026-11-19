@@ -16,10 +16,13 @@ T="$(mktemp -d)"; trap 'rm -rf "$T"' EXIT
 die(){ echo "FAIL: $*"; exit 1; }
 
 # What this computer must end up with, written down here and not read from the installer,
-# so that a wrong folder name in the installer shows up as a failure.
+# so that a wrong folder name in the installer shows up as a failure. Only this engine is
+# downloaded, so a launcher that picks another folder on this computer fails its --version run.
 case "$(uname -s)-$(uname -m)" in
   Linux-x86_64)  ASSET="ubuntu-x64.tar.gz:linux-x64";;
+  Linux-aarch64) ASSET="ubuntu-arm64.tar.gz:linux-arm64";;
   Darwin-arm64)  ASSET="macos-arm64.tar.gz:macos-arm64";;
+  Darwin-x86_64) ASSET="macos-x64.tar.gz:macos-x64";;
   *) die "no expected engine for $(uname -s)-$(uname -m): add it to this script";;
 esac
 WANT_DIR="${ASSET##*:}"

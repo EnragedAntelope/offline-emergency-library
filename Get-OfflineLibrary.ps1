@@ -1020,10 +1020,13 @@ Write-Host "Maps ready in: $obf"
 
   $mvbat = @"
 @echo off
+setlocal
 title Offline Maps on PC - OsmAndMapCreator
 cd /d "%~dp0"
 set "JAVA_HOME=%~dp0jre"
 set "PATH=%~dp0jre\bin;%PATH%"
+rem Started from PowerShell 7, Windows PowerShell would load its modules and fail (#117).
+set "PSModulePath="
 echo Preparing map files for desktop viewing (first run can take several minutes)...
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0prepare-maps.ps1"
 if errorlevel 1 exit /b 1
@@ -1044,10 +1047,13 @@ pause
 
   $offbat = @"
 @echo off
+setlocal
 title Offline Maps on PC - OffRoad
 cd /d "%~dp0"
 set "JAVA_HOME=%~dp0jre"
 set "PATH=%~dp0jre\bin;%PATH%"
+rem Started from PowerShell 7, Windows PowerShell would load its modules and fail (#117).
+set "PSModulePath="
 echo Preparing map files for offline viewing (first run can take several minutes)...
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0prepare-maps.ps1"
 if errorlevel 1 goto :failed
@@ -1372,7 +1378,10 @@ exit "$RC"
 if(Get-Command chmod -ErrorAction SilentlyContinue){ & chmod +x (Join-Path $ao 'translate-browser.command') }
 WriteBat (Join-Path $ao 'TRANSLATE-BROWSER.bat') @'
 @echo off
+setlocal
 title Offline translator - browser
+rem Started from PowerShell 7, Windows PowerShell would load its modules and fail (#117).
+set "PSModulePath="
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0translate-browser.ps1"
 set "RC=%ERRORLEVEL%"
 pause

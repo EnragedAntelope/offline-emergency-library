@@ -87,13 +87,15 @@ jobs:
   smoke:
     # Engine picking and portability on each OS (#69): the installer's own engine, launcher and
     # CHECK-DRIVE code, with only this OS's llama.cpp engine downloaded (no models, ZIMs or maps).
+    # Linux x64 and arm64, macOS arm64 (macos-latest) and Intel x64, Windows x64 (#117).
+    # macos-15-intel: GitHub's standard Intel macOS label (macos-13 is retired).
     name: Smoke test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest, macos-15-intel, windows-latest]
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -108,6 +110,12 @@ jobs:
           .\.github\scripts\check-fetch.ps1
           .\.github\scripts\check-space-estimate.ps1
           .\.github\scripts\check-smoke.ps1
+      - name: CHECK-DRIVE.bat started from PowerShell 7 (#117)
+        if: runner.os == 'Windows'
+        shell: powershell
+        env:
+          OEL_REQUIRE_PWSH: '1'
+        run: .\.github\scripts\check-pwsh7-bat.ps1
       - name: Map refresh regression (PowerShell and Git Bash)
         if: runner.os == 'Windows'
         shell: bash
