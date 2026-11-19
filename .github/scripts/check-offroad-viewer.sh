@@ -115,7 +115,7 @@ fx="$tmp/fetchfx"; mkdir -p "$fx/bin"
 printf '#!/bin/sh\nexit 22\n' > "$fx/bin/curl"; chmod +x "$fx/bin/curl"
 { echo 'log(){ printf "%s\n" "$*"; }'; echo 'USE_ARIA=0; DL_TTY=0'
   awk '/^fetch\(\)\{/{go=1} go{print} go&&/^\}/{exit}' get-offline-library.sh
-  awk '/^remote_size\(\)\{/{print; exit}' get-offline-library.sh
+  awk '/^remote_size\(\)\{/{go=1} go{print} go&&/^\}/{exit}' get-offline-library.sh
   awk '/^fetch_sized\(\)\{/{go=1} go{print} go&&/^\}/{exit}' get-offline-library.sh
   echo 'if ( fetch_sized "https://example.invalid/x.zip" "$1/x.zip" "$(remote_size https://example.invalid/x.zip)" soft ); then echo GOT; else echo SKIPPED; fi'
   echo 'echo AFTER'

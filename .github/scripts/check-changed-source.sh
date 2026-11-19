@@ -62,18 +62,21 @@ check "unchanged re-run"
 
 # A failed HEAD (error page, or a redirect hop with its own length) must not be taken as the
 # file's size: a correct copy on the drive stays and the run exits 0 (#289). Needs a real HTTP
-# server, since a file:// source cannot answer with a status.
+# server, since a file:// source cannot answer with a status. When HEAD gives no size, the
+# helpers ask for one byte and read a 206's Content-Range total; the 500 mode is a host that
+# refuses HEAD (as iris.who.int does), and 500norange also ignores Range, so no size is known.
 PY=""
 for c in python3 python; do command -v "$c" >/dev/null 2>&1 && "$c" -c 'import http.server' >/dev/null 2>&1 && { PY="$c"; break; }; done
 if [ -z "$PY" ]; then echo "  skip HEAD-error cases: no python3"; else
   cat > "$T/srv.py" <<'EOF'
-import sys, http.server
+import re, sys, http.server
 class H(http.server.BaseHTTPRequestHandler):
     def log_message(self, *a): pass
     def do_HEAD(self):
         body = open(sys.argv[1], 'rb').read()
         mode = self.path.split('/')[1]
         if mode == '503': self.send_response(503); self.send_header('Content-Length', '170')
+        elif mode in ('500', '500norange'): self.send_response(500)  # no length, as iris.who.int
         elif mode == '405': self.send_response(405); self.send_header('Content-Length', '150')
         elif mode == '302': self.send_response(302); self.send_header('Location', '/ok/manual.pdf'); self.send_header('Content-Length', '95')
         elif mode == 'len': self.send_response(200); self.send_header('Content-Length', str(len(body)))
@@ -81,11 +84,15 @@ class H(http.server.BaseHTTPRequestHandler):
         self.end_headers()
     def do_GET(self):
         body = open(sys.argv[1], 'rb').read()  # read per request: a case replaces the file
-        r = self.headers.get('Range', '')      # honor 'bytes=N-' like a real server, so a resume shows
-        s = int(r[6:-1]) if r.startswith('bytes=') and r.endswith('-') else 0
-        if 0 < s < len(body):
-            self.send_response(206); self.send_header('Content-Range', 'bytes %d-%d/%d' % (s, len(body) - 1, len(body)))
-            self.send_header('Content-Length', str(len(body) - s)); self.end_headers(); self.wfile.write(body[s:])
+        mode = self.path.split('/')[1]
+        r = self.headers.get('Range', '')      # honor 'bytes=N-' and 'bytes=0-0' like a real server, so a resume shows
+        open(sys.argv[3], 'a').write('GET %s %s\n' % (mode, r or '-'))
+        m = re.match(r'bytes=(\d+)-(\d*)$', r) if mode != '500norange' else None
+        s = int(m.group(1)) if m else 0
+        e = min(int(m.group(2)), len(body) - 1) if m and m.group(2) else len(body) - 1
+        if m and s < len(body) and s <= e and (s, e) != (0, len(body) - 1):
+            self.send_response(206); self.send_header('Content-Range', 'bytes %d-%d/%d' % (s, e, len(body)))
+            self.send_header('Content-Length', str(e + 1 - s)); self.end_headers(); self.wfile.write(body[s:e + 1])
         else:
             self.send_response(200); self.send_header('Content-Length', str(len(body))); self.end_headers(); self.wfile.write(body)
 s = http.server.HTTPServer(('127.0.0.1', 0), H)
@@ -93,7 +100,7 @@ open(sys.argv[2], 'w').write(str(s.server_address[1]))
 s.serve_forever()
 EOF
   put v4 5000 d
-  "$PY" "$T/srv.py" "$T/src/manual.pdf" "$T/port" > "$T/srv.log" 2>&1 &
+  "$PY" "$T/srv.py" "$T/src/manual.pdf" "$T/port" "$T/req.log" > "$T/srv.log" 2>&1 &
   SRV=$!; trap 'kill $SRV 2>/dev/null; rm -rf "$T"' EXIT
   for _ in $(seq 1 50); do [ -s "$T/port" ] && break; sleep 0.1; done
   if [ ! -s "$T/port" ]; then echo "FAIL: test HTTP server did not start"; sed 's/^/    /' "$T/srv.log"; fail=1; else
@@ -102,18 +109,31 @@ EOF
       cp "$T/src/manual.pdf" "$T/sh/manual.pdf"; cp "$T/src/manual.pdf" "$T/ps/manual.pdf"
       check "HEAD answers $m, correct copy on the drive"
     done
-    # The publisher replaced the file with a bigger one and the HEAD fails: the older copy on the
-    # drive must stay whole, never be resumed into a mix of both editions (#289) ...
-    P="http://127.0.0.1:$(cat "$T/port")"
-    cp "$T/src/manual.pdf" "$T/old.pdf"; put v5 6000 e
-    URL="$P/503/manual.pdf"; check "HEAD answers 503, older copy on the drive" "$T/old.pdf"
-    # ... and the next run with a working HEAD replaces it with the new edition.
-    URL="$P/len/manual.pdf"; check "HEAD works again, new edition replaces the older copy"
+    # The publisher replaced the file with a bigger one, the HEAD fails and the server ignores
+    # Range, so no size is known: the older copy on the drive must stay whole, never be resumed
+    # into a mix of both editions (#289). The one-byte probe is the only GET: no download.
+    P="http://127.0.0.1:$(cat "$T/port")"; nsh=1; [ -n "$PS" ] && nsh=2
+    cp "$T/src/manual.pdf" "$T/old.pdf"; put v5 6000 e; : > "$T/req.log"
+    URL="$P/500norange/manual.pdf"; check "HEAD answers 500, Range ignored, older copy on the drive" "$T/old.pdf"
+    g="$(grep -c '^GET 500norange ' "$T/req.log")"; g0="$(grep -c '^GET 500norange bytes=0-0$' "$T/req.log")"
+    if [ "$g" = "$nsh" ] && [ "$g0" = "$nsh" ]; then echo "  OK   [Range ignored: one one-byte probe per shell, no download]"
+    else echo "FAIL [Range ignored: expected $nsh GET bytes=0-0, got:]"; sed 's/^/    /' "$T/req.log"; fail=1; fi
+    # A host that refuses HEAD but honors Range (iris.who.int) gives the size through the one-byte
+    # probe, so the new edition replaces the older copy ...
+    URL="$P/500/manual.pdf"; check "HEAD answers 500, one-byte probe sizes it, new edition replaces the older copy"
+    # ... and a working HEAD still does the same.
+    put v6 7000 f
+    URL="$P/len/manual.pdf"; check "HEAD works, new edition replaces the older copy"
     # With nothing on the drive, a failed HEAD still downloads the file whole, and a part file
-    # left by an earlier sized download is removed once the file is in place (check fails on *.part).
+    # left by an earlier sized download is removed once the file is in place (check fails on *.part):
+    # sized by the probe ...
     rm -f "$T/sh/manual.pdf" "$T/ps/manual.pdf"
     printf 'stale' > "$T/sh/manual.pdf.4999.part"; printf 'stale' > "$T/ps/manual.pdf.4999.part"
-    URL="$P/503/manual.pdf"; check "HEAD answers 503, empty drive"
+    URL="$P/500/manual.pdf"; check "HEAD answers 500, empty drive"
+    # ... or with no size at all (through <file>.unknown.part).
+    rm -f "$T/sh/manual.pdf" "$T/ps/manual.pdf"
+    printf 'stale' > "$T/sh/manual.pdf.4999.part"; printf 'stale' > "$T/ps/manual.pdf.4999.part"
+    URL="$P/500norange/manual.pdf"; check "HEAD answers 500, Range ignored, empty drive"
   fi
 fi
 

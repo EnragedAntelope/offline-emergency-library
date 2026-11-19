@@ -362,9 +362,18 @@ function UA(){ 'Mozilla/5.0' }
 # Size of a remote file in bytes after redirects ('' if the server does not say). Only a 2xx
 # answer counts: an error page's or a redirect's own length is not the file's (#289). $ok starts
 # true because a file:// source prints no status line.
+# When HEAD gives no size (iris.who.int answers every HEAD with 500 and no length), ask for one
+# byte and take the total from a 206's Content-Range ("bytes 0-0/*" gives none). A server that
+# ignores Range answers 200: that gives no size, and --max-filesize 1 stops the body (--max-time
+# bounds a 200 of no stated length, which an older curl does not cut off). http(s) only: a
+# file:// source has no status line, and its HEAD already gives the size.
 function Remote-Size($url){
   $n = ''; $ok = $true
   foreach($l in (curl.exe -sIL -A (UA) $url 2>$null)){ if("$l" -match '^HTTP/\S+\s+(\d)'){ $ok = $Matches[1] -eq '2'; $n = '' } elseif($ok -and "$l" -match '^\s*content-length:\s*(\d+)'){ $n = $Matches[1] } }
+  if(-not ($n -and [int64]$n -gt 0) -and "$url" -match '^https?://'){
+    $n = ''; $ok = $false; $nul = if($IsLinux -or $IsMacOS){ '/dev/null' } else { 'NUL' }
+    foreach($l in (curl.exe -sL -r 0-0 --max-filesize 1 --max-time 30 -A (UA) -D - -o $nul $url 2>$null)){ if("$l" -match '^HTTP/\S+\s+(\d+)'){ $ok = $Matches[1] -eq '206'; $n = '' } elseif($ok -and "$l" -match '^\s*content-range:.*/(\d+)\s*$'){ $n = $Matches[1] } }
+  }
   if($n -and [int64]$n -gt 0){ $n } else { '' }
 }
 # Fetch-Sized url out bytes [-Soft]: for a file whose name stays the same when the source
@@ -405,7 +414,8 @@ function Fetch-Sized($url,$out,$bytes,[switch]$Soft){
   Move-Item -LiteralPath $part -Destination $out -Force
 }
 # A file a publisher can replace under the same URL (PDFs, models): never resume one
-# version into another (#274). One HEAD request; with no size known, see Fetch-Sized.
+# version into another (#274). One HEAD request (and a one-byte GET if it gives no size, see
+# Remote-Size); with no size known, see Fetch-Sized.
 function Fetch-Remote($url,$out){ Fetch-Sized $url $out (Remote-Size $url) }
 if($UseAria){ Log 'Downloader: aria2 (fast, multi-connection)' } else { Log "Downloader: curl (tip: install 'aria2' for much faster downloads)" }
 if($Lite -and -not $PSBoundParameters.ContainsKey('Selection') -and -not $Guided){ Log "Lite preset: 3B AI, medical/survival references and maps for '$Region' (unless skipped). Size depends on region; use -Region for a small area or -SkipMaps. Re-run without -Lite to add the full library." }
