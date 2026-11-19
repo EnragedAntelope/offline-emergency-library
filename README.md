@@ -473,6 +473,14 @@ None of them are needed for a normal install.
 
 Example: `./Get-OfflineLibrary.ps1 -Destination "F:\" -SkipWikipedia -SkipMaps`
 
+To save the screen output of a Windows install to a file, redirect it from `cmd` (or a scheduled task), not inside PowerShell:
+
+```bat
+powershell -NoProfile -ExecutionPolicy Bypass -File .\Get-OfflineLibrary.ps1 -Destination E:\ -SkipWikipedia > install-output.txt 2>&1
+```
+
+The installer only turns its progress meter off when the redirect is made outside PowerShell. A `>`, `*>` or `| Tee-Object` typed inside a PowerShell window leaves the meter on. `_download.log` in the destination folder records every step either way.
+
 ### Guided install (no flags)
 
 Run the installer with no flags at all (from a terminal, or by double-clicking `install.bat`,
